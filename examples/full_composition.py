@@ -8,7 +8,7 @@ from musicgen import (
     Scale, Key, Progression,
     MelodyGenerator, MelodicContour,
     Ensemble, Texture,
-    MIDIWriter, Score, Part, QUARTER
+    MIDIWriter, Score, Part, Note, QUARTER
 )
 
 

@@ -7,7 +7,11 @@ from __future__ import annotations
 from typing import List, Union, Optional, Dict
 from dataclasses import dataclass, field
 from pathlib import Path
-import struct
+
+try:
+    import mido
+except ImportError:
+    mido = None
 
 from musicgen.core.note import Note, Rest, QUARTER
 from musicgen.core.chord import Chord
@@ -16,9 +20,25 @@ from musicgen.core.chord import Chord
 class MIDIWriter:
     """Writes musical scores to MIDI files."""
 
-    # MIDI constants
-    HEADER_CHUNK_ID = b"MThd"
-    TRACK_CHUNK_ID = b"MTrk"
+    # MIDI program numbers for instruments
+    INSTRUMENT_PROGRAMS = {
+        "piano": 0,
+        "acoustic_piano": 0,
+        "violin": 40,
+        "viola": 41,
+        "cello": 42,
+        "double_bass": 43,
+        "flute": 73,
+        "piccolo": 72,
+        "clarinet": 71,
+        "oboe": 68,
+        "bassoon": 70,
+        "trumpet": 56,
+        "french_horn": 60,
+        "trombone": 57,
+        "timpani": 47,
+        "pizzicato": 45,
+    }
 
     def __init__(self, ticks_per_quarter: int = 480):
         """Initialize the MIDI writer.
@@ -41,170 +61,100 @@ class MIDIWriter:
         Returns:
             Path to the written file
         """
+        if mido is None:
+            raise RuntimeError("mido library is required for MIDI export")
+
         writer = MIDIWriter()
         writer.tempo = tempo
-        data = writer._generate_midi_data(score)
+        data = writer._generate_midi_file(score)
 
-        with open(filepath, "wb") as f:
-            f.write(data)
+        data.save(filepath)
 
         return filepath
 
-    def _generate_midi_data(self, score: "Score") -> bytes:
-        """Generate MIDI file data from a score.
+    def _generate_midi_file(self, score: "Score") -> "mido.MidiFile":
+        """Generate a MIDI file from a score.
 
         Args:
             score: The score
 
         Returns:
-            MIDI file as bytes
+            A mido.MidiFile object
         """
-        tracks = []
+        mid = mido.MidiFile(ticks_per_beat=self.ticks_per_quarter)
 
         # Create a track for each part
         for part in score.parts:
-            track_data = self._generate_track(part)
-            tracks.append(track_data)
+            track = self._generate_track(part)
+            mid.tracks.append(track)
 
-        # Build header
-        header = self._build_header(len(tracks))
+        return mid
 
-        # Combine all chunks
-        midi_data = header
-        for track in tracks:
-            midi_data += track
-
-        return midi_data
-
-    def _build_header(self, num_tracks: int) -> bytes:
-        """Build the MIDI header chunk.
-
-        Args:
-            num_tracks: Number of tracks
-
-        Returns:
-            Header chunk as bytes
-        """
-        format_type = 0 if num_tracks == 1 else 1
-
-        header = self.HEADER_CHUNK_ID
-        header += struct.pack(">I", 6)  # Header length
-        header += struct.pack(">H", format_type)  # Format
-        header += struct.pack(">H", num_tracks)  # Number of tracks
-        header += struct.pack(">H", self.ticks_per_quarter)  # Ticks per quarter
-
-        return header
-
-    def _generate_track(self, part: "Part") -> bytes:
+    def _generate_track(self, part: "Part") -> "mido.MidiTrack":
         """Generate a MIDI track for a part.
 
         Args:
             part: The part
 
         Returns:
-            Track chunk as bytes
+            A mido.MidiTrack object
         """
-        events = bytearray()
+        track = mido.MidiTrack()
+        track.name = part.name or "Untitled"
 
-        # Set tempo
+        # Set tempo meta event
         microseconds_per_quarter = int(60000000 / self.tempo)
-        events.extend(self._encode_tempo(microseconds_per_quarter))
+        track.append(mido.MetaMessage(
+            'set_tempo',
+            tempo=microseconds_per_quarter,
+            time=0
+        ))
 
-        # Set instrument
+        # Set instrument (program change)
+        program = 0
         if hasattr(part, "instrument") and part.instrument:
-            midi_program = getattr(part.instrument, "midi_program", 0)
-            events.extend(self._encode_program_change(midi_program))
+            program = getattr(part.instrument, "midi_program", 0)
+        else:
+            # Try to guess from part name
+            part_name_lower = part.name.lower() if part.name else ""
+            for inst_name, prog in self.INSTRUMENT_PROGRAMS.items():
+                if inst_name in part_name_lower:
+                    program = prog
+                    break
+
+        track.append(mido.Message(
+            'program_change',
+            program=program,
+            time=0,
+            channel=0
+        ))
 
         # Add notes
-        current_time = 0
         for note_obj in part.notes:
             if isinstance(note_obj, Note):
                 # Note on
-                events.extend(self._encode_note_on(
-                    note_obj.midi_number,
-                    note_obj.velocity,
-                    0  # Delta time (simplified)
+                track.append(mido.Message(
+                    'note_on',
+                    note=note_obj.midi_number,
+                    velocity=note_obj.velocity,
+                    time=0,
+                    channel=0
                 ))
+
                 # Note off after duration
                 ticks = int(note_obj.duration * self.ticks_per_quarter)
-                events.extend(self._encode_note_off(
-                    note_obj.midi_number,
-                    0,
-                    ticks  # Delta time
+                track.append(mido.Message(
+                    'note_off',
+                    note=note_obj.midi_number,
+                    velocity=0,
+                    time=ticks,
+                    channel=0
                 ))
-                current_time += ticks
 
         # End of track
-        events.extend(self._encode_end_of_track(0))
-
-        # Build track chunk
-        track = self.TRACK_CHUNK_ID
-        track += struct.pack(">I", len(events))  # Track length
-        track += events
+        track.append(mido.MetaMessage('end_of_track', time=0))
 
         return track
-
-    def _encode_tempo(self, microseconds: int) -> bytes:
-        """Encode a tempo meta event.
-
-        Args:
-            microseconds: Microseconds per quarter note
-
-        Returns:
-            Encoded event
-        """
-        data = struct.pack(">I", microseconds)[1:]  # 3 bytes
-        return b"\x00\xFF\x51\x03" + data
-
-    def _encode_program_change(self, program: int) -> bytes:
-        """Encode a program change event.
-
-        Args:
-            program: MIDI program number (0-127)
-
-        Returns:
-            Encoded event
-        """
-        return bytes([0xC0, program & 0x7F])
-
-    def _encode_note_on(self, note: int, velocity: int, delta_time: int) -> bytes:
-        """Encode a note on event.
-
-        Args:
-            note: MIDI note number
-            velocity: MIDI velocity
-            delta_time: Delta time in ticks
-
-        Returns:
-            Encoded event (simplified - no variable length encoding)
-        """
-        if delta_time == 0:
-            return bytes([0x90, note & 0x7F, velocity & 0x7F])
-        return bytes([0x90, note & 0x7F, velocity & 0x7F])
-
-    def _encode_note_off(self, note: int, velocity: int, delta_time: int) -> bytes:
-        """Encode a note off event.
-
-        Args:
-            note: MIDI note number
-            velocity: Release velocity
-            delta_time: Delta time in ticks
-
-        Returns:
-            Encoded event
-        """
-        return bytes([0x80, note & 0x7F, velocity & 0x7F])
-
-    def _encode_end_of_track(self, delta_time: int) -> bytes:
-        """Encode an end of track meta event.
-
-        Args:
-            delta_time: Delta time
-
-        Returns:
-            Encoded event
-        """
-        return b"\x00\xFF\x2F\x00"
 
 
 @dataclass

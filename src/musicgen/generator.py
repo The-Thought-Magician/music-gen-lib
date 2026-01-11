@@ -104,9 +104,22 @@ def generate(request: CompositionRequest) -> CompositionResult:
     instrument_names = request.instruments or preset.instruments[:4]
     title = request.title or f"{request.mood.capitalize()} Composition"
 
+    # Parse key name to extract tonic (remove 'm' suffix like "Am" -> "A")
+    tonic = key_name.strip().upper()
+    if tonic.endswith("M"):
+        tonic = tonic[:-1]  # Remove trailing 'M' from keys like "AM"
+
+    # Determine key type from scale or suffix
+    if "minor" in scale_type.lower():
+        key_type = "minor"
+    elif key_name.lower().endswith("m") and "major" not in scale_type.lower():
+        key_type = "minor"
+    else:
+        key_type = "major"
+
     # Create music elements
-    key = Key(key_name, "major" if "major" in scale_type else "minor")
-    scale = Scale(key_name, scale_type)
+    key = Key(tonic, key_type)
+    scale = Scale(tonic, scale_type)
     progression = Progression.functional(key=key, length=8)
 
     # Generate melody
@@ -194,7 +207,7 @@ def generate(request: CompositionRequest) -> CompositionResult:
 
     return CompositionResult(
         score=score,
-        key=key_name,
+        key=f"{tonic} {key_type}",
         scale_type=scale_type,
         tempo=tempo,
         instruments=instrument_names,

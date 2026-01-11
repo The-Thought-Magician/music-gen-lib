@@ -146,7 +146,7 @@ class TestIntegrationGenerate:
 
         result = generate(request)
 
-        assert result.key == "G"
+        assert result.key == "G major"
         assert result.midi_path is not None
 
     def test_generate_with_key_override(self, tmp_path):
@@ -163,7 +163,7 @@ class TestIntegrationGenerate:
 
         result = generate(request)
 
-        assert result.key == "F"
+        assert result.key == "F major"
 
     def test_generate_with_tempo_override(self, tmp_path):
         """Test generating with tempo override."""
