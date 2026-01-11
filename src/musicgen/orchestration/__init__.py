@@ -1,6 +1,6 @@
 """Orchestration module.
 
-This module provides classes for instruments and ensembles.
+This module provides classes for instruments, ensembles, and orchestration strategies.
 """
 
 from musicgen.orchestration.instruments import (
@@ -13,6 +13,13 @@ from musicgen.orchestration.ensembles import (
     TextureType,
     Ensemble,
 )
+from musicgen.orchestration.strategies import (
+    OrchestrationStrategies,
+    OrchestrationBuilder,
+    TexturePlan,
+    TextureDensity,
+    get_preset,
+)
 
 __all__ = [
     "Instrument",
@@ -21,4 +28,9 @@ __all__ = [
     "Texture",
     "TextureType",
     "Ensemble",
+    "OrchestrationStrategies",
+    "OrchestrationBuilder",
+    "TexturePlan",
+    "TextureDensity",
+    "get_preset",
 ]

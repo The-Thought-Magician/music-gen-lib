@@ -1,0 +1,13 @@
+# MusicGen AI Prompt File
+#
+# Write your description of the desired music below.
+# The AI will interpret your prompt and generate a complete orchestration.
+#
+# Example prompts:
+# - "A heroic battle scene with driving rhythms, powerful brass, and soaring strings"
+# - "A peaceful forest scene with gentle flute melodies and soft string accompaniment"
+# - "An epic cinematic trailer with full orchestra, building to a massive climax"
+# - "A sad nostalgic memory with piano and cello in a minor key"
+# - "Upbeat jazz-inspired piece with swing rhythms and woodwind solos"
+#
+# Describe your desired music below:
