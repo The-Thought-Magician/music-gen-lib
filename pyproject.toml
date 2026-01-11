@@ -34,13 +34,33 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Core development tools (Python 3.10+)
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "sphinx>=5.0",
     "sphinx-rtd-theme>=1.0",
     "myst-parser>=1.0",
+]
+
+# Audio synthesis (requires system dependencies: fluidsynth)
+audio = [
+    "pydub>=0.25.0",
+]
+
+# LilyPond/PDF export (requires Python <3.12)
+lilypond = [
     "abjad>=3.0",
+]
+
+# AI-powered composition (Gemini)
+ai = [
+    "google-genai>=1.0.0",
+]
+
+# All optional dependencies (except lilypond for Python 3.12+)
+all = [
+    "musicgen[dev,audio,ai]",
 ]
 
 [project.urls]
