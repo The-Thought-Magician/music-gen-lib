@@ -1,0 +1,9 @@
+{
+  "enabledPlugins": {
+    "code-review-ai@claude-code-workflows": true,
+    "comprehensive-review@claude-code-workflows": true,
+    "python-development@claude-code-workflows": true,
+    "unit-testing@claude-code-workflows": true,
+    "code-documentation@claude-code-workflows": true
+  }
+}
