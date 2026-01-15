@@ -1,0 +1,5 @@
+# AI request/response logs
+*.txt
+*.json
+*.yaml
+*/

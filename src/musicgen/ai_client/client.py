@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+import logging
 import time
+from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 try:
@@ -30,6 +33,8 @@ from musicgen.ai_client.exceptions import (
 from musicgen.ai_client.prompts import PromptBuilder
 from musicgen.config import Config, get_config
 
+logger = logging.getLogger(__name__)
+
 
 class GeminiClient:
     """Client for Google Gemini 2.5 Pro API.
@@ -39,10 +44,14 @@ class GeminiClient:
     - Retry logic with exponential backoff
     - Schema-aware prompting
     - JSON response parsing
+    - Request/response logging
     """
 
     # Default model
     DEFAULT_MODEL = "gemini-2.5-pro"
+
+    # Logging directory
+    LOG_DIR = Path("logs/ai_calls")
 
     def __init__(
         self,
@@ -51,6 +60,7 @@ class GeminiClient:
         temperature: float | None = None,
         max_tokens: int | None = None,
         config: Config | None = None,
+        log_requests: bool = True,
     ):
         """Initialize the Gemini client.
 
@@ -60,6 +70,7 @@ class GeminiClient:
             temperature: Sampling temperature (0.0-1.0). If None, reads from config.
             max_tokens: Max output tokens. If None, reads from config (usually unlimited).
             config: Optional config object.
+            log_requests: Whether to log requests/responses to files.
 
         Raises:
             RuntimeError: If google-genai is not installed.
@@ -72,6 +83,7 @@ class GeminiClient:
             )
 
         self.config = config or get_config()
+        self.log_requests = log_requests
 
         # Get API key
         self.api_key = api_key or self.config.api_key
@@ -92,6 +104,10 @@ class GeminiClient:
 
         # Initialize client
         self.client = genai.Client(api_key=self.api_key)
+
+        # Create log directory
+        if self.log_requests:
+            self.LOG_DIR.mkdir(parents=True, exist_ok=True)
 
     def generate(
         self,
@@ -117,8 +133,17 @@ class GeminiClient:
         prompt_builder = PromptBuilder(system_instructions=system_instructions)
         system_prompt, user_prompt = prompt_builder.build_prompt(prompt, schema)
 
+        # Log the request
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        if self.log_requests:
+            self._log_request(timestamp, prompt, system_prompt, user_prompt, schema)
+
         # Call API with retry
         response_text = self._call_with_retry(system_prompt, user_prompt)
+
+        # Log the response
+        if self.log_requests:
+            self._log_response(timestamp, response_text)
 
         # Parse response
         return self._parse_response(response_text)
@@ -267,6 +292,77 @@ class GeminiClient:
             response = response[start:end + 1]
 
         return response
+
+
+    def _log_request(
+        self,
+        timestamp: str,
+        prompt: str,
+        system_prompt: str,
+        user_prompt: str,
+        schema: str | None = None,
+    ) -> None:
+        """Log the request details.
+
+        Args:
+            timestamp: Timestamp for the log file
+            prompt: Original user prompt
+            system_prompt: System instructions sent to AI
+            user_prompt: User prompt sent to AI
+            schema: Schema YAML (if provided)
+        """
+        log_dir = self.LOG_DIR / timestamp
+        log_dir.mkdir(parents=True, exist_ok=True)
+
+        # Save original prompt
+        (log_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
+
+        # Save system prompt
+        (log_dir / "system_prompt.txt").write_text(system_prompt, encoding="utf-8")
+
+        # Save user prompt
+        (log_dir / "user_prompt.txt").write_text(user_prompt, encoding="utf-8")
+
+        # Save schema if provided
+        if schema:
+            (log_dir / "schema.yaml").write_text(schema, encoding="utf-8")
+
+        # Save request metadata
+        metadata = {
+            "model": self.model_name,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "timestamp": timestamp,
+        }
+        (log_dir / "metadata.json").write_text(
+            json.dumps(metadata, indent=2), encoding="utf-8"
+        )
+
+        logger.info(f"Request logged to: {log_dir}")
+
+    def _log_response(self, timestamp: str, response_text: str) -> None:
+        """Log the AI response.
+
+        Args:
+            timestamp: Timestamp for the log file (should match request)
+            response_text: Raw response text from AI
+        """
+        log_dir = self.LOG_DIR / timestamp
+
+        # Save raw response
+        (log_dir / "response_raw.txt").write_text(response_text, encoding="utf-8")
+
+        # Try to save parsed response
+        try:
+            cleaned = self._clean_json_response(response_text)
+            parsed = json.loads(cleaned)
+            (log_dir / "response_parsed.json").write_text(
+                json.dumps(parsed, indent=2), encoding="utf-8"
+            )
+        except Exception as e:
+            (log_dir / "parse_error.txt").write_text(str(e), encoding="utf-8")
+
+        logger.info(f"Response logged to: {log_dir}")
 
 
 # Convenience function
