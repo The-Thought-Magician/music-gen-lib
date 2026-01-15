@@ -1,0 +1,5 @@
+# Generated MIDI files
+*.mid
+*.midi
+*.wav
+*.mp3
