@@ -58,10 +58,7 @@ class AudioRenderer:
 
         # Synthesize audio
         try:
-            audio = midi.synthesize(
-                fs=self.sample_rate,
-                wave_type='sine'  # Can be 'sine', 'square', 'sawtooth', etc.
-            )
+            audio = midi.synthesize(fs=self.sample_rate)
         except Exception as e:
             logger.error(f"Failed to synthesize audio: {e}")
             raise RuntimeError(f"Failed to synthesize audio: {e}") from e
