@@ -533,21 +533,20 @@ def cmd_ai(args) -> int:
                 print(f"  MIDI: {midi_path}")
 
         # Generate audio
-        if "wav" in formats or "mp3" in formats:
-            if midi_path and AUDIO_AVAILABLE:
-                from musicgen.io.audio_synthesizer import AudioSynthesizer
-                try:
-                    synth = AudioSynthesizer()
-                    if "wav" in formats:
-                        wav_path = str(output_dir / f"{base_name}.wav")
-                        synth.render(midi_path, wav_path, "wav")
-                        print(f"  WAV: {wav_path}")
-                    if "mp3" in formats:
-                        mp3_path = str(output_dir / f"{base_name}.mp3")
-                        synth.render(midi_path, mp3_path, "mp3")
-                        print(f"  MP3: {mp3_path}")
-                except Exception as e:
-                    print(f"  Audio generation skipped: {e}")
+        if ("wav" in formats or "mp3" in formats) and midi_path and AUDIO_AVAILABLE:
+            from musicgen.io.audio_synthesizer import AudioSynthesizer
+            try:
+                synth = AudioSynthesizer()
+                if "wav" in formats:
+                    wav_path = str(output_dir / f"{base_name}.wav")
+                    synth.render(midi_path, wav_path, "wav")
+                    print(f"  WAV: {wav_path}")
+                if "mp3" in formats:
+                    mp3_path = str(output_dir / f"{base_name}.mp3")
+                    synth.render(midi_path, mp3_path, "mp3")
+                    print(f"  MP3: {mp3_path}")
+            except Exception as e:
+                print(f"  Audio generation skipped: {e}")
 
         print(f"\nDone! Composition saved to {output_dir}")
 
