@@ -5,16 +5,14 @@ and assigning instruments to musical roles.
 """
 
 from __future__ import annotations
-from typing import List, Dict, Optional, Tuple
-from enum import Enum
+
 from dataclasses import dataclass
+from enum import Enum
 
 from musicgen.core.note import Note
-from musicgen.core.chord import Chord
-from musicgen.orchestration.instruments import Instrument
-from musicgen.theory.scales import Scale
 from musicgen.theory.keys import Key
 from musicgen.theory.progressions import Progression
+from musicgen.theory.scales import Scale
 
 
 class TextureType(Enum):
@@ -44,7 +42,7 @@ class InstrumentRole:
     instrument: str
     role: str  # "melody", "harmony", "bass", "accompaniment", "countermelody"
     voice_index: int = 0  # For voice leading (0=soprano/highest)
-    doubling: Optional[str] = None  # What instrument to double
+    doubling: str | None = None  # What instrument to double
     divisi: int = 1  # Number of parts
 
 
@@ -54,7 +52,7 @@ class TexturePlan:
 
     texture_type: TextureType
     density: TextureDensity
-    roles: List[InstrumentRole]
+    roles: list[InstrumentRole]
     dynamics: str = "mf"
 
 
@@ -63,9 +61,9 @@ class OrchestrationStrategies:
 
     @staticmethod
     def homophonic(
-        melody_instruments: List[str],
-        harmony_instruments: List[str],
-        bass_instruments: Optional[List[str]] = None
+        melody_instruments: list[str],
+        harmony_instruments: list[str],
+        bass_instruments: list[str] | None = None
     ) -> TexturePlan:
         """Create homophonic texture (melody + chordal accompaniment).
 
@@ -111,7 +109,7 @@ class OrchestrationStrategies:
         )
 
     @staticmethod
-    def polyphonic(instruments: List[str]) -> TexturePlan:
+    def polyphonic(instruments: list[str]) -> TexturePlan:
         """Create polyphonic texture (independent melodic lines).
 
         Args:
@@ -137,8 +135,8 @@ class OrchestrationStrategies:
     @staticmethod
     def melody_with_accompaniment(
         melody_instrument: str,
-        accompaniment_instruments: List[str],
-        bass_instrument: Optional[str] = None
+        accompaniment_instruments: list[str],
+        bass_instrument: str | None = None
     ) -> TexturePlan:
         """Create melody + accompaniment texture.
 
@@ -175,7 +173,7 @@ class OrchestrationStrategies:
         )
 
     @staticmethod
-    def pad(instruments: List[str]) -> TexturePlan:
+    def pad(instruments: list[str]) -> TexturePlan:
         """Create pad texture (sustained chords).
 
         Args:
@@ -199,7 +197,7 @@ class OrchestrationStrategies:
         )
 
     @staticmethod
-    def tutti(instruments: List[str]) -> TexturePlan:
+    def tutti(instruments: list[str]) -> TexturePlan:
         """Create tutti texture (all instruments playing).
 
         Args:
@@ -223,7 +221,7 @@ class OrchestrationStrategies:
         )
 
     @staticmethod
-    def dialogue(group1: List[str], group2: List[str]) -> TexturePlan:
+    def dialogue(group1: list[str], group2: list[str]) -> TexturePlan:
         """Create dialogue texture (call and response).
 
         Args:
@@ -297,7 +295,7 @@ class OrchestrationBuilder:
         texture_plan: TexturePlan,
         progression: Progression,
         duration_bars: int = 8
-    ) -> Dict[str, List[Note]]:
+    ) -> dict[str, list[Note]]:
         """Apply a texture plan to a chord progression.
 
         Args:
@@ -325,7 +323,7 @@ class OrchestrationBuilder:
         role: InstrumentRole,
         progression: Progression,
         duration_bars: int
-    ) -> List[Note]:
+    ) -> list[Note]:
         """Generate notes for an instrument based on its role.
 
         Args:
@@ -353,7 +351,7 @@ class OrchestrationBuilder:
         self,
         progression: Progression,
         duration_bars: int
-    ) -> List[Note]:
+    ) -> list[Note]:
         """Generate melodic line.
 
         Args:
@@ -363,8 +361,7 @@ class OrchestrationBuilder:
         Returns:
             Melody notes.
         """
-        from musicgen.composition.melody import MelodyGenerator, MelodicContour
-        from musicgen.core.note import QUARTER
+        from musicgen.composition.melody import MelodicContour, MelodyGenerator
 
         melody_gen = MelodyGenerator(self.scale, self.key)
         melody = melody_gen.generate_melody(
@@ -379,7 +376,7 @@ class OrchestrationBuilder:
         self,
         progression: Progression,
         duration_bars: int
-    ) -> List[Note]:
+    ) -> list[Note]:
         """Generate bass line.
 
         Args:
@@ -389,7 +386,7 @@ class OrchestrationBuilder:
         Returns:
             Bass notes.
         """
-        from musicgen.core.note import QUARTER, HALF
+        from musicgen.core.note import HALF
 
         notes = []
         beats_per_chord = 4
@@ -413,7 +410,7 @@ class OrchestrationBuilder:
         progression: Progression,
         duration_bars: int,
         voice_index: int
-    ) -> List[Note]:
+    ) -> list[Note]:
         """Generate harmony part.
 
         Args:
@@ -424,7 +421,7 @@ class OrchestrationBuilder:
         Returns:
             Harmony notes.
         """
-        from musicgen.core.note import HALF, WHOLE
+        from musicgen.core.note import WHOLE
 
         notes = []
         voice_index = min(voice_index, 2)  # Limit to 3rds and 5ths
@@ -441,7 +438,7 @@ class OrchestrationBuilder:
         self,
         progression: Progression,
         duration_bars: int
-    ) -> List[Note]:
+    ) -> list[Note]:
         """Generate accompaniment pattern.
 
         Args:
@@ -451,7 +448,7 @@ class OrchestrationBuilder:
         Returns:
             Accompaniment notes.
         """
-        from musicgen.core.note import QUARTER, EIGHTH, Rest
+        from musicgen.core.note import QUARTER
 
         notes = []
 
@@ -473,7 +470,7 @@ class OrchestrationBuilder:
         self,
         progression: Progression,
         duration_bars: int
-    ) -> List[Note]:
+    ) -> list[Note]:
         """Generate countermelody.
 
         Args:
@@ -483,7 +480,7 @@ class OrchestrationBuilder:
         Returns:
             Countermelody notes.
         """
-        from musicgen.composition.melody import MelodyGenerator, MelodicContour
+        from musicgen.composition.melody import MelodicContour, MelodyGenerator
 
         melody_gen = MelodyGenerator(self.scale, self.key)
         melody = melody_gen.generate_melody(
@@ -535,7 +532,7 @@ ORCHESTRATION_PRESETS = {
 }
 
 
-def get_preset(name: str) -> Optional[TexturePlan]:
+def get_preset(name: str) -> TexturePlan | None:
     """Get an orchestration preset by name.
 
     Args:

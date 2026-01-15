@@ -5,13 +5,12 @@ chord progressions.
 """
 
 from __future__ import annotations
-from typing import List, Optional, Union
-from dataclasses import dataclass, field
+
 import random
+from dataclasses import dataclass, field
 
-from musicgen.core.chord import Chord, MAJOR, MINOR, DIMINISHED, AUGMENTED
+from musicgen.core.chord import DIMINISHED, MAJOR, MINOR, Chord
 from musicgen.theory.keys import Key
-
 
 # Roman numeral to scale degree mapping (1-based)
 ROMAN_TO_DEGREE = {
@@ -31,8 +30,8 @@ class Progression:
         key: The key of the progression
     """
 
-    chords: List[Chord] = field(default_factory=list)
-    key: Optional[Key] = None
+    chords: list[Chord] = field(default_factory=list)
+    key: Key | None = None
 
     def __post_init__(self):
         """Initialize progression."""
@@ -54,7 +53,7 @@ class Progression:
         """
         self.chords.append(chord)
 
-    def get_chord(self, index: int) -> Optional[Chord]:
+    def get_chord(self, index: int) -> Chord | None:
         """Get a chord by index.
 
         Args:
@@ -67,7 +66,7 @@ class Progression:
             return self.chords[index]
         return None
 
-    def transpose(self, semitones: int) -> "Progression":
+    def transpose(self, semitones: int) -> Progression:
         """Return a new progression transposed by semitones.
 
         Args:
@@ -89,8 +88,8 @@ class Progression:
         return Progression(chords=new_chords, key=new_key)
 
     @classmethod
-    def from_roman(cls, roman_numerals: str, key: Union[str, Key],
-                   quality: Optional[str] = None) -> "Progression":
+    def from_roman(cls, roman_numerals: str, key: str | Key,
+                   quality: str | None = None) -> Progression:
         """Create a progression from Roman numerals.
 
         Args:
@@ -136,8 +135,10 @@ class Progression:
                 # Handle seventh chords
                 if is_seventh:
                     from musicgen.core.chord import (
-                        MAJOR_SEVENTH, MINOR_SEVENTH,
-                        DOMINANT_SEVENTH, DIMINISHED_SEVENTH
+                        DIMINISHED_SEVENTH,
+                        DOMINANT_SEVENTH,
+                        MAJOR_SEVENTH,
+                        MINOR_SEVENTH,
                     )
                     if chord.quality == MAJOR:
                         if degree == 5:  # V chord = dominant
@@ -165,7 +166,7 @@ class Progression:
 
     @classmethod
     def circle_of_fifths(cls, root: str, length: int = 4,
-                         quality: Optional[str] = None) -> "Progression":
+                         quality: str | None = None) -> Progression:
         """Generate a circle-of-fifths progression.
 
         Args:
@@ -194,8 +195,8 @@ class Progression:
         return cls(chords=chords, key=Key(root, "major" if quality == MAJOR else "minor"))
 
     @classmethod
-    def functional(cls, key: Union[str, Key], length: int = 8,
-                   cadence: str = "authentic", allow_secondary: bool = False) -> "Progression":
+    def functional(cls, key: str | Key, length: int = 8,
+                   cadence: str = "authentic", allow_secondary: bool = False) -> Progression:
         """Generate a functionally coherent progression.
 
         Args:

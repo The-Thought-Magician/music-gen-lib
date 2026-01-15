@@ -5,11 +5,11 @@ common musical forms.
 """
 
 from __future__ import annotations
-from typing import List, Dict, Optional, Union
+
 from dataclasses import dataclass, field
 from enum import Enum
 
-from musicgen.composition.melody import Melody, Phrase
+from musicgen.composition.melody import Melody
 from musicgen.theory.keys import Key
 
 
@@ -36,8 +36,8 @@ class Section:
     """
 
     name: str
-    melodies: List[Melody] = field(default_factory=list)
-    key: Optional[Key] = None
+    melodies: list[Melody] = field(default_factory=list)
+    key: Key | None = None
     length: int = 8
 
     @property
@@ -74,8 +74,8 @@ class Form:
     """
 
     form_type: FormType
-    sections: List[Section] = field(default_factory=list)
-    key: Optional[Key] = None
+    sections: list[Section] = field(default_factory=list)
+    key: Key | None = None
 
     @property
     def length(self) -> int:
@@ -95,7 +95,7 @@ class Form:
         """
         self.sections.append(section)
 
-    def get_section(self, name: str) -> Optional[Section]:
+    def get_section(self, name: str) -> Section | None:
         """Get a section by name.
 
         Args:
@@ -111,7 +111,7 @@ class Form:
 
     @classmethod
     def binary(cls, section_a: Section, section_b: Section,
-               key: Optional[Key] = None) -> "Form":
+               key: Key | None = None) -> Form:
         """Create a binary form (AB).
 
         Args:
@@ -132,7 +132,7 @@ class Form:
 
     @classmethod
     def ternary(cls, section_a: Section, section_b: Section,
-                key: Optional[Key] = None) -> "Form":
+                key: Key | None = None) -> Form:
         """Create a ternary form (ABA).
 
         Args:
@@ -157,8 +157,8 @@ class Form:
         )
 
     @classmethod
-    def rondo(cls, theme: Section, episodes: List[Section],
-              key: Optional[Key] = None) -> "Form":
+    def rondo(cls, theme: Section, episodes: list[Section],
+              key: Key | None = None) -> Form:
         """Create a rondo form (ABACA...).
 
         Args:
@@ -185,7 +185,7 @@ class Form:
 
     @classmethod
     def sonata(cls, exposition: Section, development: Section,
-               recapitulation: Section, key: Optional[Key] = None) -> "Form":
+               recapitulation: Section, key: Key | None = None) -> Form:
         """Create a sonata form.
 
         Args:

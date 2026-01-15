@@ -4,21 +4,20 @@ This module provides the primary interface for generating music compositions.
 """
 
 from __future__ import annotations
-from typing import Optional, List
+
+import random
 from dataclasses import dataclass, field
 from pathlib import Path
-import random
 
-from musicgen.core.note import Note, QUARTER
-from musicgen.theory.scales import Scale
+from musicgen.composition.melody import MelodicContour, MelodyGenerator
+from musicgen.config.moods import get_mood_preset, list_moods
+from musicgen.core.note import QUARTER, Note
+from musicgen.io.lilypond_writer import LilyPondWriter
+from musicgen.io.midi_writer import MIDIWriter, Part, Score
+from musicgen.io.musicxml_writer import MusicXMLWriter
 from musicgen.theory.keys import Key
 from musicgen.theory.progressions import Progression
-from musicgen.composition.melody import MelodyGenerator, MelodicContour
-from musicgen.orchestration.ensembles import Ensemble, Texture
-from musicgen.io.midi_writer import MIDIWriter, Score, Part
-from musicgen.io.musicxml_writer import MusicXMLWriter
-from musicgen.io.lilypond_writer import LilyPondWriter
-from musicgen.config.moods import get_mood_preset, list_moods
+from musicgen.theory.scales import Scale
 
 
 @dataclass
@@ -40,16 +39,16 @@ class CompositionRequest:
     """
 
     mood: str = "peaceful"
-    key: Optional[str] = None
-    scale: Optional[str] = None
-    tempo: Optional[int] = None
+    key: str | None = None
+    scale: str | None = None
+    tempo: int | None = None
     duration: int = 30
-    instruments: Optional[List[str]] = None
+    instruments: list[str] | None = None
     title: str = ""
     composer: str = "MusicGen"
     output_dir: str = "."
-    export_formats: List[str] = field(default_factory=lambda: ["midi"])
-    seed: Optional[int] = None
+    export_formats: list[str] = field(default_factory=lambda: ["midi"])
+    seed: int | None = None
 
 
 @dataclass
@@ -73,11 +72,11 @@ class CompositionResult:
     key: str
     scale_type: str
     tempo: int
-    instruments: List[str]
-    midi_path: Optional[str] = None
-    audio_path: Optional[str] = None
-    musicxml_path: Optional[str] = None
-    pdf_path: Optional[str] = None
+    instruments: list[str]
+    midi_path: str | None = None
+    audio_path: str | None = None
+    musicxml_path: str | None = None
+    pdf_path: str | None = None
     title: str = ""
 
 
@@ -110,9 +109,7 @@ def generate(request: CompositionRequest) -> CompositionResult:
         tonic = tonic[:-1]  # Remove trailing 'M' from keys like "AM"
 
     # Determine key type from scale or suffix
-    if "minor" in scale_type.lower():
-        key_type = "minor"
-    elif key_name.lower().endswith("m") and "major" not in scale_type.lower():
+    if "minor" in scale_type.lower() or key_name.lower().endswith("m") and "major" not in scale_type.lower():
         key_type = "minor"
     else:
         key_type = "major"
@@ -219,7 +216,7 @@ def generate(request: CompositionRequest) -> CompositionResult:
     )
 
 
-def list_available_moods() -> List[str]:
+def list_available_moods() -> list[str]:
     """Return list of available mood presets.
 
     Returns:

@@ -3,17 +3,17 @@
 This module provides classes for melody generation and musical forms.
 """
 
-from musicgen.composition.melody import (
-    MelodicContour,
-    Motif,
-    Phrase,
-    Melody,
-    MelodyGenerator,
-)
 from musicgen.composition.forms import (
+    Form,
     FormType,
     Section,
-    Form,
+)
+from musicgen.composition.melody import (
+    MelodicContour,
+    Melody,
+    MelodyGenerator,
+    Motif,
+    Phrase,
 )
 
 __all__ = [

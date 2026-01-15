@@ -31,6 +31,8 @@ dependencies = [
     "mido>=1.2",
     "pretty-midi>=0.2",
     "numpy>=1.24",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
@@ -41,6 +43,8 @@ dev = [
     "sphinx>=5.0",
     "sphinx-rtd-theme>=1.0",
     "myst-parser>=1.0",
+    "ruff>=0.8.0",
+    "mypy>=1.8.0",
 ]
 
 # Audio synthesis (requires system dependencies: fluidsynth)
@@ -109,6 +113,62 @@ python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "mido.*",
+    "pretty_midi.*",
+    "yaml.*",
+    "google.*",
+    "genai.*",
+    "pydub.*",
+    "music21.*",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "ARG",    # flake8-unused-arguments
+    "SIM",    # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # do not perform function calls in argument defaults
+    "W191",   # indentation contains tabs
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # unused imports
+"tests/*" = ["ARG"]       # unused arguments in tests
+"src/musicgen/__main__.py" = ["F401", "F841"]  # availability checks and unused vars
+"src/musicgen/theory/*" = ["ARG", "SIM", "F841", "B007"]  # theory module patterns
+"src/musicgen/ai/*" = ["ARG", "B904"]  # ai module patterns
+"src/musicgen/ai_client/*" = ["ARG", "B904"]  # ai client patterns
+"src/musicgen/composer_new/*" = ["B904"]  # composer patterns
+"src/musicgen/ai_models/*" = ["UP"]  # using Union for compatibility
+"src/musicgen/io/*" = ["ARG", "B904", "F841"]  # io module patterns
+"src/musicgen/orchestration/*" = ["ARG", "F841", "F821"]  # orchestration patterns
+"src/musicgen/renderer/*" = ["ARG", "B904", "F401"]  # renderer patterns
+
+[tool.ruff.lint.isort]
+known-first-party = ["musicgen"]
 
 [tool.black]
 line-length = 100

@@ -5,12 +5,10 @@ for use with FluidSynth audio synthesis.
 """
 
 from __future__ import annotations
-import os
+
 import shutil
-from pathlib import Path
-from typing import Optional
-import hashlib
 import subprocess
+from pathlib import Path
 
 # SoundFont URLs
 GENERAL_USER_GS_URL = "https://schristiancollins.com/generaluser/GeneralUser-GS-v1.471.sf2"
@@ -24,7 +22,7 @@ PROJECT_SOUNDFONT_DIR = Path(__file__).parent.parent.parent.parent / "resources"
 class SoundFontManager:
     """Manages SoundFont files for audio synthesis."""
 
-    def __init__(self, cache_dir: Optional[Path] = None):
+    def __init__(self, cache_dir: Path | None = None):
         """Initialize the SoundFont manager.
 
         Args:
@@ -36,7 +34,7 @@ class SoundFontManager:
         # Ensure project directory exists
         PROJECT_SOUNDFONT_DIR.mkdir(parents=True, exist_ok=True)
 
-    def get_soundfont_path(self, name: str = "GeneralUser-GS") -> Optional[Path]:
+    def get_soundfont_path(self, name: str = "GeneralUser-GS") -> Path | None:
         """Get the path to a SoundFont file.
 
         Searches in order:
@@ -192,7 +190,7 @@ class SoundFontManager:
 
 
 # Global singleton
-_default_manager: Optional[SoundFontManager] = None
+_default_manager: SoundFontManager | None = None
 
 
 def get_soundfont_manager() -> SoundFontManager:
@@ -203,7 +201,7 @@ def get_soundfont_manager() -> SoundFontManager:
     return _default_manager
 
 
-def get_default_soundfont() -> Optional[Path]:
+def get_default_soundfont() -> Path | None:
     """Get the default SoundFont path."""
     return get_soundfont_manager().get_soundfont_path()
 

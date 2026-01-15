@@ -4,17 +4,16 @@ This module provides functionality for writing musical scores to MIDI files.
 """
 
 from __future__ import annotations
-from typing import List, Union, Optional, Dict
+
 from dataclasses import dataclass, field
-from pathlib import Path
+from typing import Optional
 
 try:
     import mido
 except ImportError:
     mido = None
 
-from musicgen.core.note import Note, Rest, QUARTER
-from musicgen.core.chord import Chord
+from musicgen.core.note import Note, Rest
 
 
 class MIDIWriter:
@@ -50,7 +49,7 @@ class MIDIWriter:
         self.tempo = 120  # Default tempo
 
     @staticmethod
-    def write(score: "Score", filepath: str, tempo: int = 120) -> str:
+    def write(score: Score, filepath: str, tempo: int = 120) -> str:
         """Write a score to a MIDI file.
 
         Args:
@@ -72,7 +71,7 @@ class MIDIWriter:
 
         return filepath
 
-    def _generate_midi_file(self, score: "Score") -> "mido.MidiFile":
+    def _generate_midi_file(self, score: Score) -> mido.MidiFile:
         """Generate a MIDI file from a score.
 
         Args:
@@ -90,7 +89,7 @@ class MIDIWriter:
 
         return mid
 
-    def _generate_track(self, part: "Part") -> "mido.MidiTrack":
+    def _generate_track(self, part: Part) -> mido.MidiTrack:
         """Generate a MIDI track for a part.
 
         Args:
@@ -169,14 +168,14 @@ class Part:
 
     name: str = ""
     instrument: Optional = None
-    notes: List[Union[Note, Rest]] = field(default_factory=list)
+    notes: list[Note | Rest] = field(default_factory=list)
 
     @property
     def length(self) -> int:
         """Return number of notes."""
         return len(self.notes)
 
-    def add_note(self, note: Union[Note, Rest]) -> None:
+    def add_note(self, note: Note | Rest) -> None:
         """Add a note to this part.
 
         Args:
@@ -199,7 +198,7 @@ class Score:
         composer: Composer name
     """
 
-    parts: List[Part] = field(default_factory=list)
+    parts: list[Part] = field(default_factory=list)
     title: str = ""
     composer: str = ""
 

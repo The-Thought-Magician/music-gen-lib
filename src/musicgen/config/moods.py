@@ -5,8 +5,9 @@ musical parameters for generating music with specific emotional qualities.
 """
 
 from __future__ import annotations
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
+
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -28,14 +29,14 @@ class MoodPreset:
     scale: str
     tempo_min: int
     tempo_max: int
-    instruments: List[str]
+    instruments: list[str]
     dynamics: str = "mf"
     articulation: str = "legato"
     form: str = "binary"
 
 
 # Mood presets dictionary
-MOOD_PRESETS: Dict[str, Dict[str, Any]] = {
+MOOD_PRESETS: dict[str, dict[str, Any]] = {
     "epic": {
         "key": "D",
         "scale": "harmonic_minor",
@@ -154,7 +155,7 @@ def get_mood_preset(mood: str) -> MoodPreset:
     )
 
 
-def list_moods() -> List[str]:
+def list_moods() -> list[str]:
     """Return a list of available mood names.
 
     Returns:
@@ -163,7 +164,7 @@ def list_moods() -> List[str]:
     return list(MOOD_PRESETS.keys())
 
 
-def get_all_presets() -> Dict[str, MoodPreset]:
+def get_all_presets() -> dict[str, MoodPreset]:
     """Get all mood presets as MoodPreset objects.
 
     Returns:

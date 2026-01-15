@@ -5,10 +5,8 @@ and rests, including duration and dynamic constants.
 """
 
 from __future__ import annotations
-import math
-from dataclasses import dataclass, field
-from typing import Optional
 
+from dataclasses import dataclass
 
 # Duration constants (in quarter notes)
 WHOLE = 4.0
@@ -96,7 +94,7 @@ class Note:
 
     @classmethod
     def from_pitch_string(cls, pitch: str, duration: float = QUARTER,
-                          velocity: int = MF, **kwargs) -> "Note":
+                          velocity: int = MF, **kwargs) -> Note:
         """Create a Note from a pitch string (e.g., "C4", "A#5", "Bb3").
 
         Args:
@@ -169,7 +167,7 @@ class Note:
         """Return the pitch class (0-11, where C=0, C#=1, etc.)."""
         return PITCH_CLASS.get(f"{self.name}{self.accidental}", 0) % 12
 
-    def transpose(self, semitones: int) -> "Note":
+    def transpose(self, semitones: int) -> Note:
         """Return a new Note transposed by the given semitones.
 
         Args:
@@ -215,7 +213,7 @@ class Note:
 
     @classmethod
     def from_midi(cls, midi_number: int, duration: float = QUARTER,
-                  velocity: int = MF, prefer_sharp: bool = True) -> "Note":
+                  velocity: int = MF, prefer_sharp: bool = True) -> Note:
         """Create a Note from a MIDI note number.
 
         Args:

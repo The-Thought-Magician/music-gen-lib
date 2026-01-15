@@ -3,21 +3,21 @@
 This module provides classes for instruments, ensembles, and orchestration strategies.
 """
 
+from musicgen.orchestration.ensembles import (
+    Ensemble,
+    Texture,
+    TextureType,
+)
 from musicgen.orchestration.instruments import (
     Instrument,
     InstrumentFamily,
     Voice,
 )
-from musicgen.orchestration.ensembles import (
-    Texture,
-    TextureType,
-    Ensemble,
-)
 from musicgen.orchestration.strategies import (
-    OrchestrationStrategies,
     OrchestrationBuilder,
-    TexturePlan,
+    OrchestrationStrategies,
     TextureDensity,
+    TexturePlan,
     get_preset,
 )
 

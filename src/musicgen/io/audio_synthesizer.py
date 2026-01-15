@@ -5,12 +5,10 @@ using FluidSynth and converting to various formats (WAV, MP3, FLAC).
 """
 
 from __future__ import annotations
-import os
+
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Optional, List
-import struct
 
 try:
     import pydub
@@ -19,7 +17,7 @@ try:
 except ImportError:
     PYDUB_AVAILABLE = False
 
-from musicgen.io.soundfont import get_soundfont_manager, ensure_soundfont
+from musicgen.io.soundfont import ensure_soundfont, get_soundfont_manager
 
 
 class AudioSynthesizer:
@@ -27,7 +25,7 @@ class AudioSynthesizer:
 
     def __init__(
         self,
-        soundfont_path: Optional[str | Path] = None,
+        soundfont_path: str | Path | None = None,
         sample_rate: int = 44100,
         bits: int = 16,
         channels: int = 2
@@ -59,7 +57,7 @@ class AudioSynthesizer:
     def render(
         self,
         midi_path: str | Path,
-        output_path: Optional[str | Path] = None,
+        output_path: str | Path | None = None,
         output_format: str = "wav"
     ) -> str:
         """Render a MIDI file to audio.

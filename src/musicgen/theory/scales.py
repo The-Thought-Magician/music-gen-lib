@@ -5,7 +5,7 @@ various modes and types.
 """
 
 from __future__ import annotations
-from typing import List, Optional, Set
+
 from dataclasses import dataclass
 from enum import Enum
 
@@ -94,12 +94,12 @@ class Scale:
             self._type_enum = SCALE_NAMES[type_str]
 
     @property
-    def intervals(self) -> List[int]:
+    def intervals(self) -> list[int]:
         """Return the interval pattern for this scale."""
         return SCALE_INTERVALS[self._type_enum]
 
     @property
-    def notes(self) -> List[str]:
+    def notes(self) -> list[str]:
         """Return the note names in this scale."""
         tonic_note = Note(self.tonic, self.octave)
         tonic_midi = tonic_note.midi_number
@@ -145,7 +145,7 @@ class Scale:
         note = note.strip().upper()
         return note in self.notes
 
-    def get_note_index(self, note: str) -> Optional[int]:
+    def get_note_index(self, note: str) -> int | None:
         """Get the scale degree of a note.
 
         Args:
@@ -160,7 +160,7 @@ class Scale:
         except ValueError:
             return None
 
-    def transpose(self, semitones: int) -> "Scale":
+    def transpose(self, semitones: int) -> Scale:
         """Return a new Scale transposed by the given semitones.
 
         Args:
@@ -178,13 +178,13 @@ class Scale:
             octave=transposed.octave
         )
 
-    def diatonic_chords(self) -> List:
+    def diatonic_chords(self) -> list:
         """Generate diatonic chords for each scale degree.
 
         Returns:
             List of Chord objects
         """
-        from musicgen.core.chord import Chord, MAJOR, MINOR, DIMINISHED
+        from musicgen.core.chord import DIMINISHED, MAJOR, MINOR, AUGMENTED, Chord
 
         # Determine chord qualities based on scale type
         if self._type_enum == ScaleType.MAJOR:

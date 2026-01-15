@@ -5,7 +5,7 @@ with their ranges and characteristics.
 """
 
 from __future__ import annotations
-from typing import List, Optional, Dict, Tuple
+
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -44,7 +44,7 @@ class Instrument:
     clef: str = "treble"
 
     # Common instrument presets
-    _PRESETS: Dict[str, Dict] = field(default_factory=dict, repr=False)
+    _PRESETS: dict[str, dict] = field(default_factory=dict, repr=False)
 
     def __post_init__(self):
         """Initialize instrument and set up presets."""
@@ -204,7 +204,7 @@ class Instrument:
         return concert_note.transpose(-self.transposition)
 
     @classmethod
-    def preset(cls, name: str) -> "Instrument":
+    def preset(cls, name: str) -> Instrument:
         """Create an instrument from a preset name.
 
         Args:
@@ -257,7 +257,7 @@ class Voice:
 
     name: str
     instrument: Instrument
-    notes: List[Note] = field(default_factory=list)
+    notes: list[Note] = field(default_factory=list)
 
     @property
     def length(self) -> int:

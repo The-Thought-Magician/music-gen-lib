@@ -4,13 +4,11 @@ This module provides functionality for writing musical scores to MusicXML files.
 """
 
 from __future__ import annotations
-from typing import List, Optional
-from dataclasses import dataclass
-from pathlib import Path
+
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
-from musicgen.core.note import Note, Rest, QUARTER
+from musicgen.core.note import Note, Rest
 
 
 class MusicXMLWriter:
@@ -29,7 +27,7 @@ class MusicXMLWriter:
     }
 
     @staticmethod
-    def write(score: "Score", filepath: str) -> str:
+    def write(score: Score, filepath: str) -> str:
         """Write a score to a MusicXML file.
 
         Args:
@@ -47,7 +45,7 @@ class MusicXMLWriter:
 
         return filepath
 
-    def _generate_musicxml(self, score: "Score") -> str:
+    def _generate_musicxml(self, score: Score) -> str:
         """Generate MusicXML from a score.
 
         Args:
@@ -94,14 +92,13 @@ class MusicXMLWriter:
         reparsed = minidom.parseString(rough_string)
         return reparsed.toprettyxml(indent="  ")
 
-    def _add_measures(self, part_elem: ET.Element, part: "Part") -> None:
+    def _add_measures(self, part_elem: ET.Element, part: Part) -> None:
         """Add measures to a part.
 
         Args:
             part_elem: The part XML element
             part: The part data
         """
-        from musicgen.io.midi_writer import Part as MIDIWriterPart
 
         # Simple measure division (4/4 time, assumed)
         beats_per_measure = 4

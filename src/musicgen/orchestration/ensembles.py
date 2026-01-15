@@ -5,7 +5,7 @@ and their configurations.
 """
 
 from __future__ import annotations
-from typing import List, Optional, Dict
+
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -33,12 +33,12 @@ class Texture:
     """
 
     texture_type: TextureType = TextureType.HOMOPHONIC
-    melody_instruments: List[str] = field(default_factory=list)
-    harmony_instruments: List[str] = field(default_factory=list)
-    bass_instruments: List[str] = field(default_factory=list)
+    melody_instruments: list[str] = field(default_factory=list)
+    harmony_instruments: list[str] = field(default_factory=list)
+    bass_instruments: list[str] = field(default_factory=list)
 
     @classmethod
-    def monophonic(cls, melody_instruments: List[str]) -> "Texture":
+    def monophonic(cls, melody_instruments: list[str]) -> Texture:
         """Create a monophonic texture.
 
         Args:
@@ -53,9 +53,9 @@ class Texture:
         )
 
     @classmethod
-    def homophonic(cls, melody_instruments: List[str],
-                   harmony_instruments: Optional[List[str]] = None,
-                   bass_instruments: Optional[List[str]] = None) -> "Texture":
+    def homophonic(cls, melody_instruments: list[str],
+                   harmony_instruments: list[str] | None = None,
+                   bass_instruments: list[str] | None = None) -> Texture:
         """Create a homophonic texture.
 
         Args:
@@ -74,7 +74,7 @@ class Texture:
         )
 
     @classmethod
-    def polyphonic(cls, instruments: List[str]) -> "Texture":
+    def polyphonic(cls, instruments: list[str]) -> Texture:
         """Create a polyphonic texture.
 
         Args:
@@ -100,11 +100,11 @@ class Ensemble:
     """
 
     name: str
-    instruments: List[Instrument] = field(default_factory=list)
-    texture: Optional[Texture] = None
+    instruments: list[Instrument] = field(default_factory=list)
+    texture: Texture | None = None
 
     # Common ensemble presets
-    _PRESETS: Dict[str, List[Dict]] = field(default_factory=dict, repr=False)
+    _PRESETS: dict[str, list[dict]] = field(default_factory=dict, repr=False)
 
     def __post_init__(self):
         """Initialize ensemble and set up presets."""
@@ -161,7 +161,7 @@ class Ensemble:
         """Return the number of instruments."""
         return len(self.instruments)
 
-    def get_instruments_by_family(self, family: InstrumentFamily) -> List[Instrument]:
+    def get_instruments_by_family(self, family: InstrumentFamily) -> list[Instrument]:
         """Get all instruments of a specific family.
 
         Args:
@@ -181,7 +181,7 @@ class Ensemble:
         self.instruments.append(instrument)
 
     @classmethod
-    def preset(cls, name: str) -> "Ensemble":
+    def preset(cls, name: str) -> Ensemble:
         """Create an ensemble from a preset name.
 
         Args:

@@ -1,0 +1,64 @@
+# AI Model Configuration
+model:
+  # Model to use for composition
+  default_model: "gemini-2.5-pro"
+  # Sampling temperature (0.0-1.0), lower = more deterministic
+  default_temperature: 0.5
+  # Maximum output tokens (null = unlimited)
+  default_max_tokens: null
+  # Retry attempts for failed API calls
+  retry_attempts: 3
+  # Delay between retries (seconds)
+  retry_delay: 1.0
+
+# Schema Generation
+schema:
+  # Include form structure in schema
+  include_form_structure: true
+  # Include dynamics markings
+  include_dynamics: true
+  # Include articulation markings
+  include_articulation: true
+  # Include tempo changes
+  include_tempo_changes: true
+  # Include time signature changes
+  include_time_signature_changes: true
+  # Include key changes (modulation)
+  include_key_changes: true
+
+# Note Sequence Options
+notes:
+  # Representation format: "json", "compact", "detailed"
+  default_format: "detailed"
+  # Duration unit: "quarter", "second", "tick"
+  duration_unit: "quarter"
+  # Velocity range (0-127)
+  velocity_min: 60
+  velocity_max: 100
+
+# Export Defaults
+export:
+  # Default output directory
+  default_output_dir: "."
+  # Default export formats
+  default_formats: ["midi", "wav"]
+  # Audio sample rate
+  sample_rate: 44100
+  # Audio bit depth
+  bit_depth: 16
+
+# Orchestration
+orchestration:
+  # Maximum number of instruments
+  max_instruments: 16
+  # Default MIDI channel mapping
+  midi_channels: auto
+
+# Validation
+validation:
+  # Validate AI output against schema
+  strict_schema_validation: true
+  # Validate music theory rules
+  validate_music_theory: false  # AI is responsible
+  # Maximum duration per composition (seconds)
+  max_duration: 600

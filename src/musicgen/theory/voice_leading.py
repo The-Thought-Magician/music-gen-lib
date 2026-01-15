@@ -5,13 +5,13 @@ between chords following species counterpoint rules.
 """
 
 from __future__ import annotations
-from typing import List, Tuple, Optional
+
+import random
 from dataclasses import dataclass
 from enum import Enum
-import random
 
-from musicgen.core.note import Note
 from musicgen.core.chord import Chord
+from musicgen.core.note import Note
 
 
 class VoiceType(Enum):
@@ -42,10 +42,10 @@ class Voice:
     """
 
     voice_type: VoiceType
-    notes: List[Note]
+    notes: list[Note]
 
     @property
-    def range(self) -> Tuple[int, int]:
+    def range(self) -> tuple[int, int]:
         """Return the range for this voice type."""
         return VOICE_RANGES[self.voice_type]
 
@@ -97,11 +97,11 @@ class Voicing:
     chord: Chord
 
     @property
-    def notes(self) -> List[Note]:
+    def notes(self) -> list[Note]:
         """Return all notes in the voicing."""
         return [self.soprano, self.alto, self.tenor, self.bass]
 
-    def get_intervals(self) -> List[int]:
+    def get_intervals(self) -> list[int]:
         """Get intervals between adjacent voices (top to bottom)."""
         return [
             self.soprano.midi_number - self.alto.midi_number,
@@ -109,7 +109,7 @@ class Voicing:
             self.tenor.midi_number - self.bass.midi_number,
         ]
 
-    def has_parallel_fifths(self, other: 'Voicing') -> bool:
+    def has_parallel_fifths(self, other: Voicing) -> bool:
         """Check for parallel fifths with another voicing.
 
         Args:
@@ -121,12 +121,12 @@ class Voicing:
         my_intervals = self.get_intervals()
         other_intervals = other.get_intervals()
 
-        for i, (m, o) in enumerate(zip(my_intervals, other_intervals)):
+        for i, (m, o) in enumerate(zip(my_intervals, other_intervals, strict=False)):
             if m == 7 and o == 7:  # Perfect fifth (inverted)
                 return True
         return False
 
-    def has_parallel_octaves(self, other: 'Voicing') -> bool:
+    def has_parallel_octaves(self, other: Voicing) -> bool:
         """Check for parallel octaves with another voicing.
 
         Args:
@@ -154,7 +154,7 @@ class Voicing:
 
 
 def voice_lead(chord1: Chord, chord2: Chord, num_voices: int = 4,
-               prev_voicing: Optional[Voicing] = None) -> Voicing:
+               prev_voicing: Voicing | None = None) -> Voicing:
     """Generate proper voice leading between two chords.
 
     Args:
@@ -234,7 +234,7 @@ def voice_lead(chord1: Chord, chord2: Chord, num_voices: int = 4,
     )
 
 
-def generate_harmony(progression, scale, num_voices: int = 4) -> List[Voicing]:
+def generate_harmony(progression, scale, num_voices: int = 4) -> list[Voicing]:
     """Generate full harmony for a chord progression.
 
     Args:
@@ -256,7 +256,7 @@ def generate_harmony(progression, scale, num_voices: int = 4) -> List[Voicing]:
     return voicings
 
 
-def check_voice_leading_violations(voicings: List[Voicing]) -> List[str]:
+def check_voice_leading_violations(voicings: list[Voicing]) -> list[str]:
     """Check a sequence of voicings for voice leading errors.
 
     Args:

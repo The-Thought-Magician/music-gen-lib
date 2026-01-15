@@ -4,9 +4,11 @@ This module provides the CLI for generating music from the command line,
 including support for mood-based and AI-powered generation.
 """
 
-import sys
-import os
+from __future__ import annotations
+
 import argparse
+import logging
+import sys
 import time
 from pathlib import Path
 
@@ -19,15 +21,30 @@ try:
 except ImportError:
     pass
 
-from musicgen.generator import generate, CompositionRequest, list_available_moods
+from musicgen.generator import CompositionRequest, generate, list_available_moods
 
-# Try to import AI components
+# Try to import AI components (old orchestration plan approach)
 try:
     from musicgen.ai import GeminiComposer, build_composition_from_plan
     from musicgen.ai.models import OrchestrationPlan
-    AI_AVAILABLE = True
+    AI_ORCHESTRATION_AVAILABLE = True
 except ImportError:
-    AI_AVAILABLE = False
+    AI_ORCHESTRATION_AVAILABLE = False
+
+# Try to import new AI note-level components
+try:
+    from musicgen.composer_new import AIComposer, ValidationError
+    from musicgen.composer_new.presets import get_preset, list_presets
+    AI_COMPOSE_AVAILABLE = True
+except ImportError:
+    AI_COMPOSE_AVAILABLE = False
+
+# Try to import AI client
+try:
+    from musicgen.ai_client import check_availability
+    AI_CLIENT_AVAILABLE = True
+except ImportError:
+    AI_CLIENT_AVAILABLE = False
 
 # Try to import audio components
 try:
@@ -35,6 +52,20 @@ try:
     AUDIO_AVAILABLE = True
 except ImportError:
     AUDIO_AVAILABLE = False
+
+# Try to import renderer
+try:
+    from musicgen.renderer import Renderer
+    RENDERER_AVAILABLE = True
+except ImportError:
+    RENDERER_AVAILABLE = False
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 def main(argv: list = None) -> int:
@@ -48,10 +79,78 @@ def main(argv: list = None) -> int:
     """
     parser = argparse.ArgumentParser(
         prog="musicgen",
-        description="Generate rule-based orchestral music compositions"
+        description="Generate rule-based and AI-powered music compositions",
+        epilog="Examples:\n"
+               "  musicgen compose \"A peaceful piano melody\"\n"
+               "  musicgen compose -f prompt.txt --output-dir output\n"
+               "  musicgen compose --preset epic_orchestral -f midi wav mp3\n"
+               "  musicgen presets list",
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
+
+    # COMPOSE command (new AI-first approach)
+    if AI_COMPOSE_AVAILABLE:
+        compose_parser = subparsers.add_parser(
+            "compose",
+            help="Generate music from a prompt (AI note-level composition)"
+        )
+        compose_parser.add_argument(
+            "prompt",
+            nargs="*",
+            help="Natural language description (e.g., 'A jazz piece in F minor')"
+        )
+        compose_parser.add_argument(
+            "-f", "--prompt-file",
+            dest="prompt_file",
+            help="Read prompt from file"
+        )
+        compose_parser.add_argument(
+            "--preset",
+            choices=list_presets() if AI_COMPOSE_AVAILABLE else [],
+            help="Use a preset prompt template"
+        )
+        compose_parser.add_argument(
+            "--output-dir", "-o",
+            default=".",
+            help="Output directory (default: current directory)"
+        )
+        compose_parser.add_argument(
+            "--format",
+            dest="formats",
+            action="append",
+            choices=["midi", "wav", "mp3", "json"],
+            help="Output format (can specify multiple, default: midi)"
+        )
+        compose_parser.add_argument(
+            "--output-name",
+            help="Base name for output files (default: from composition title)"
+        )
+        compose_parser.add_argument(
+            "--temperature",
+            type=float,
+            help="AI sampling temperature (0.0-1.0, default: from config)"
+        )
+        compose_parser.add_argument(
+            "--model",
+            help="AI model to use (default: from config)"
+        )
+        compose_parser.add_argument(
+            "--save-prompt",
+            action="store_true",
+            help="Save the prompt to a file"
+        )
+        compose_parser.add_argument(
+            "--save-json",
+            action="store_true",
+            help="Save the composition as JSON"
+        )
+        compose_parser.add_argument(
+            "--verbose", "-v",
+            action="store_true",
+            help="Verbose output"
+        )
 
     # Generate command (mood-based)
     gen_parser = subparsers.add_parser("generate", help="Generate a composition from mood preset")
@@ -107,9 +206,26 @@ def main(argv: list = None) -> int:
         help="Random seed for reproducibility"
     )
 
-    # AI command (AI-powered generation)
-    if AI_AVAILABLE:
-        ai_parser = subparsers.add_parser("ai", help="Generate music using AI from a prompt")
+    # PRESETS command
+    if AI_COMPOSE_AVAILABLE:
+        presets_parser = subparsers.add_parser(
+            "presets",
+            help="Manage prompt presets"
+        )
+        presets_parser.add_argument(
+            "action",
+            choices=["list", "show"],
+            help="Action: list all presets or show a specific preset"
+        )
+        presets_parser.add_argument(
+            "name",
+            nargs="?",
+            help="Preset name (for 'show' action)"
+        )
+
+    # AI command (old AI-powered generation with orchestration plans)
+    if AI_ORCHESTRATION_AVAILABLE:
+        ai_parser = subparsers.add_parser("ai", help="Generate music using AI (orchestration plan approach)")
         ai_parser.add_argument(
             "prompt",
             nargs="*",
@@ -154,7 +270,7 @@ def main(argv: list = None) -> int:
         )
 
     # From-file command (read prompt from file)
-    if AI_AVAILABLE:
+    if AI_ORCHESTRATION_AVAILABLE:
         file_parser = subparsers.add_parser("from-file", help="Generate music from a prompt file")
         file_parser.add_argument(
             "prompt_file",
@@ -208,10 +324,16 @@ def main(argv: list = None) -> int:
     elif args.command == "generate":
         return cmd_generate(args)
 
-    elif args.command == "ai" and AI_AVAILABLE:
+    elif args.command == "compose" and AI_COMPOSE_AVAILABLE:
+        return cmd_compose(args)
+
+    elif args.command == "presets" and AI_COMPOSE_AVAILABLE:
+        return cmd_presets(args)
+
+    elif args.command == "ai" and AI_ORCHESTRATION_AVAILABLE:
         return cmd_ai(args)
 
-    elif args.command == "from-file" and AI_AVAILABLE:
+    elif args.command == "from-file" and AI_ORCHESTRATION_AVAILABLE:
         return cmd_from_file(args)
 
     else:
@@ -240,31 +362,50 @@ def cmd_check() -> int:
     print("System Capabilities:")
     print()
 
-    # Check AI support
-    print("AI Support:")
-    if AI_AVAILABLE:
-        from musicgen.ai.client import check_gemini_available
-        ai_status = check_gemini_available()
-        print(f"  Package: {'✓' if ai_status['available'] else '✗'} google-genai")
-        print(f"  API Key: {'✓' if ai_status['api_key_set'] else '✗'} Set GOOGLE_API_KEY")
+    # Check AI support (new compose command)
+    print("AI Compose (Note-level):")
+    if AI_COMPOSE_AVAILABLE:
+        print("  Package: ✓ Installed")
     else:
-        print("  Package: ✗ google-genai (install with: uv add --optional ai google-genai)")
+        print("  Package: ✗ Not available")
+
+    if AI_CLIENT_AVAILABLE:
+        status = check_availability()
+        print(f"  API Key: {'✓' if status['api_key_set'] else '✗'} Set GOOGLE_API_KEY")
+        print(f"  Overall: {'✓ Ready' if status['available'] else '✗ Not ready'}")
+    else:
+        print("  API Key: ✗ google-genai not installed")
 
     print()
 
-    # Check audio support
-    print("Audio Support:")
-    if AUDIO_AVAILABLE:
-        audio_status = check_audio_support()
-        print(f"  FluidSynth: {'✓' if audio_status['fluidsynth'] else '✗'}")
-        print(f"  pydub: {'✓' if audio_status['pydub'] else '✗'}")
-        print(f"  ffmpeg: {'✓' if audio_status['ffmpeg'] else '✗'}")
-        if audio_status['soundfont']:
-            print(f"  SoundFont: ✓ {audio_status['soundfont']}")
-        else:
-            print(f"  SoundFont: ✗ (will download on first use)")
+    # Check AI orchestration plan support (old ai command)
+    print("AI Orchestration Plan:")
+    if AI_ORCHESTRATION_AVAILABLE:
+        print("  Package: ✓ Installed")
     else:
-        print("  Audio module not available")
+        print("  Package: ✗ Not available")
+
+    print()
+
+    # Check rendering support
+    print("Rendering Support:")
+    try:
+        import mido
+        print("  mido: ✓ (MIDI export)")
+    except ImportError:
+        print("  mido: ✗ (pip install mido)")
+
+    try:
+        import pretty_midi
+        print("  pretty-midi: ✓ (audio synthesis)")
+    except ImportError:
+        print("  pretty-midi: ✗ (pip install pretty-midi)")
+
+    try:
+        import pydub
+        print("  pydub: ✓ (MP3 export)")
+    except ImportError:
+        print("  pydub: ✗ (pip install pydub)")
 
     return 0
 
@@ -440,7 +581,7 @@ def cmd_from_file(args) -> int:
 
     def generate_from_file():
         """Generate music from the prompt file."""
-        with open(prompt_file, 'r') as f:
+        with open(prompt_file) as f:
             prompt = f.read().strip()
 
         if not prompt:
@@ -486,6 +627,168 @@ def cmd_from_file(args) -> int:
             return 0
     else:
         return generate_from_file()
+
+
+def cmd_compose(args) -> int:
+    """Execute compose command (new AI-first note-level composition).
+
+    Args:
+        args: Parsed arguments
+
+    Returns:
+        Exit code
+    """
+    # Set log level
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    # Get prompt
+    prompt = _get_prompt(args)
+    if not prompt:
+        logger.error("No prompt provided. Use: musicgen compose \"your prompt\"")
+        return 1
+
+    logger.info(f"Prompt: {prompt[:100]}...")
+
+    # Get formats
+    formats = args.formats or ["midi"]
+
+    try:
+        # Initialize composer
+        composer = AIComposer(
+            model=args.model,
+            temperature=args.temperature,
+        )
+
+        # Generate
+        logger.info("Generating composition...")
+        composition = composer.generate(prompt)
+
+        logger.info(f"Generated: {composition.title}")
+        logger.info(f"  Key: {composition.key}")
+        logger.info(f"  Tempo: {composition.tempo} BPM")
+        logger.info(f"  Duration: {composition.duration_seconds:.1f}s")
+        logger.info(f"  Instruments: {', '.join(composition.instrument_names)}")
+
+        # Save prompt if requested
+        if args.save_prompt:
+            prompt_path = Path(args.output_dir) / f"{args.output_name or 'prompt'}.txt"
+            prompt_path.write_text(prompt)
+            logger.info(f"  Prompt saved: {prompt_path}")
+
+        # Save JSON if requested
+        if "json" in formats or args.save_json:
+            json_path = Path(args.output_dir) / f"{args.output_name or composition.title.replace(' ', '_')}.json"
+            json_path.write_text(composition.model_dump_json(indent=2))
+            logger.info(f"  JSON: {json_path}")
+
+        # Render to MIDI/Audio
+        if RENDERER_AVAILABLE and any(f in formats for f in ["midi", "wav", "mp3"]):
+            renderer = Renderer(output_dir=Path(args.output_dir))
+            results = renderer.render(
+                composition,
+                formats=[f for f in formats if f in ["midi", "wav", "mp3"]],
+                output_name=args.output_name,
+            )
+            for fmt, path in results.items():
+                logger.info(f"  {fmt.upper()}: {path}")
+        elif any(f in formats for f in ["midi", "wav", "mp3"]):
+            # Fallback to old MIDI writer
+            from musicgen.io.midi_writer import MIDIWriter
+            output_dir = Path(args.output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            base_name = args.output_name or composition.title.replace(" ", "_")
+
+            # Build score from composition
+            from musicgen.io.midi_writer import Part, Score
+            score = Score(title=composition.title, composer="MusicGen AI")
+
+            for part in composition.parts:
+                midi_part = Part(name=part.name)
+                for note_event in part.get_note_events():
+                    if hasattr(note_event, 'note_name'):
+                        from musicgen.core.note import QUARTER, Note
+                        midi_note = Note(note_event.note_name, note_event.duration, QUARTER)
+                        midi_part.notes.append(midi_note)
+                score.add_part(midi_part)
+
+            if "midi" in formats:
+                midi_path = output_dir / f"{base_name}.mid"
+                MIDIWriter.write(score, str(midi_path), tempo=composition.tempo)
+                logger.info(f"  MIDI: {midi_path}")
+
+        return 0
+
+    except ValidationError as e:
+        logger.error(f"Validation failed: {e}")
+        return 1
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        return 1
+
+
+def cmd_presets(args) -> int:
+    """Execute presets command.
+
+    Args:
+        args: Parsed arguments
+
+    Returns:
+        Exit code
+    """
+    if not AI_COMPOSE_AVAILABLE:
+        logger.error("Presets not available")
+        return 1
+
+    if args.action == "list":
+        logger.info("Available presets:")
+        for preset in list_presets():
+            logger.info(f"  - {preset}")
+        return 0
+
+    elif args.action == "show":
+        if not args.name:
+            logger.error("Please specify a preset name")
+            return 1
+        try:
+            preset = get_preset(args.name)
+            logger.info(f"preset: {args.name}")
+            logger.info(preset)
+            return 0
+        except KeyError:
+            logger.error(f"Unknown preset: {args.name}")
+            return 1
+
+
+def _get_prompt(args) -> str | None:
+    """Get prompt from arguments or file.
+
+    Args:
+        args: Parsed arguments
+
+    Returns:
+        Prompt string or None
+    """
+    # From file
+    if hasattr(args, 'prompt_file') and args.prompt_file:
+        return Path(args.prompt_file).read_text().strip()
+
+    # From preset
+    if hasattr(args, 'preset') and args.preset:
+        preset = get_preset(args.preset)
+        base = preset
+        if hasattr(args, 'prompt') and args.prompt:
+            base += " " + " ".join(args.prompt)
+        return base
+
+    # From arguments
+    if hasattr(args, 'prompt') and args.prompt:
+        return " ".join(args.prompt)
+
+    return None
 
 
 if __name__ == "__main__":

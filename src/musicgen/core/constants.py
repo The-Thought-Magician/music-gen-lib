@@ -1,7 +1,6 @@
 """Constants for music notation and timing."""
 
 from dataclasses import dataclass
-from typing import NamedTuple
 
 # Note names
 NOTE_NAMES = ["C", "D", "E", "F", "G", "A", "B"]

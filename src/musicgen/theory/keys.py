@@ -5,11 +5,11 @@ their associated key signatures.
 """
 
 from __future__ import annotations
-from typing import List, Optional
+
 from dataclasses import dataclass
 from enum import Enum
 
-from musicgen.theory.scales import Scale, ScaleType
+from musicgen.theory.scales import Scale
 
 
 class KeyType(Enum):
@@ -45,7 +45,7 @@ class KeySignature:
             self.flats = 0
 
     @property
-    def accidentals(self) -> List[str]:
+    def accidentals(self) -> list[str]:
         """Return list of accidentals in this key signature."""
         if self.sharps > 0:
             return [f"{n}#" for n in SHARP_ORDER[:self.sharps]]
@@ -54,7 +54,7 @@ class KeySignature:
         return []
 
     @classmethod
-    def from_key(cls, tonic: str, key_type: str = "major") -> "KeySignature":
+    def from_key(cls, tonic: str, key_type: str = "major") -> KeySignature:
         """Create a KeySignature from a tonic and key type.
 
         Args:
@@ -136,7 +136,7 @@ class Key:
 
         return Scale(self.tonic, scale_type)
 
-    def relative(self) -> "Key":
+    def relative(self) -> Key:
         """Return the relative key.
 
         For major keys, returns the relative minor.
@@ -161,7 +161,7 @@ class Key:
             key_type=new_type
         )
 
-    def parallel(self) -> "Key":
+    def parallel(self) -> Key:
         """Return the parallel key (same tonic, opposite type).
 
         Returns:
@@ -170,7 +170,7 @@ class Key:
         new_type = "minor" if self.key_type.lower() == "major" else "major"
         return Key(tonic=self.tonic, key_type=new_type)
 
-    def diatonic_chords(self) -> List:
+    def diatonic_chords(self) -> list:
         """Return the diatonic chords in this key.
 
         Returns:

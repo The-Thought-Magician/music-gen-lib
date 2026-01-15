@@ -5,11 +5,10 @@ various qualities and inversions.
 """
 
 from __future__ import annotations
-from typing import List, Optional
+
 from dataclasses import dataclass, field
 
-from musicgen.core.note import Note, QUARTER
-
+from musicgen.core.note import QUARTER, Note
 
 # Chord quality types
 MAJOR = "major"
@@ -64,7 +63,7 @@ class Chord:
     _root_octave: int = 4
     _inversion: int = 0
     duration: float = QUARTER
-    _notes: List[Note] = field(default_factory=list, repr=False)
+    _notes: list[Note] = field(default_factory=list, repr=False)
 
     def __post_init__(self):
         """Validate and initialize chord."""
@@ -94,7 +93,7 @@ class Chord:
         if not self._notes:
             self._notes = self._generate_notes()
 
-    def _generate_notes(self) -> List[Note]:
+    def _generate_notes(self) -> list[Note]:
         """Generate the notes for this chord based on root, quality, and inversion."""
         intervals = CHORD_INTERVALS[self._quality]
         notes = []
@@ -132,7 +131,7 @@ class Chord:
         return self._root_name
 
     @property
-    def notes(self) -> List[Note]:
+    def notes(self) -> list[Note]:
         """Return list of Note objects in the chord (sorted by pitch)."""
         return self._notes.copy()
 
@@ -161,7 +160,7 @@ class Chord:
         """Return the root octave."""
         return self._root_octave
 
-    def invert(self, inversion: int) -> "Chord":
+    def invert(self, inversion: int) -> Chord:
         """Return a new Chord with the specified inversion.
 
         Args:
@@ -178,7 +177,7 @@ class Chord:
             duration=self.duration
         )
 
-    def transpose(self, semitones: int) -> "Chord":
+    def transpose(self, semitones: int) -> Chord:
         """Return a new Chord transposed by the given semitones.
 
         Args:
@@ -248,7 +247,7 @@ class Chord:
         return hash((self._root_name, self._quality, self._inversion))
 
     @classmethod
-    def from_notes(cls, notes: List[Note], quality: Optional[str] = None) -> "Chord":
+    def from_notes(cls, notes: list[Note], quality: str | None = None) -> Chord:
         """Create a Chord from a list of Notes.
 
         Determines root and quality from the notes if not specified.

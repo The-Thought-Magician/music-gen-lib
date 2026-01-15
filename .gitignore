@@ -47,6 +47,8 @@ coverage.xml
 
 # Environment variables
 .env
+.env.local
+config/musicgen.local.yaml
 .venv
 venv/
 ENV/

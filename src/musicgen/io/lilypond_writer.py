@@ -4,13 +4,10 @@ This module provides functionality for writing musical scores to LilyPond files.
 """
 
 from __future__ import annotations
-from typing import List, Optional, Tuple
-from dataclasses import dataclass
-from pathlib import Path
-import subprocess
-import tempfile
 
-from musicgen.core.note import Note, Rest, QUARTER
+import subprocess
+
+from musicgen.core.note import Note, Rest
 
 
 class LilyPondWriter:
@@ -41,7 +38,7 @@ class LilyPondWriter:
     }
 
     @staticmethod
-    def write(score: "Score", output_ly: str = "",
+    def write(score: Score, output_ly: str = "",
               output_pdf: str = "", title: str = "", composer: str = "",
               include_title: bool = True, staff_size: int = 20) -> str:
         """Write a score to a LilyPond file.
@@ -80,7 +77,7 @@ class LilyPondWriter:
 
         return output_ly
 
-    def _generate_lilypond(self, score: "Score", title: str = "",
+    def _generate_lilypond(self, score: Score, title: str = "",
                            composer: str = "", include_title: bool = True,
                            staff_size: int = 20) -> str:
         """Generate LilyPond code from a score.
@@ -140,7 +137,7 @@ class LilyPondWriter:
 
         return "\n".join(lines)
 
-    def _generate_staff(self, part: "Part", index: int) -> str:
+    def _generate_staff(self, part: Part, index: int) -> str:
         """Generate a LilyPond staff for a part.
 
         Args:
@@ -151,7 +148,7 @@ class LilyPondWriter:
             LilyPond staff code
         """
         lines = []
-        lines.append(f"\\new Staff {{")
+        lines.append("\\new Staff {")
         lines.append(f"  \\set Staff.instrumentName = #\"{part.name or f'Part {index+1}'}\"")
         lines.append("  {")
 
@@ -163,7 +160,7 @@ class LilyPondWriter:
         # Join notes and add to staff
         notes_text = " ".join(note_strings)
         # Wrap in a relative music expression for convenience
-        lines.append(f"    \\relative c' {{")
+        lines.append("    \\relative c' {")
         lines.append(f"      {notes_text}")
         lines.append("    }")
 

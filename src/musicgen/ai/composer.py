@@ -5,27 +5,26 @@ musical scores using the musicgen composition engine.
 """
 
 from __future__ import annotations
+
 import random
-from typing import List, Optional
-from pathlib import Path
 
 from musicgen.ai.models import (
+    DynamicsLevel,
+    InstrumentAssignment,
     OrchestrationPlan,
     Section,
-    InstrumentAssignment,
-    DynamicsLevel,
 )
-from musicgen.core.note import Note, QUARTER, HALF, WHOLE, EIGHTH
-from musicgen.theory.scales import Scale
+from musicgen.composition.melody import MelodicContour, MelodyGenerator
+from musicgen.core.note import HALF, QUARTER, WHOLE, Note
+from musicgen.io.midi_writer import Part, Score
 from musicgen.theory.keys import Key
 from musicgen.theory.progressions import Progression
-from musicgen.composition.melody import MelodyGenerator, MelodicContour
-from musicgen.io.midi_writer import Score, Part, MIDIWriter
+from musicgen.theory.scales import Scale
 
 
 def build_composition_from_plan(
     plan: OrchestrationPlan,
-    seed: Optional[int] = None
+    seed: int | None = None
 ) -> Score:
     """Build a complete composition from an orchestration plan.
 
@@ -264,8 +263,8 @@ def _generate_progression(
 
 def _get_active_instruments(
     section: Section,
-    all_instruments: List[InstrumentAssignment]
-) -> List[InstrumentAssignment]:
+    all_instruments: list[InstrumentAssignment]
+) -> list[InstrumentAssignment]:
     """Get list of instruments that play in this section.
 
     Args:
@@ -311,7 +310,7 @@ def _select_contour(mood: str) -> MelodicContour:
         return MelodicContour.WAVE  # Default
 
 
-def _generate_bass_line(progression: Progression, scale: Scale) -> List:
+def _generate_bass_line(progression: Progression, scale: Scale) -> list:
     """Generate a bass line from chord progression.
 
     Args:
@@ -336,7 +335,7 @@ def _generate_harmony(
     progression: Progression,
     scale: Scale,
     role: str
-) -> List:
+) -> list:
     """Generate harmony part.
 
     Args:
@@ -364,7 +363,7 @@ def _generate_pad_notes(
     scale: Scale,
     dynamics: DynamicsLevel,
     slowing: bool = False
-) -> List:
+) -> list:
     """Generate pad/sustained notes.
 
     Args:
@@ -388,7 +387,7 @@ def _generate_pad_notes(
     return notes
 
 
-def _rhythmically_displace(notes: List, offset: int) -> List:
+def _rhythmically_displace(notes: list, offset: int) -> list:
     """Rhythmically displace notes for countermelody effect.
 
     Args:
@@ -410,7 +409,7 @@ def _rhythmically_displace(notes: List, offset: int) -> List:
 
 def _merge_sections_to_score(
     score: Score,
-    sections: List[Score],
+    sections: list[Score],
     plan: OrchestrationPlan
 ) -> None:
     """Merge multiple section scores into main score.

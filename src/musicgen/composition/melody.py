@@ -5,15 +5,15 @@ contours and motivic development techniques.
 """
 
 from __future__ import annotations
-from typing import List, Optional, Union
+
+import random
 from dataclasses import dataclass, field
 from enum import Enum
-import random
+from typing import Optional
 
-from musicgen.core.note import Note, Rest, QUARTER, HALF, EIGHTH
-from musicgen.core.chord import Chord
-from musicgen.theory.scales import Scale
+from musicgen.core.note import EIGHTH, HALF, QUARTER, Note, Rest
 from musicgen.theory.keys import Key
+from musicgen.theory.scales import Scale
 
 
 class MelodicContour(Enum):
@@ -36,7 +36,7 @@ class Motif:
         contour: The melodic contour type
     """
 
-    notes: List[Union[Note, Rest]] = field(default_factory=list)
+    notes: list[Note | Rest] = field(default_factory=list)
     contour: MelodicContour = MelodicContour.STATIC
 
     @property
@@ -58,7 +58,7 @@ class Motif:
         midi_nums = [n.midi_number for n in note_list]
         return max(midi_nums) - min(midi_nums)
 
-    def develop(self, technique: str, **kwargs) -> "Motif":
+    def develop(self, technique: str, **kwargs) -> Motif:
         """Create a developed version of this motif.
 
         Args:
@@ -136,7 +136,7 @@ class Phrase:
         cadence: Type of cadence ("authentic", "half", "deceptive", "plagal", "none")
     """
 
-    notes: List[Union[Note, Rest]] = field(default_factory=list)
+    notes: list[Note | Rest] = field(default_factory=list)
     phrase_type: str = "standalone"
     cadence: str = "none"
 
@@ -150,7 +150,7 @@ class Phrase:
         """Return total duration in quarter notes."""
         return sum(n.duration for n in self.notes)
 
-    def is_period_partner(self, other: "Phrase") -> bool:
+    def is_period_partner(self, other: Phrase) -> bool:
         """Check if this phrase forms a period with another.
 
         Args:
@@ -179,8 +179,8 @@ class Melody:
         phrases: List of phrases (optional)
     """
 
-    notes: List[Union[Note, Rest]] = field(default_factory=list)
-    phrases: List[Phrase] = field(default_factory=list)
+    notes: list[Note | Rest] = field(default_factory=list)
+    phrases: list[Phrase] = field(default_factory=list)
 
     @property
     def length(self) -> int:
@@ -201,7 +201,7 @@ class Melody:
         midi_nums = [n.midi_number for n in note_list]
         return max(midi_nums) - min(midi_nums)
 
-    def add_note(self, note: Union[Note, Rest]) -> None:
+    def add_note(self, note: Note | Rest) -> None:
         """Add a note or rest to the melody.
 
         Args:
@@ -209,7 +209,7 @@ class Melody:
         """
         self.notes.append(note)
 
-    def extend(self, other: "Melody") -> None:
+    def extend(self, other: Melody) -> None:
         """Extend this melody with another.
 
         Args:
@@ -244,7 +244,7 @@ class MelodyGenerator:
     scale: Scale
     key: Key
     tempo: int = 120
-    seed: Optional[int] = None
+    seed: int | None = None
 
     def __post_init__(self):
         """Initialize the generator."""

@@ -5,21 +5,20 @@ for interpreting natural language prompts and generating orchestration plans.
 """
 
 from __future__ import annotations
-import os
+
 import json
-from typing import Optional, List
-from pathlib import Path
+import os
 import time
 
 try:
     from google import genai
-    from google.genai import types
     from google.api_core.exceptions import (
         GoogleAPIError,
         InvalidArgument,
         ResourceExhausted,
-        ServiceUnavailable
+        ServiceUnavailable,
     )
+    from google.genai import types
     GENAI_AVAILABLE = True
 except ImportError:
     GENAI_AVAILABLE = False
@@ -27,17 +26,15 @@ except ImportError:
     genai = None
 
 from musicgen.ai.models import (
-    OrchestrationPlan,
-    Section,
-    InstrumentAssignment,
+    DynamicsLevel,
     DynamicsPlan,
-    TextureChange,
+    FormType,
+    InstrumentAssignment,
     InstrumentRole,
     InstrumentSection,
-    DynamicsLevel,
+    OrchestrationPlan,
     ScaleType,
-    FormType,
-    ORCHESTRAL_INSTRUMENTS,
+    Section,
 )
 
 
@@ -57,8 +54,8 @@ class GeminiComposer:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None,
+        api_key: str | None = None,
+        model: str | None = None,
         temperature: float = 0.7,
         max_output_tokens: int = 8192
     ):
@@ -105,7 +102,7 @@ class GeminiComposer:
         self,
         prompt: str,
         duration_seconds: int = 180,
-        form_type: Optional[str] = None
+        form_type: str | None = None
     ) -> OrchestrationPlan:
         """Extract musical parameters from a natural language prompt.
 
@@ -132,7 +129,7 @@ class GeminiComposer:
     def _build_system_prompt(
         self,
         duration_seconds: int,
-        form_type: Optional[str]
+        form_type: str | None
     ) -> str:
         """Build the system prompt for Gemini.
 
@@ -283,14 +280,14 @@ Generate the orchestration plan JSON. Return ONLY the JSON, no additional text."
                 else:
                     raise
 
-            except (ServiceUnavailable, InvalidArgument) as e:
+            except (ServiceUnavailable, InvalidArgument):
                 # Temporary error or invalid request
                 if attempt < self.MAX_RETRIES - 1:
                     time.sleep(self.RETRY_DELAY * (attempt + 1))
                 else:
                     raise
 
-            except GoogleAPIError as e:
+            except GoogleAPIError:
                 # Other API errors
                 raise
 
@@ -492,7 +489,7 @@ Generate the orchestration plan JSON. Return ONLY the JSON, no additional text."
 
 def extract_from_prompt(
     prompt: str,
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     duration_seconds: int = 180
 ) -> OrchestrationPlan:
     """Convenience function to extract parameters from a prompt.
