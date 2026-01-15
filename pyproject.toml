@@ -56,6 +56,8 @@ lilypond = [
 # AI-powered composition (Gemini)
 ai = [
     "google-genai>=1.0.0",
+    "google-api-core>=2.0",
+    "python-dotenv>=1.0",
 ]
 
 # All optional dependencies (except lilypond for Python 3.12+)

@@ -6,7 +6,7 @@
 **Project Description**: A Python library that generates orchestral instrumental music using traditional music theory principles (rule-based composition, not AI). Outputs both sheet music (MusicXML/LilyPond) and audio files (WAV/FLAC).
 
 ---
-
+## use ruff check for typechecking and fixing the errors. 
 ## Enabled Plugins
 
 This project has the following plugins installed in `.claude/settings.json`:

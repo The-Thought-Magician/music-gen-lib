@@ -88,13 +88,11 @@ class GeminiComposer:
                 "variable or pass api_key parameter."
             )
 
-        # Configure client
-        genai.configure(api_key=self.api_key)
-
+        # Configure client - new google-genai API passes api_key directly to Client
         self.model_name = model or self.DEFAULT_MODEL
         self.temperature = temperature
         self.max_output_tokens = max_output_tokens
-        self.client = genai.Client()
+        self.client = genai.Client(api_key=self.api_key)
 
         # Generation config
         self.generation_config = types.GenerateContentConfig(
@@ -332,6 +330,89 @@ Generate the orchestration plan JSON. Return ONLY the JSON, no additional text."
         except Exception as e:
             raise ValueError(f"Failed to parse plan: {e}")
 
+    def _normalize_section(self, s_data: dict) -> dict:
+        """Normalize section data from AI response.
+
+        Handles variations in field names and formats.
+
+        Args:
+            s_data: Raw section data from AI.
+
+        Returns:
+            Normalized section data dict.
+        """
+        normalized = {}
+
+        # Handle name field variations (section_name, name)
+        normalized["name"] = s_data.get("name") or s_data.get("section_name", "A")
+
+        # Handle duration (duration_seconds, duration)
+        if "duration_seconds" in s_data:
+            normalized["duration_seconds"] = int(s_data["duration_seconds"])
+        elif "duration" in s_data:
+            normalized["duration_seconds"] = int(s_data["duration"])
+        else:
+            normalized["duration_seconds"] = 90
+
+        # Handle tempo - extract number from string like "120 bpm"
+        if "tempo" in s_data:
+            tempo = s_data["tempo"]
+            if isinstance(tempo, str):
+                # Extract digits from string
+                import re
+                match = re.search(r'\d+', tempo)
+                normalized["tempo"] = int(match.group()) if match else 120
+            else:
+                normalized["tempo"] = int(tempo)
+        else:
+            normalized["tempo"] = 120
+
+        # Other fields
+        normalized["key"] = s_data.get("key", "C")
+        normalized["key_type"] = s_data.get("key_type", s_data.get("mode", "major"))
+        normalized["time_signature"] = s_data.get("time_signature", s_data.get("time_signature", "4/4"))
+        normalized["mood_description"] = s_data.get("mood_description", s_data.get("mood", ""))
+
+        # Handle instrumentation - can be list of strings or list of dicts
+        raw_inst = s_data.get("instrumentation", s_data.get("instruments", ["all"]))
+        if raw_inst and isinstance(raw_inst, list) and len(raw_inst) > 0:
+            if isinstance(raw_inst[0], dict):
+                # Extract instrument names from dicts
+                normalized["instrumentation"] = [i.get("instrument", i.get("name", str(i))) for i in raw_inst]
+            else:
+                normalized["instrumentation"] = raw_inst
+        else:
+            normalized["instrumentation"] = ["all"]
+        normalized["melody_source"] = s_data.get("melody_source", "new")
+        normalized["harmonic_center"] = s_data.get("harmonic_center", "tonic")
+
+        # Handle dynamics - convert string to DynamicsLevel enum
+        dynamics_start = s_data.get("dynamics_start", s_data.get("dynamics", "mf"))
+        if isinstance(dynamics_start, str) and len(dynamics_start) <= 3:
+            normalized["dynamics_start"] = DynamicsLevel(dynamics_start.lower())
+        else:
+            normalized["dynamics_start"] = DynamicsLevel.MF
+
+        dynamics_end = s_data.get("dynamics_end", s_data.get("dynamics", "mf"))
+        if isinstance(dynamics_end, str) and len(dynamics_end) <= 3:
+            normalized["dynamics_end"] = DynamicsLevel(dynamics_end.lower())
+        else:
+            normalized["dynamics_end"] = DynamicsLevel.MF
+
+        normalized["texture"] = s_data.get("texture", "homophonic")
+
+        # Handle scale_type
+        scale_raw = s_data.get("scale_type", "major")
+        if isinstance(scale_raw, str):
+            try:
+                normalized["scale_type"] = ScaleType(scale_raw.lower().replace("-", "_"))
+            except ValueError:
+                normalized["scale_type"] = ScaleType.MAJOR
+        else:
+            normalized["scale_type"] = ScaleType.MAJOR
+
+        return normalized
+
     def _json_to_plan(self, data: dict) -> OrchestrationPlan:
         """Convert JSON dict to OrchestrationPlan.
 
@@ -341,10 +422,11 @@ Generate the orchestration plan JSON. Return ONLY the JSON, no additional text."
         Returns:
             OrchestrationPlan object.
         """
-        # Convert sections
+        # Convert sections with normalization
         sections = []
         for s_data in data.get("sections", []):
-            sections.append(Section(**s_data))
+            normalized = self._normalize_section(s_data)
+            sections.append(Section(**normalized))
 
         # Convert instruments
         instruments = []
@@ -378,6 +460,13 @@ Generate the orchestration plan JSON. Return ONLY the JSON, no additional text."
         if isinstance(scale_type, str):
             scale_type = ScaleType(scale_type)
 
+        # Normalize main tempo
+        tempo = data.get("tempo", 120)
+        if isinstance(tempo, str):
+            import re
+            match = re.search(r'\d+', tempo)
+            tempo = int(match.group()) if match else 120
+
         # Create main plan
         plan_data = {
             "title": data.get("title", "Untitled"),
@@ -385,7 +474,7 @@ Generate the orchestration plan JSON. Return ONLY the JSON, no additional text."
             "key": data.get("key", "C"),
             "key_type": data.get("key_type", "major"),
             "scale_type": scale_type,
-            "tempo": data.get("tempo", 120),
+            "tempo": tempo,
             "time_signature": data.get("time_signature", "4/4"),
             "sections": sections,
             "instruments": instruments,

@@ -10,6 +10,15 @@ import argparse
 import time
 from pathlib import Path
 
+# Load .env file if present (for API keys)
+try:
+    from dotenv import load_dotenv
+    _env_path = Path.cwd() / ".env"
+    if _env_path.exists():
+        load_dotenv(_env_path)
+except ImportError:
+    pass
+
 from musicgen.generator import generate, CompositionRequest, list_available_moods
 
 # Try to import AI components
@@ -375,11 +384,12 @@ def cmd_ai(args) -> int:
         midi_path = None
         audio_path = None
 
-        # Generate MIDI
-        if "midi" in formats:
+        # Generate MIDI (always needed for audio)
+        if "midi" in formats or "wav" in formats or "mp3" in formats:
             midi_path = str(output_dir / f"{base_name}.mid")
             MIDIWriter.write(score, midi_path, tempo=plan.tempo)
-            print(f"  MIDI: {midi_path}")
+            if "midi" in formats:
+                print(f"  MIDI: {midi_path}")
 
         # Generate audio
         if "wav" in formats or "mp3" in formats:
