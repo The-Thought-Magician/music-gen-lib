@@ -41,22 +41,6 @@ All project documentation is in the `docs/` folder:
 
 ---
 
-## Branch Management
-
-**CRITICAL**: Always work on feature branches
-
-1. Before starting a step, create a feature branch:
-   ```bash
-   git checkout -b feature/[step-name]
-   ```
-
-2. Never commit directly to `main`
-
-3. Merge to `main` only when the entire project is complete
-
-4. Delete feature branches after merging
-
----
 
 ## Commit Convention
 
@@ -70,7 +54,6 @@ git commit -m "feat: complete [step-name]
 - [Any technical notes]
 - [Reference decisions.md if applicable]
 
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -85,6 +68,9 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
 ### Test Commands
 
 ```bash
+
+# Run linting 
+ruff check 
 # Run all tests
 pytest tests/
 
@@ -95,141 +81,6 @@ pytest --cov=src/musicgen --cov-report=html
 pytest tests/test_note.py
 ```
 
----
+Prefer to use uv commands instead of pip. uv is our package manager. uv add <package-name> to add packages. uv sync to sync the environment. and uv run <command> to run commands in the environment.
 
-## Code Review Process
 
-After each step completion, run BOTH review plugins:
-
-1. **code-review-ai**
-   ```bash
-   claude-z -p --permission-mode bypassPermissions --agent code-review-ai "Review the changes in this step"
-   ```
-   Save output to: `docs/reviews/[step-name]-review-1-a.md`
-
-2. **comprehensive-review**
-   ```bash
-   claude-z -p --permission-mode bypassPermissions --agent comprehensive-review "Review the changes in this step"
-   ```
-   Save output to: `docs/reviews/[step-name]-review-1-b.md`
-
-3. **Address any issues** found in reviews
-   - Create fix sub-step if needed
-   - Add decision to `docs/decisions.md`
-   - Re-run reviews until clean
-
----
-
-## README Updates
-
-After each step completion, update `README.md` with:
-- New features added
-- Configuration changes
-- New dependencies
-- Setup/usage changes
-- API changes (if applicable)
-
----
-
-## Step Execution Workflow
-
-For each step in `docs/plan.md`:
-
-1. Read the step file from `docs/steps/XX-step-name.md`
-2. Create feature branch
-3. Execute the prompt using `claude-z -p --permission-mode bypassPermissions "[prompt content]"`
-4. Implement the code
-5. Write/run tests
-6. Run linting
-7. Get user approval
-8. Run code reviews (both plugins)
-9. Fix any issues (create sub-steps if needed)
-10. Commit changes
-11. Update README.md
-12. Wait for user approval before proceeding
-
----
-
-## Tech Stack
-
-Based on `docs/research.md`:
-
-| Component | Technology |
-|-----------|------------|
-| Language | Python 3.12+ |
-| Music Theory | music21, mingus |
-| MIDI I/O | mido, pretty_midi |
-| Audio Synthesis | FluidSynth, pyfluidsynth |
-| Sheet Music | Abjad, LilyPond |
-| SoundFont | GeneralUser GS |
-| Audio Processing | pydub |
-
----
-
-## External Dependencies
-
-| Dependency | Type | Notes |
-|------------|------|-------|
-| FluidSynth | System package | `sudo apt install fluidsynth` |
-| LilyPond | System package | `sudo apt install lilypond` |
-| GeneralUser GS | SoundFont | Download from schristiancollins.com |
-
----
-
-## Development Commands
-
-```bash
-# Install Python dependencies
-pip install -e ".[dev]"
-
-# Run tests
-pytest tests/
-
-# Run with coverage
-pytest --cov=src/musicgen --cov-report=html
-
-# Format code
-black src/ tests/
-
-# Lint
-ruff check src/ tests/
-
-# Type check
-mypy src/
-```
-
----
-
-## Project Structure (to be created)
-
-```
-music-gen-lib/
-├── src/
-│   └── musicgen/
-│       ├── __init__.py
-│       ├── core/           # Note, Chord, Rest classes
-│       ├── theory/         # Scales, keys, progressions, voice leading
-│       ├── composition/    # Melody, forms
-│       ├── orchestration/  # Instruments, ensembles
-│       ├── io/             # MIDI, audio, sheet music writers
-│       ├── config/         # Mood configurations
-│       └── generator.py    # Main API
-├── tests/
-├── examples/
-├── docs/
-├── pyproject.toml
-├── README.md
-└── claude.md
-```
-
----
-
-## Notes
-
-- This is a complex project requiring deep music theory knowledge
-- Rule-based composition (NOT AI/ML based)
-- Target output: Orchestral-quality music
-- Phase 1 (Steps 1-4) establish the music theory foundation
-- Phase 2 (Steps 5-7) implement composition engines
-- Phase 3 (Steps 8-11) handle export (MIDI, audio, sheet music)
-- Phase 4 (Steps 12-13) complete the user interface and documentation
