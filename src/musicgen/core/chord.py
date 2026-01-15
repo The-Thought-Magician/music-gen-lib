@@ -77,8 +77,8 @@ class Chord:
                 note = Note.from_pitch_string(self._root_name)
                 self._root_name = note.name
                 self._root_octave = note.octave
-            except ValueError:
-                raise ValueError(f"Invalid root note: {self._root_name}")
+            except ValueError as e:
+                raise ValueError(f"Invalid root note: {self._root_name}") from e
 
         # Validate quality
         if self._quality not in VALID_QUALITIES:

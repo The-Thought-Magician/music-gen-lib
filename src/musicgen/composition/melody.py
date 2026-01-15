@@ -309,7 +309,7 @@ class MelodyGenerator:
         return Motif(notes=notes, contour=contour)
 
     def generate_phrase(self, length: int = 16,
-                        progression: Optional = None,
+                        progression: Optional = None,  # noqa: ARG002
                         phrase_type: str = "standalone",
                         cadence: str = "none") -> Phrase:
         """Generate a musical phrase.
@@ -325,7 +325,7 @@ class MelodyGenerator:
         """
         notes = []
 
-        for i in range(length):
+        for _i in range(length):
             # Generate note from scale
             degree = random.randint(1, len(self.scale.notes))
             note = self.scale.get_degree(degree)
@@ -334,7 +334,7 @@ class MelodyGenerator:
 
         return Phrase(notes=notes, phrase_type=phrase_type, cadence=cadence)
 
-    def generate_melody(self, progression: Optional = None,
+    def generate_melody(self, progression: Optional = None,  # noqa: ARG002
                         contour: MelodicContour = MelodicContour.WAVE,
                         form_structure: str = "binary",
                         motivic_unity: float = 0.7) -> Melody:

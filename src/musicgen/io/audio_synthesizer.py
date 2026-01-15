@@ -11,7 +11,6 @@ import tempfile
 from pathlib import Path
 
 try:
-    import pydub
     from pydub import AudioSegment
     PYDUB_AVAILABLE = True
 except ImportError:

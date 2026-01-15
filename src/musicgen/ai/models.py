@@ -100,9 +100,8 @@ class InstrumentAssignment(BaseModel):
     @field_validator("midi_program")
     @classmethod
     def validate_midi_program(cls, v: int | None) -> int | None:
-        if v is not None:
-            if not 0 <= v <= 127:
-                raise ValueError("MIDI program must be 0-127")
+        if v is not None and not 0 <= v <= 127:
+            raise ValueError("MIDI program must be 0-127")
         return v
 
     @field_validator("range_low", "range_high")

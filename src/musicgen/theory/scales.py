@@ -184,7 +184,7 @@ class Scale:
         Returns:
             List of Chord objects
         """
-        from musicgen.core.chord import DIMINISHED, MAJOR, MINOR, AUGMENTED, Chord
+        from musicgen.core.chord import AUGMENTED, DIMINISHED, MAJOR, MINOR, Chord
 
         # Determine chord qualities based on scale type
         if self._type_enum == ScaleType.MAJOR:

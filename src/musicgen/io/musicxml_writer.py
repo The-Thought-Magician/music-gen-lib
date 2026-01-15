@@ -6,9 +6,13 @@ This module provides functionality for writing musical scores to MusicXML files.
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+from typing import TYPE_CHECKING
 from xml.dom import minidom
 
 from musicgen.core.note import Note, Rest
+
+if TYPE_CHECKING:
+    from musicgen.io.midi_writer import Part, Score
 
 
 class MusicXMLWriter:

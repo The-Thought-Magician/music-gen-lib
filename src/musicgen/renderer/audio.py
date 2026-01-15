@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Optional
 
 try:
     import pretty_midi
@@ -19,7 +20,7 @@ class AudioRenderer:
 
     def __init__(
         self,
-        soundfont_path: Optional[Path] = None,
+        soundfont_path: Path | None = None,
         sample_rate: int = 44100,
     ):
         """Initialize audio renderer.

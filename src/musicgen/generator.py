@@ -151,7 +151,7 @@ def generate(request: CompositionRequest) -> CompositionResult:
     score.add_part(melody_part)
 
     # Add accompaniment parts for remaining instruments
-    for i, inst_name in enumerate(instrument_names[1:4]):
+    for inst_name in instrument_names[1:4]:
         accompaniment_part = Part(name=inst_name)
         # Generate simple accompaniment from chord progression
         for chord in progression.chords:

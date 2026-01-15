@@ -8,6 +8,7 @@ from __future__ import annotations
 import subprocess
 
 from musicgen.core.note import Note, Rest
+from musicgen.io.midi_writer import Part, Score
 
 
 class LilyPondWriter:
@@ -169,7 +170,7 @@ class LilyPondWriter:
 
         return "\n    ".join(lines)
 
-    def _note_to_lilypond(self, note: Union[Note, Rest]) -> str:
+    def _note_to_lilypond(self, note: Note | Rest) -> str:
         """Convert a note or rest to LilyPond notation.
 
         Args:
