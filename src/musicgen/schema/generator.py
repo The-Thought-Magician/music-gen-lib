@@ -93,8 +93,8 @@ class SchemaGenerator:
         comp = {
             "title": "string (composition title)",
             "tempo": "int (40-200 BPM)",
-            "time_signature": "string (e.g., '4/4', '3/4', '6/8')",
-            "key": "string (e.g., 'C major', 'A minor', 'D dorian')",
+            "time_signature": '{"numerator": int, "denominator": int} (e.g., {"numerator": 4, "denominator": 4})',
+            "key": '{"tonic": "string (note name)", "mode": "string (major/minor/dorian/etc.)"} (e.g., {"tonic": "C", "mode": "major"})',
             "parts": "array of Part objects",
         }
 
@@ -134,7 +134,7 @@ class SchemaGenerator:
             "name": "string (instrument name)",
             "midi_program": "int (0-127, see instrument list)",
             "midi_channel": "int (0-15, 10 reserved for percussion)",
-            "role": "string (melody, harmony, bass, accompaniment, countermelody)",
+            "role": "string - MUST be one of: 'melody', 'harmony', 'bass', 'accompaniment', 'countermelody', 'pad', 'percussion'",
             "notes": "array of Note objects",
         }
 

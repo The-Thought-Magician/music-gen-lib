@@ -81,8 +81,26 @@ class AINote(BaseModel):
         """Validate note name format."""
         if v is None:
             return None
-        # Already validated by regex in Field
-        return v.upper() if v else v
+
+        if not v:
+            return v
+
+        # Convert flats to sharps for consistency
+        # Eb -> D#, Bb -> A#, etc.
+        flat_to_sharp = {
+            "Db": "C#", "Eb": "D#", "Gb": "F#", "Ab": "G#", "Bb": "A#",
+            "db": "C#", "eb": "D#", "gb": "F#", "ab": "G#", "bb": "A#",
+        }
+
+        # Extract the base note (without octave)
+        octave = v[-1] if v[-1].isdigit() else ""
+        base = v[:-1] if octave else v
+
+        # Check if it's a flat
+        if base in flat_to_sharp:
+            base = flat_to_sharp[base]
+
+        return base + octave
 
     def get_midi_number(self) -> int:
         """Get the MIDI number for this note.

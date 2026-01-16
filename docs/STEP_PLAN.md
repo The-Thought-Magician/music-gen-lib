@@ -8,7 +8,7 @@ Building an AI-first music generation library that uses Google Gemini 2.5 Pro to
 
 ---
 
-## Completed Steps (1-8)
+## Phase 1: Foundation (COMPLETED)
 
 ### ✅ Step 1: Configuration System
 - Created `config/musicgen.yaml` with defaults
@@ -33,7 +33,7 @@ Building an AI-first music generation library that uses Google Gemini 2.5 Pro to
 - Created `src/musicgen/ai_client/exceptions.py` - custom exceptions
 - Created `src/musicgen/ai_client/prompts.py` - `PromptBuilder`
 - Retry logic with exponential backoff
-- **Request/response logging to `logs/ai_calls/`**
+- Request/response logging to `logs/ai_calls/`
 
 ### ✅ Step 5: AI Composer
 - Created `src/musicgen/composer_new/composer.py` - `AIComposer`
@@ -58,174 +58,341 @@ Building an AI-first music generation library that uses Google Gemini 2.5 Pro to
 
 ---
 
-## Current State
+## Phase 1.5: Quality Improvements (COMPLETED - Jan 16, 2025)
 
-### Files Created/Modified
+### ✅ Step 9: Schema Fixes
+- Fixed key signature format to match Pydantic model: `{"tonic": "C", "mode": "major"}`
+- Fixed time signature format: `{"numerator": 4, "denominator": 4}`
+- Added explicit valid role values to schema
+- Fixed note name parsing: converts flats to sharps (Eb → D#)
+
+### ✅ Step 10: Enhanced Prompts
+- Added explicit duration calculations and note count requirements
+- Added guidance limiting to 2-4 parts for better note density
+- Added section on valid part roles
+- Improved note density instructions
+
+### ✅ Step 11: Quality Validation
+- Added duration validation (target: 2+ minutes)
+- Added minimum note count validation per part role
+- Logs warnings when requirements aren't met
+
+### Test Results After Improvements
+
+| Piece | Duration | Note Counts | Status |
+|-------|----------|-------------|--------|
+| Sunset on Sycamore Street (nostalgic piano) | 3.1 min | 87/126/60/54 | ✅ Good |
+| Midnight on the Seine (jazz trio) | 3.5 min | 165/190/113 | ✅ Excellent |
+| Summit's Triumph (orchestral) | 1.4 min | 99/84/57 | ⚠️ Short |
+
+---
+
+## Phase 2: Critical Architecture Fixes (PLANNED)
+
+### Overview
+
+After reviewing the system, **critical architectural issues** were identified that prevent the generation of truly musical, performable compositions. The current schema works for simple monophonic melodies but cannot represent:
+
+1. **Polyphony** (chords, simultaneous notes)
+2. **Synchronization** (global timing across parts)
+3. **Expression** (continuous controllers, dynamics)
+4. **Tempo/Meter changes** (ritardandi, time signature changes)
+5. **Long compositions** (token economy limits)
+
+---
+
+## Step 12: Add Polyphony Support
+
+### Problem
+The current `notes` array is sequential. A C Major chord (C-E-G played simultaneously) must be represented as three separate notes starting at the same time.
+
+### Solution Options
+
+**Option A: Add `start_time` (Absolute Timing)**
+```python
+class AINote(BaseModel):
+    note_name: str
+    duration: float
+    start_time: float  # Absolute position in quarter notes
+    velocity: int
+```
+
+**Option B: Add `time_delta` (MIDI-style)**
+```python
+class AINote(BaseModel):
+    note_name: str
+    duration: float
+    time_delta: float  # Time since previous event
+    velocity: int
+```
+
+**Option C: Note Groups/Chords**
+```python
+class AINoteGroup(BaseModel):
+    start_time: float
+    duration: float
+    notes: list[NoteWithPitch]  # Multiple notes at same time
+```
+
+### Recommendation
+Use **Option A** (`start_time`) as it's the most flexible and aligns with how DAWs and MIDI editors represent music.
+
+### Files to Modify
+- `src/musicgen/ai_models/notes.py` - Add `start_time` field
+- `src/musicgen/ai_models/parts.py` - Update validation
+- `src/musicgen/renderer/midi.py` - Update rendering logic
+- `src/musicgen/schema/generator.py` - Update schema
+
+---
+
+## Step 13: Add Global Timeline/Synchronization
+
+### Problem
+Each part has independent timing. If Flute has a rest of 0.5 and Violin has a note of 0.5, ensuring they align at Measure 15 requires complex calculation. Floating-point errors cause desync.
+
+### Solution Options
+
+**Option A: Measure-Based Structure**
+```json
+{
+  "measures": [
+    {
+      "number": 1,
+      "beats": 4,
+      "parts": {
+        "violin": [{"note": "C4", "start": 0, "duration": 1}],
+        "flute": [{"note": "E4", "start": 0, "duration": 1}]
+      }
+    }
+  ]
+}
+```
+
+**Option B: Global Timeline Events**
+```json
+{
+  "timeline": [
+    {"time": 0, "events": [...]},
+    {"time": 0.5, "events": [...]}
+  ]
+}
+```
+
+**Option C: Keep Part-Based but Add Sync Markers**
+```json
+{
+  "parts": [...],
+  "sync_points": [
+    {"measure": 16, "time": 48.0}
+  ]
+}
+```
+
+### Recommendation
+Start with **Option A** (Measure-Based) for new compositions, but keep the current Part-based structure for backwards compatibility. Add a `structure_type` field to choose.
+
+---
+
+## Step 14: Add Continuous Controllers (Expression)
+
+### Problem
+Music is not just Note On/Off. A violin crescendo while holding a note cannot be represented by a single `velocity` value.
+
+### Solution: Add CC Events
+
+```python
+class ControlChangeEvent(BaseModel):
+    controller: int  # CC number (64=sustain, 11=expression, 7=volume, etc.)
+    value: int       # 0-127
+    time: float      # When this occurs
+
+class AIPart(BaseModel):
+    notes: list[AINote]
+    cc_events: list[ControlChangeEvent]  # NEW
+```
+
+### Essential CC Numbers
+- CC 1: Modulation (vibrato)
+- CC 7: Volume (master volume)
+- CC 10: Pan (stereo position)
+- CC 11: Expression (dynamic swells)
+- CC 64: Sustain Pedal (on/off)
+- CC 64/67: Sostenuto/Sostenuto pedal
+
+### Files to Modify
+- `src/musicgen/ai_models/notes.py` - Add `ControlChangeEvent` class
+- `src/musicgen/ai_models/parts.py` - Add `cc_events` to `AIPart`
+- `src/musicgen/renderer/midi.py` - Render CC events to MIDI
+
+---
+
+## Step 15: Add Tempo and Meter Fluidity
+
+### Problem
+Real music breathes. A ritardando at the end, or a 4/4 to 3/4 switch, is impossible with static `tempo` and `time_signature` fields.
+
+### Solution: Event-Based Maps
+
+```python
+class TempoEvent(BaseModel):
+    time: float      # When this tempo change takes effect
+    bpm: int
+
+class TimeSignatureEvent(BaseModel):
+    measure: int     # At which measure
+    numerator: int
+    denominator: int
+
+class AIComposition(BaseModel):
+    tempo: int                    # Default/initial
+    tempo_map: list[TempoEvent]   # Changes
+    time_signature: TimeSignature
+    time_signature_changes: list[TimeSignatureEvent]
+```
+
+### Files to Modify
+- `src/musicgen/ai_models/composition.py` - Add event lists
+- `src/musicgen/renderer/midi.py` - Render tempo/meta events
+
+---
+
+## Step 16: Chunking Strategy for Long Compositions
+
+### Problem
+A 2-minute orchestral piece has 2000+ notes. LLMs will:
+- Hit output token limits
+- Make syntax errors in large JSON
+- Lose coherence across long generations
+
+### Solution: Section-by-Section Generation
+
+```python
+class SectionalComposer:
+    def generate_section(
+        self,
+        prompt: str,
+        section_name: str,  # "A", "B", "bridge", etc.
+        context: dict,      # Previous sections, key, etc.
+        length_bars: int = 16
+    ) -> AISection:
+        """Generate one section at a time."""
+
+class AISection(BaseModel):
+    name: str
+    start_bar: int
+    end_bar: int
+    parts: dict[str, list[AINote]]
+```
+
+### Files to Create
+- `src/musicgen/composer_new/sectional.py` - New section-based composer
+
+---
+
+## Implementation Priority
+
+### High Priority (Do First)
+1. **Step 12: Polyphony** - Essential for chords, piano pieces
+2. **Step 14: CC Events** - Essential for expression, sustain pedal
+
+### Medium Priority (Do Second)
+3. **Step 15: Tempo/Meter Fluidity** - Important for musicality
+4. **Step 13: Synchronization** - Important for complex pieces
+
+### Lower Priority (Do Later)
+5. **Step 16: Chunking** - Only needed for very long pieces
+
+---
+
+## Proposed New Schema (Draft)
+
+```json
+{
+  "title": "Composition Title",
+  "tempo": {"initial": 120, "changes": [{"time": 32, "bpm": 110}]},
+  "time_signature": {"initial": {"numerator": 4, "denominator": 4}},
+  "key": {"tonic": "C", "mode": "major"},
+  "structure_type": "measure_based",
+  "measures": [
+    {
+      "number": 1,
+      "beats": 4,
+      "parts": [
+        {
+          "name": "piano",
+          "role": "harmony",
+          "events": [
+            {
+              "time": 0,
+              "notes": [
+                {"note_name": "C4", "duration": 4, "velocity": 80},
+                {"note_name": "E4", "duration": 4, "velocity": 75},  # CHORD!
+                {"note_name": "G4", "duration": 4, "velocity": 75}
+              ]
+            },
+            {
+              "time": 4,
+              "cc": {"controller": 64, "value": 127}  # Sustain on
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## Files Created/Modified (Current State)
+
 ```
 src/musicgen/
 ├── ai_client/
 │   ├── __init__.py
 │   ├── client.py          # GeminiClient with logging
 │   ├── exceptions.py      # Custom exceptions
-│   └── prompts.py         # Improved prompts with examples
+│   └── prompts.py         # Improved prompts with duration requirements
 ├── ai_models/
 │   ├── __init__.py
 │   ├── composition.py     # AIComposition model
-│   ├── notes.py          # AINote, AIRest
+│   ├── notes.py          # AINote, AIRest (with flat-to-sharp conversion)
 │   └── parts.py          # AIPart model
 ├── composer_new/
 │   ├── __init__.py
-│   ├── composer.py       # AIComposer with log_requests
+│   ├── composer.py       # AIComposer with quality validation
 │   └── presets.py        # Prompt templates
 ├── config/
 │   ├── defaults.py       # Default config values
 │   ├── settings.py       # Config class
-│   └── __init__.py       # Extended exports
+│   └── __init__.py
 ├── renderer/
 │   ├── __init__.py
 │   ├── midi.py          # MIDIRenderer
-│   ├── audio.py         # AudioRenderer (fixed wave_type issue)
+│   ├── audio.py         # AudioRenderer
 │   └── renderer.py      # Renderer orchestration
 ├── schema/
 │   ├── __init__.py
-│   ├── generator.py     # SchemaGenerator
+│   ├── generator.py     # SchemaGenerator (fixed key format)
 │   └── models.py        # Schema models
-└── __main__.py           # Updated CLI with compose command
-```
-
-### Generated Audio Files (Output)
-```
-output/
-├── Peaceful_Piano.mid/wav     # ~2 min
-├── Jazz_Piano_Trio.mid/wav    # ~2.5 min
-├── Melancholy_Strings.mid/wav  # ~5.5 min
-└── Electronic_Ambient.mid/wav  # ~14 min (bug - too long)
-```
-
-### Environment Setup
-```bash
-# Dependencies installed in .venv/
-.venv/bin/pip list | grep -E "(google|pydantic|yaml|mido|pretty)"
-google-api-core
-google-auth
-google-genai
-pydantic
-pyyaml
-mido
-pretty-midi
-numpy
+└── __main__.py           # CLI with compose command
 ```
 
 ---
 
-## Known Issues
+## Environment Setup
 
-### 1. AI Generated Compositions Too Generic
-The AI returns valid JSON but compositions lack:
-- Sufficient note count (often 30-50 notes instead of 60-120 required)
-- Musical coherence and development
-- Distinctive style based on prompt
-- Proper 2-3 minute duration
-
-**Root Cause:** The prompt may not be emphasizing quantity enough. The AI focuses on quality/structure but doesn't generate enough notes.
-
-### 2. Ambient Piece Duration Bug
-The ambient composition generated ~850 notes instead of intended amount, creating a 14-minute piece instead of 2-3 minutes. This was due to how the note generation loop was structured.
-
-### 3. Response Logging Working
-The logging is saving to `logs/ai_calls/<timestamp>/` with:
-- `prompt.txt` - Original user prompt
-- `system_prompt.txt` - Full system instructions
-- `user_prompt.txt` - User prompt with schema
-- `schema.yaml` - Schema sent to AI
-- `response_raw.txt` - Raw AI response
-- `response_parsed.json` - Parsed composition
-- `metadata.json` - Model, temperature, etc.
-
----
-
-## Descriptive Prompts Created
-
-These paragraph-length prompts were designed to evoke specific emotional responses:
-
-1. **Nostalgic Sunset (A minor, 70 BPM)**
-   - Childhood neighborhood at sunset, bittersweet nostalgia
-   - Piano + gentle strings, simple touching melody
-   - Emotional builds and releases, breathing with pauses
-
-2. **Epic Triumph (D major/minor, 120-130 BPM)**
-   - Adventure movie climax, hero achieves impossible quest
-   - Full orchestra: trumpets, soaring strings, tympani, french horns
-   - Building anticipation, massive crescendos, triumphant moments
-
-3. **Late Night Jazz (F/Bb minor, 90-100 BPM)**
-   - Paris jazz club at 2 AM, telepathic musical conversation
-   - Piano trio (piano, double bass, drums)
-   - Bill Evans-inspired harmonies, warm walking bass, syncopated rhythms
-
-4. **Space Ambient (60-70 BPM)**
-   - Floating through nebula, shimmering synth pads
-   - Timeless, no clear pulse, crystalline melodies
-   - Extended chords, deep bass rumbles, meditative
-
----
-
-## Next Steps to Continue
-
-### Step A: Review AI Response Logs
 ```bash
-# Check the latest AI responses
-ls logs/ai_calls/
-cat logs/ai_calls/<timestamp>/response_parsed.json | jq
-```
+# Using uv (recommended)
+uv sync
 
-Look at:
-- How many notes per part is AI actually generating?
-- Is the structure there or just random notes?
-- Are the styles matching the prompts?
-
-### Step B: Improve Prompt Engineering
-The issue may be:
-1. Not emphasizing NOTE QUANTITY enough
-2. Schema too complex causing token limit issues
-3. Temperature too low causing generic outputs
-
-Try these changes in `src/musicgen/ai_client/prompts.py`:
-
-```python
-# Add stronger emphasis on note count
-"REQUIREMENTS:
-1. Create AT LEAST 150-200 notes per part (this is critical!)
-2. Duration should be 2-3 minutes minimum at the specified tempo
-...
-```
-
-Or try higher temperature:
-```python
-composer = AIComposer(temperature=0.8)  # More creative/random
-```
-
-### Step C: Consider Alternative Approach
-If note-by-note generation is too difficult for the AI:
-
-1. **Generate parameters, then expand locally**
-   - AI generates: chord progression, melody outline, structure
-   - Local code expands to full note sequences
-
-2. **Use multiple AI calls**
-   - Call 1: Generate structure + chord progression
-   - Call 2: Generate melody for one section
-   - Call 3: Generate bass line
-   - etc.
-
-3. **Use structured generation with constraints**
-   - Generate 8-bar phrases separately
-   - Stitch them together locally
-
-### Step D: Test with Different Model
-```bash
-# Try gemini-2.0-flash-exp if 2.5-pro is being too conservative
-composer = AIComposer(model="gemini-2.0-flash-exp")
+# Dependencies include:
+# - google-genai (Gemini 2.5 Pro client)
+# - pydantic (validation)
+# - mido (MIDI file I/O)
+# - pretty-midi (MIDI rendering)
+# - numpy (audio processing)
+# - pyyaml (config)
 ```
 
 ---
@@ -235,11 +402,8 @@ composer = AIComposer(model="gemini-2.0-flash-exp")
 Recent commits:
 ```
 409ff18 feat: add request/response logging and improve AI prompts
-733cd6a fix: apply ruff linting fixes and CLI updates
-585c6a7 feat(step 2): add schema generation engine
-6b7c1b8 feat(step 1): add configuration system
-ca3fa61 chore: add .gitignore for output directory
-58ebe15 fix: remove unsupported wave_type argument
+37ea414 feat: add log_requests parameter to AIComposer
+e13a658 docs: add comprehensive step plan with context
 ```
 
 ---
@@ -253,12 +417,6 @@ musicgen check
 # Generate from prompt
 musicgen compose "your prompt here" --output-dir output -f midi wav
 
-# List presets
-musicgen presets list
-
-# Generate with verbose logging
-musicgen compose "prompt" --verbose
-
 # Using Python directly
 .venv/bin/python3 << 'EOF'
 from musicgen.composer_new import AIComposer
@@ -271,30 +429,6 @@ renderer = Renderer(output_dir="output")
 renderer.render(comp, formats=["midi", "wav"])
 EOF
 ```
-
----
-
-## Files to Review for Debugging
-
-1. **`logs/ai_calls/<timestamp>/response_parsed.json`** - See what AI actually returned
-2. **`src/musicgen/ai_client/prompts.py`** - The prompts being sent
-3. **`src/musicgen/schema/generator.py`** - The schema being generated
-4. **`src/musicgen/composer_new/composer.py`** - The orchestration layer
-
----
-
-## Key Code Locations
-
-| Functionality | File | Key Class/Function |
-|---------------|------|-------------------|
-| AI Client | `ai_client/client.py` | `GeminiClient.generate()` |
-| Prompt Building | `ai_client/prompts.py` | `PromptBuilder.build_prompt()` |
-| Schema Generation | `schema/generator.py` | `SchemaGenerator.generate()` |
-| Note Models | `ai_models/notes.py` | `AINote`, `AIRest` |
-| Composition Model | `ai_models/composition.py` | `AIComposition` |
-| MIDI Rendering | `renderer/midi.py` | `MIDIRenderer.render()` |
-| Audio Rendering | `renderer/audio.py` | `AudioRenderer.render()` |
-| Main Composer | `composer_new/composer.py` | `AIComposer.generate()` |
 
 ---
 

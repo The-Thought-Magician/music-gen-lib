@@ -15,6 +15,14 @@ from musicgen.schema import SchemaConfig, SchemaGenerator
 logger = logging.getLogger(__name__)
 
 
+# Validation constants
+MIN_DURATION_SECONDS = 120  # 2 minutes minimum
+MIN_MELODY_NOTES = 150
+MIN_HARMONY_NOTES = 120
+MIN_BASS_NOTES = 80
+MIN_ACCOMPANIMENT_NOTES = 100
+
+
 class AIComposer:
     """AI-powered music composer.
 
@@ -64,6 +72,7 @@ class AIComposer:
         prompt: str,
         validate: bool = True,
         return_raw: bool = False,
+        validate_duration: bool = True,
     ) -> AIComposition | dict[str, Any]:
         """Generate a composition from a prompt.
 
@@ -71,6 +80,7 @@ class AIComposer:
             prompt: Natural language description of desired music
             validate: Whether to validate against AIComposition model
             return_raw: If True, return raw dict instead of AIComposition
+            validate_duration: Whether to validate minimum duration/note requirements
 
         Returns:
             AIComposition or raw dict
@@ -105,12 +115,66 @@ class AIComposer:
                     f"{len(composition.parts)} parts, "
                     f"{composition.duration_seconds:.1f}s"
                 )
+
+                # Validate duration and note counts
+                if validate_duration:
+                    self._validate_composition_quality(composition)
+
                 return composition
             except Exception as e:
                 logger.error(f"Validation failed: {e}")
                 raise ValidationError(f"Failed to validate AI response: {e}") from e
 
         return raw_response
+
+    def _validate_composition_quality(self, composition: AIComposition) -> None:
+        """Validate that composition meets minimum quality requirements.
+
+        Args:
+            composition: The composition to validate
+
+        Raises:
+            ValidationError: If composition doesn't meet requirements
+        """
+        duration = composition.duration_seconds
+
+        # Check duration
+        if duration < MIN_DURATION_SECONDS:
+            logger.warning(
+                f"Composition duration ({duration:.1f}s) is below minimum "
+                f"({MIN_DURATION_SECONDS}s). The AI may not have generated enough notes."
+            )
+
+        # Check note counts per part
+        for part in composition.parts:
+            note_count = len(part.notes)
+            role = part.role
+
+            min_notes = 0
+            if role == "melody":
+                min_notes = MIN_MELODY_NOTES
+            elif role == "harmony":
+                min_notes = MIN_HARMONY_NOTES
+            elif role == "bass":
+                min_notes = MIN_BASS_NOTES
+            elif role == "accompaniment":
+                min_notes = MIN_ACCOMPANIMENT_NOTES
+            else:
+                min_notes = 80  # Default minimum
+
+            if note_count < min_notes:
+                logger.warning(
+                    f"Part '{part.name}' (role: {role}) has {note_count} notes, "
+                    f"below recommended minimum of {min_notes}. "
+                    f"This may result in a composition shorter than intended."
+                )
+
+        # Log summary
+        logger.info(
+            f"Composition quality check: {duration:.1f}s duration, "
+            f"{sum(len(p.notes) for p in composition.parts)} total notes across "
+            f"{len(composition.parts)} parts"
+        )
 
     def generate_to_file(
         self,
