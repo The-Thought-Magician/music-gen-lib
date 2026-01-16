@@ -26,6 +26,16 @@ from musicgen.ai_models.parts import (
 )
 from musicgen.ai_models.sections import AISection
 
+# Post-processing
+from musicgen.ai_models.postprocess import (
+    ValidationResult,
+    auto_fix_composition,
+    fix_polyphony,
+    get_polyphony_report,
+    is_harmony_role,
+    validate_composition,
+)
+
 __all__ = [
     # Notes
     "AINote",
@@ -46,4 +56,11 @@ __all__ = [
     "TempoEvent",
     "KeySignature",
     "StructureType",
+    # Post-processing
+    "ValidationResult",
+    "validate_composition",
+    "fix_polyphony",
+    "auto_fix_composition",
+    "get_polyphony_report",
+    "is_harmony_role",
 ]

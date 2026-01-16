@@ -51,9 +51,9 @@ class AINote(BaseModel):
         description="Duration in quarter notes",
         gt=0
     )
-    start_time: float | None = Field(
-        None,
-        description="Start time in quarter notes (if absolute timing)",
+    start_time: float = Field(
+        default=0.0,
+        description="Start time in quarter notes from part start (REQUIRED for polyphony/chords - always specify this value to control when notes play relative to each other)",
         ge=0
     )
 
@@ -158,9 +158,9 @@ class AIRest(BaseModel):
         description="Duration in quarter notes",
         gt=0
     )
-    start_time: float | None = Field(
-        None,
-        description="Start time in quarter notes (if absolute timing)",
+    start_time: float = Field(
+        default=0.0,
+        description="Start time in quarter notes from part start (REQUIRED for polyphony - always specify this value)",
         ge=0
     )
 

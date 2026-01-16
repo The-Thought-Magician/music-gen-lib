@@ -31,6 +31,7 @@ from musicgen.ai_client.exceptions import (
     RateLimitError,
 )
 from musicgen.ai_client.prompts import PromptBuilder
+from musicgen.ai_client.tools import FunctionDeclaration, format_tools_for_gemini
 from musicgen.config import Config, get_config
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,7 @@ class GeminiClient:
     - Schema-aware prompting
     - JSON response parsing
     - Request/response logging
+    - Function calling support
     """
 
     # Default model
@@ -114,6 +116,7 @@ class GeminiClient:
         prompt: str,
         schema: str | None = None,
         system_instructions: str | None = None,
+        tools: list[FunctionDeclaration] | None = None,
     ) -> dict[str, Any]:
         """Generate a composition from a prompt.
 
@@ -121,9 +124,12 @@ class GeminiClient:
             prompt: User's description of desired music.
             schema: Optional YAML schema to include in prompt.
             system_instructions: Optional custom system instructions.
+            tools: Optional list of function declarations for tool calling.
 
         Returns:
-            Parsed JSON response as dict.
+            Parsed JSON response as dict. If tools are provided and the AI
+            makes tool calls, the response will include a "tool_calls" key
+            with the list of function calls.
 
         Raises:
             APICallError: If API call fails after retries.
@@ -136,10 +142,14 @@ class GeminiClient:
         # Log the request
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         if self.log_requests:
-            self._log_request(timestamp, prompt, system_prompt, user_prompt, schema)
+            self._log_request(timestamp, prompt, system_prompt, user_prompt, schema, tools)
 
         # Call API with retry
-        response_text = self._call_with_retry(system_prompt, user_prompt)
+        response_text = self._call_with_retry(
+            system_prompt,
+            user_prompt,
+            tools=format_tools_for_gemini(tools) if tools else None,
+        )
 
         # Log the response
         if self.log_requests:
@@ -151,13 +161,15 @@ class GeminiClient:
     def _call_with_retry(
         self,
         system_prompt: str,
-        user_prompt: str
+        user_prompt: str,
+        tools: dict[str, Any] | None = None,
     ) -> str:
         """Call API with retry logic.
 
         Args:
             system_prompt: System instructions
             user_prompt: User prompt
+            tools: Optional formatted tools for function calling
 
         Returns:
             Response text
@@ -169,7 +181,7 @@ class GeminiClient:
 
         for attempt in range(self.max_retries):
             try:
-                return self._make_call(system_prompt, user_prompt)
+                return self._make_call(system_prompt, user_prompt, tools)
 
             except ResourceExhausted as e:
                 last_error = e
@@ -204,31 +216,71 @@ class GeminiClient:
             cause=last_error
         )
 
-    def _make_call(self, system_prompt: str, user_prompt: str) -> str:
+    def _make_call(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        tools: dict[str, Any] | None = None,
+    ) -> str:
         """Make a single API call.
 
         Args:
             system_prompt: System instructions
             user_prompt: User prompt
+            tools: Optional formatted tools for function calling
 
         Returns:
-            Response text
+            Response text (including tool calls if present)
         """
         # Build generation config
         config_dict = {
             "temperature": self.temperature,
+            "system_instruction": system_prompt,
         }
         if self.max_tokens is not None:
             config_dict["max_output_tokens"] = self.max_tokens
 
         generation_config = types.GenerateContentConfig(**config_dict)
 
+        # Build kwargs for API call
+        kwargs = {
+            "model": self.model_name,
+            "contents": user_prompt,
+            "config": generation_config,
+        }
+
+        # Add tools if provided
+        if tools:
+            kwargs["tools"] = tools
+
         # Make the call
-        response = self.client.models.generate_content(
-            model=self.model_name,
-            contents=user_prompt,
-            config=generation_config,
-        )
+        response = self.client.models.generate_content(**kwargs)
+
+        # Check for tool calls in response
+        if hasattr(response, 'candidates') and response.candidates:
+            candidate = response.candidates[0]
+            if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
+                # Extract text and any tool calls
+                parts = candidate.content.parts
+                result_text = ""
+                tool_calls = []
+
+                for part in parts:
+                    if hasattr(part, 'text') and part.text:
+                        result_text += part.text
+                    if hasattr(part, 'function_call') and part.function_call:
+                        # Convert function call to dict format
+                        fc = part.function_call
+                        tool_calls.append({
+                            "name": fc.name,
+                            "args": dict(fc.args) if hasattr(fc, 'args') else {},
+                        })
+
+                # If we have tool calls, wrap the response
+                if tool_calls:
+                    result_dict = json.loads(result_text) if result_text.strip() else {}
+                    result_dict["tool_calls"] = tool_calls
+                    return json.dumps(result_dict)
 
         return response.text
 
@@ -301,6 +353,7 @@ class GeminiClient:
         system_prompt: str,
         user_prompt: str,
         schema: str | None = None,
+        tools: list[FunctionDeclaration] | None = None,
     ) -> None:
         """Log the request details.
 
@@ -310,6 +363,7 @@ class GeminiClient:
             system_prompt: System instructions sent to AI
             user_prompt: User prompt sent to AI
             schema: Schema YAML (if provided)
+            tools: Function declarations (if provided)
         """
         log_dir = self.LOG_DIR / timestamp
         log_dir.mkdir(parents=True, exist_ok=True)
@@ -327,12 +381,21 @@ class GeminiClient:
         if schema:
             (log_dir / "schema.yaml").write_text(schema, encoding="utf-8")
 
+        # Save tools if provided
+        if tools:
+            tools_data = [tool.to_dict() for tool in tools]
+            (log_dir / "tools.json").write_text(
+                json.dumps(tools_data, indent=2), encoding="utf-8"
+            )
+
         # Save request metadata
         metadata = {
             "model": self.model_name,
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
             "timestamp": timestamp,
+            "has_tools": tools is not None,
+            "tool_count": len(tools) if tools else 0,
         }
         (log_dir / "metadata.json").write_text(
             json.dumps(metadata, indent=2), encoding="utf-8"

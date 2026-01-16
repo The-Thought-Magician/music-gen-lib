@@ -102,6 +102,47 @@ class AIPart(BaseModel):
                 validated.append(note)
         return validated
 
+    @field_validator("notes")
+    @classmethod
+    def validate_start_time_for_polyphony_parts(cls, v: list, info) -> list:
+        """Ensure harmony/accompaniment parts have start_time on all notes.
+
+        For parts that create chords (harmony, accompaniment, pad), every note
+        must have a start_time specified to enable polyphony.
+        """
+        # Get the role of this part if available
+        role = None
+        if isinstance(info.data, dict):
+            role = info.data.get("role")
+
+        # Only validate polyphony parts
+        polyphony_roles = {
+            InstrumentRole.HARMONY,
+            InstrumentRole.ACCOMPANIMENT,
+            InstrumentRole.PAD,
+        }
+
+        if role in polyphony_roles:
+            for note in v:
+                if isinstance(note, dict):
+                    # Skip rests
+                    if note.get("rest") is True:
+                        continue
+                    # Check for start_time
+                    if "start_time" not in note or note.get("start_time") is None:
+                        raise ValueError(
+                            f"All notes in {role.value} parts must have start_time "
+                            f"specified for polyphony/chords. Note missing start_time: {note}"
+                        )
+                elif isinstance(note, AINote):
+                    if note.start_time is None:
+                        raise ValueError(
+                            f"All notes in {role.value} parts must have start_time "
+                            f"specified for polyphony/chords."
+                        )
+
+        return v
+
     def get_note_events(self) -> list[AINoteEvent]:
         """Get validated note events.
 

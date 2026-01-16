@@ -121,7 +121,7 @@ def main(argv: list = None) -> int:
             dest="formats",
             action="append",
             choices=["midi", "wav", "mp3", "json"],
-            help="Output format (can specify multiple, default: midi)"
+            help="Output format (can specify multiple, default: midi, mp3)"
         )
         compose_parser.add_argument(
             "--output-name",
@@ -198,7 +198,7 @@ def main(argv: list = None) -> int:
         dest="formats",
         action="append",
         choices=["midi", "wav", "mp3", "musicxml", "pdf"],
-        help="Export format (can specify multiple, default: midi)"
+        help="Export format (can specify multiple, default: midi, mp3)"
     )
     gen_parser.add_argument(
         "--seed",
@@ -252,7 +252,7 @@ def main(argv: list = None) -> int:
             dest="formats",
             action="append",
             choices=["midi", "wav", "mp3", "musicxml", "pdf"],
-            help="Export format (can specify multiple, default: midi)"
+            help="Export format (can specify multiple, default: midi, mp3)"
         )
         ai_parser.add_argument(
             "--seed",
@@ -420,7 +420,7 @@ def cmd_generate(args) -> int:
         Exit code
     """
     # Set default formats if none specified
-    formats = args.formats or ["midi"]
+    formats = args.formats or ["midi", "mp3"]
 
     # Create request
     request = CompositionRequest(
@@ -480,7 +480,7 @@ def cmd_ai(args) -> int:
     prompt = " ".join(args.prompt)
 
     # Set default formats if none specified
-    formats = args.formats or ["midi"]
+    formats = args.formats or ["midi", "mp3"]
 
     print(f"Analyzing prompt: \"{prompt[:50]}...\"")
 
@@ -598,7 +598,7 @@ def cmd_from_file(args) -> int:
         ai_args.duration = args.duration
         ai_args.form = None
         ai_args.output_dir = args.output_dir
-        ai_args.formats = args.formats or ["midi"]
+        ai_args.formats = args.formats or ["midi", "mp3"]
         ai_args.seed = None
         ai_args.api_key = None
         ai_args.save_plan = False
@@ -650,7 +650,7 @@ def cmd_compose(args) -> int:
     logger.info(f"Prompt: {prompt[:100]}...")
 
     # Get formats
-    formats = args.formats or ["midi"]
+    formats = args.formats or ["midi", "mp3"]
 
     try:
         # Initialize composer

@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from musicgen.ai_client.tools import (
+    DEFAULT_COMPOSITION_TOOLS,
+    FunctionDeclaration,
+)
 from musicgen.schema import SchemaConfig, get_schema
 
 
@@ -11,16 +15,19 @@ class PromptBuilder:
     def __init__(
         self,
         schema_config: SchemaConfig | None = None,
-        system_instructions: str | None = None
+        system_instructions: str | None = None,
+        tools: list[FunctionDeclaration] | None = None,
     ):
         """Initialize prompt builder.
 
         Args:
             schema_config: Optional schema configuration
             system_instructions: Optional custom system instructions
+            tools: Optional list of function declarations for tool calling
         """
         self.schema_config = schema_config
-        self.system_instructions = system_instructions or self._default_system_instructions()
+        self.tools = tools
+        self.system_instructions = system_instructions or self._default_system_instructions(tools)
 
     def build_prompt(
         self,
@@ -53,8 +60,12 @@ class PromptBuilder:
         Returns:
             System prompt
         """
+        # Add tool usage instructions if tools are provided
+        tool_instructions = self._build_tool_instructions() if self.tools else ""
+
         return f"""{self.system_instructions}
 
+{tool_instructions}
 COMPOSITION SCHEMA:
 You must generate compositions that follow this schema exactly:
 
@@ -130,17 +141,34 @@ VALID PART ROLES (use exactly these values):
 
 DO NOT combine roles (e.g., don't use "harmony_bass"). Use ONE valid role per part.
 
-POLYPHONY (Chords and Simultaneous Notes):
-You can create chords by setting the same start_time for multiple notes:
-- To play a C Major chord (C-E-G) at beat 1:
+POLYPHONY (Chords and Simultaneous Notes) - CRITICAL:
+start_time is REQUIRED for ALL notes in harmony/accompaniment/pad parts. You MUST specify start_time for every note to enable proper polyphony.
+
+HARMONY PARTS MUST USE start_time FOR CHORDS - notes without start_time will not play simultaneously
+
+To create chords, set the same start_time for multiple notes:
+- C Major chord (C-E-G) at beat 1:
   {{"note_name": "C4", "start_time": 0.0, "duration": 2.0, "velocity": 75}}
   {{"note_name": "E4", "start_time": 0.0, "duration": 2.0, "velocity": 75}}
   {{"note_name": "G4", "start_time": 0.0, "duration": 2.0, "velocity": 75}}
 
-- The start_time is the ABSOLUTE position in quarter notes from the part start
-- Notes with the same start_time play simultaneously (creating chords)
-- Notes with different start_times play sequentially
-- If start_time is omitted, notes play sequentially (one after another)
+- D Minor chord at beat 3:
+  {{"note_name": "D4", "start_time": 2.0, "duration": 2.0, "velocity": 75}}
+  {{"note_name": "F4", "start_time": 2.0, "duration": 2.0, "velocity": 75}}
+  {{"note_name": "A4", "start_time": 2.0, "duration": 2.0, "velocity": 75}}
+
+RULES FOR start_time:
+1. start_time is the ABSOLUTE position in quarter notes from the part start (always starts at 0.0)
+2. Notes with the same start_time play simultaneously (creating chords)
+3. Notes with different start_times play sequentially
+4. ALWAYS increment start_time based on the previous note's duration for sequential notes
+5. For chord progressions: all notes in a chord share the same start_time
+
+Example sequential melody with start_time:
+  {{"note_name": "C4", "start_time": 0.0, "duration": 1.0, "velocity": 75}}  # Beat 1
+  {{"note_name": "D4", "start_time": 1.0, "duration": 1.0, "velocity": 75}}  # Beat 2 (0.0 + 1.0)
+  {{"note_name": "E4", "start_time": 2.0, "duration": 1.0, "velocity": 75}}  # Beat 3 (1.0 + 1.0)
+  {{"note_name": "F4", "start_time": 3.0, "duration": 1.0, "velocity": 75}}  # Beat 4 (2.0 + 1.0)
 
 Use polyphony for:
 - Piano chords and harmonies
@@ -221,7 +249,14 @@ CRITICAL REQUIREMENTS - READ CAREFULLY:
    - Include dynamic contrast (some parts louder/softer)
    - Make the melody memorable and singable
 
-6. Return ONLY the JSON object - no markdown code blocks, no explanations
+6. POLYPHONY REQUIREMENT:
+   - start_time is REQUIRED for ALL notes - always specify it
+   - For harmony/accompaniment parts: use start_time to create chords
+   - Same start_time = notes play together (chord)
+   - Different start_time = notes play sequentially
+   - CRITICAL: HARMONY PARTS MUST USE start_time FOR CHORDS
+
+7. Return ONLY the JSON object - no markdown code blocks, no explanations
 
 EXAMPLE FORMAT (structure only - create ORIGINAL music):
 {{
@@ -236,19 +271,34 @@ EXAMPLE FORMAT (structure only - create ORIGINAL music):
       "midi_channel": 0,
       "role": "melody",
       "notes": [
-        {{"note_name": "C4", "duration": 2.0, "velocity": 75}},
-        {{"note_name": "E4", "duration": 1.0, "velocity": 70}},
-        {{"note_name": "G4", "duration": 1.0, "velocity": 72}},
+        {{"note_name": "C4", "start_time": 0.0, "duration": 1.0, "velocity": 75}},
+        {{"note_name": "E4", "start_time": 1.0, "duration": 1.0, "velocity": 70}},
+        {{"note_name": "G4", "start_time": 2.0, "duration": 1.0, "velocity": 72}},
         ... (150+ more notes for 2+ minutes at this tempo)
+      ]
+    }},
+    {{
+      "name": "piano_harmony",
+      "midi_program": 0,
+      "midi_channel": 1,
+      "role": "harmony",
+      "notes": [
+        {{"note_name": "C4", "start_time": 0.0, "duration": 2.0, "velocity": 65}},
+        {{"note_name": "E4", "start_time": 0.0, "duration": 2.0, "velocity": 65}},
+        {{"note_name": "G4", "start_time": 0.0, "duration": 2.0, "velocity": 65}},
+        {{"note_name": "D4", "start_time": 2.0, "duration": 2.0, "velocity": 65}},
+        {{"note_name": "F4", "start_time": 2.0, "duration": 2.0, "velocity": 65}},
+        {{"note_name": "A4", "start_time": 2.0, "duration": 2.0, "velocity": 65}},
+        ... (120+ more notes)
       ]
     }},
     {{
       "name": "piano_bass",
       "midi_program": 0,
-      "midi_channel": 1,
+      "midi_channel": 2,
       "role": "bass",
       "notes": [
-        {{"note_name": "C3", "duration": 4.0, "velocity": 65}},
+        {{"note_name": "C3", "start_time": 0.0, "duration": 4.0, "velocity": 65}},
         ... (80+ more notes)
       ]
     }}
@@ -258,9 +308,16 @@ EXAMPLE FORMAT (structure only - create ORIGINAL music):
 REMEMBER: Generate ORIGINAL music with 150-300+ notes per part for a full 2-3 minute composition!
 """
 
-    def _default_system_instructions(self) -> str:
-        """Default system instructions - more specific than before."""
-        return """You are an expert AI composer who creates note-by-note musical compositions.
+    def _default_system_instructions(self, tools: list[FunctionDeclaration] | None = None) -> str:
+        """Default system instructions - more specific than before.
+
+        Args:
+            tools: Optional list of tools - if provided, includes tool instructions
+
+        Returns:
+            System instructions string
+        """
+        base_instructions = """You are an expert AI composer who creates note-by-note musical compositions.
 
 You understand:
 - Music theory: scales, chords, progressions, voice leading
@@ -276,6 +333,67 @@ Your compositions are:
 - Long enough to be enjoyable (2+ minutes worth of notes)
 
 You generate note-by-note sequences that professional musicians could actually perform."""
+
+        if tools:
+            tool_names = ", ".join([f"'{t.name}'" for t in tools])
+            base_instructions += f"""
+
+AVAILABLE TOOLS:
+You have access to the following tools for enhanced composition: {tool_names}.
+Use these tools to create more structured and expressive compositions.
+See the TOOL USAGE section below for detailed instructions on when and how to use each tool."""
+
+        return base_instructions
+
+    def _build_tool_instructions(self) -> str:
+        """Build instructions for tool usage.
+
+        Returns:
+            Tool usage instructions string
+        """
+        # Get descriptions of available tools
+        tool_descriptions = []
+        for tool in self.tools or []:
+            tool_descriptions.append(f"- {tool.name}: {tool.description}")
+
+        tools_list = "\n".join(tool_descriptions) if tool_descriptions else ""
+
+        return f"""TOOL USAGE:
+You have access to function calling tools that can enhance your compositions.
+
+AVAILABLE TOOLS:
+{tools_list}
+
+WHEN TO USE TOOLS:
+1. Use tools to STRUCTURE your composition before generating notes
+2. Call create_section for each major section (intro, verse, chorus, bridge, etc.)
+3. Use create_chord when you want specific harmonic progressions with voice leading
+4. Use set_dynamic to plan dynamic contrasts between sections
+5. Use add_rhythm_variation to add interest to repeated patterns
+6. Use add_counter_melody to add secondary melodic lines
+7. Use apply_transformation to develop motifs through variation
+
+HOW TO USE TOOLS:
+- Make tool calls BEFORE generating your final JSON composition
+- Tool calls help you plan and structure the composition
+- The composition JSON you return should reflect the planning done through tools
+- You can make multiple tool calls in a single response
+
+EXAMPLE TOOL USAGE:
+If creating a pop song structure:
+1. Call create_section for "intro" (measures 1-8)
+2. Call create_section for "verse" (measures 9-24)
+3. Call create_section for "chorus" (measures 25-40)
+4. Call set_dynamic for "mf" starting at measure 25 (chorus entrance)
+5. Generate the full JSON composition reflecting this structure
+
+IMPORTANT:
+- Tools are OPTIONAL aids for composition
+- Your primary output must still be the JSON composition
+- Use tools to make your compositions more structured and expressive
+- Not every tool needs to be used for every composition
+
+"""
 
 
 def build_prompt(

@@ -24,9 +24,10 @@ DEFAULT_CONFIG = {
         "velocity_min": 60,
         "velocity_max": 100,
     },
+    # Export defaults: MIDI for editing, MP3 for easy playback/sharing
     "export": {
         "default_output_dir": ".",
-        "default_formats": ["midi", "wav"],
+        "default_formats": ["midi", "mp3"],
         "sample_rate": 44100,
         "bit_depth": 16,
     },

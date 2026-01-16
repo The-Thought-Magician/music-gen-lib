@@ -118,7 +118,7 @@ class SchemaGenerator:
             "pitch": self._pitch_description(),
             "duration": f"float (in {self.config.duration_unit.value}s)",
             "velocity": f"int ({self.config.velocity_min}-{self.config.velocity_max})",
-            "start_time": "float (optional, absolute position in quarter notes from part start for polyphony/chords)",
+            "start_time": "float (REQUIRED - absolute position in quarter notes from part start. For harmony/parts, start_time is REQUIRED to create chords. Notes with the same start_time play simultaneously.)",
         }
 
         if self.config.include_articulation:
