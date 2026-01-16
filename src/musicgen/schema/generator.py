@@ -78,6 +78,7 @@ class SchemaGenerator:
             "note": self._note_schema(),
             "rest": self._rest_schema(),
             "part": self._part_schema(),
+            "measure": self._measure_schema(),
             "constraints": self._constraints_schema(),
             "instruments": self._instrument_schema(),
             "music_theory": self._theory_schema(),
@@ -91,11 +92,15 @@ class SchemaGenerator:
     def _composition_schema(self) -> dict[str, Any]:
         """Schema for top-level composition."""
         comp = {
+            "structure_type": "Either 'part_based' (default) or 'measure_based'",
             "title": "string (composition title)",
-            "tempo": "int (40-200 BPM)",
+            "tempo": "int (40-200 BPM) - initial tempo",
+            "tempo_changes": "array of {time (float, quarter notes), bpm (int)} - optional tempo changes",
             "time_signature": '{"numerator": int, "denominator": int} (e.g., {"numerator": 4, "denominator": 4})',
+            "time_signature_changes": "array of {measure (int), numerator (int), denominator (int)} - optional time signature changes",
             "key": '{"tonic": "string (note name)", "mode": "string (major/minor/dorian/etc.)"} (e.g., {"tonic": "C", "mode": "major"})',
-            "parts": "array of Part objects",
+            "parts": "array of Part objects (for part_based structure)",
+            "measures": "array of Measure objects (for measure_based structure - optional)",
         }
 
         if self.config.include_form:
@@ -113,6 +118,7 @@ class SchemaGenerator:
             "pitch": self._pitch_description(),
             "duration": f"float (in {self.config.duration_unit.value}s)",
             "velocity": f"int ({self.config.velocity_min}-{self.config.velocity_max})",
+            "start_time": "float (optional, absolute position in quarter notes from part start for polyphony/chords)",
         }
 
         if self.config.include_articulation:
@@ -128,6 +134,17 @@ class SchemaGenerator:
             "duration": f"float (in {self.config.duration_unit.value}s)",
         }
 
+    def _measure_schema(self) -> dict[str, Any]:
+        """Schema for a measure (measure-based structure)."""
+        return {
+            "number": "int (measure number, 1-indexed)",
+            "time_signature": '{"numerator": int, "denominator": int} (optional override)',
+            "parts": "dict mapping part names to arrays of notes",
+            "dynamic": "string (optional - pp, p, mp, mf, f, ff, fff)",
+            "tempo": "int (optional tempo change for this measure)",
+            "key": '{"tonic": string, "mode": string} (optional key change)',
+        }
+
     def _part_schema(self) -> dict[str, Any]:
         """Schema for an instrument part."""
         return {
@@ -136,6 +153,8 @@ class SchemaGenerator:
             "midi_channel": "int (0-15, 10 reserved for percussion)",
             "role": "string - MUST be one of: 'melody', 'harmony', 'bass', 'accompaniment', 'countermelody', 'pad', 'percussion'",
             "notes": "array of Note objects",
+            "cc_events": "array of {controller (int), value (int), time (float)} - optional continuous controller events",
+            "sustain_pedal": "boolean - if true, auto-generates sustain pedal CC events for piano/keyboard parts",
         }
 
     def _constraints_schema(self) -> dict[str, Any]:

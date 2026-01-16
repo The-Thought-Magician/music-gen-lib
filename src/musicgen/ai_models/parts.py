@@ -6,7 +6,7 @@ from enum import Enum
 
 from pydantic import BaseModel, Field, field_validator
 
-from musicgen.ai_models.notes import AINote, AINoteEvent, AIRest
+from musicgen.ai_models.notes import AINote, AINoteEvent, AIRest, ControlChangeEvent, CC
 
 
 class InstrumentRole(str, Enum):
@@ -74,6 +74,18 @@ class AIPart(BaseModel):
         description="Default articulation for notes in this part"
     )
 
+    # Continuous Controller events for expression
+    cc_events: list[ControlChangeEvent | dict] = Field(
+        default_factory=list,
+        description="Continuous controller events for expression"
+    )
+
+    # Common shortcuts
+    sustain_pedal: bool = Field(
+        default=False,
+        description="Whether sustain pedal is used (auto-generates CC64 events)"
+    )
+
     @field_validator("notes", mode="before")
     @classmethod
     def validate_notes(cls, v: list) -> list:
@@ -118,3 +130,66 @@ class AIPart(BaseModel):
             n.duration if hasattr(n, "duration") else 0
             for n in self.get_note_events()
         )
+
+    def get_cc_events(self) -> list[ControlChangeEvent]:
+        """Get validated CC events.
+
+        Returns:
+            List of ControlChangeEvent objects
+        """
+        events = []
+        for cc in self.cc_events:
+            if isinstance(cc, dict):
+                events.append(ControlChangeEvent(**cc))
+            elif isinstance(cc, ControlChangeEvent):
+                events.append(cc)
+
+        # Auto-generate sustain pedal if requested
+        if self.sustain_pedal:
+            # Find if there are already sustain events
+            has_sustain = any(
+                (isinstance(cc, ControlChangeEvent) and cc.controller == CC.DAMPER_PEDAL) or
+                (isinstance(cc, dict) and cc.get("controller") == CC.DAMPER_PEDAL)
+                for cc in self.cc_events
+            )
+            if not has_sustain:
+                # Add sustain on at start, off at end
+                total_duration = self.duration_quarters
+                events.append(ControlChangeEvent(
+                    controller=CC.DAMPER_PEDAL,
+                    value=127,  # On
+                    time=0.0
+                ))
+                events.append(ControlChangeEvent(
+                    controller=CC.DAMPER_PEDAL,
+                    value=0,  # Off
+                    time=total_duration
+                ))
+
+        return sorted(events, key=lambda x: x.time)
+
+    def add_sustain_pedal(
+        self,
+        on_time: float = 0.0,
+        off_time: float | None = None
+    ) -> None:
+        """Add sustain pedal CC events.
+
+        Args:
+            on_time: When to press sustain (quarter notes)
+            off_time: When to release (None = end of part)
+        """
+        self.cc_events.append(ControlChangeEvent(
+            controller=CC.DAMPER_PEDAL,
+            value=127,  # On
+            time=on_time
+        ))
+
+        if off_time is None:
+            off_time = self.duration_quarters
+
+        self.cc_events.append(ControlChangeEvent(
+            controller=CC.DAMPER_PEDAL,
+            value=0,  # Off
+            time=off_time
+        ))

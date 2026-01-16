@@ -129,6 +129,53 @@ VALID PART ROLES (use exactly these values):
 - "percussion" - Percussion parts
 
 DO NOT combine roles (e.g., don't use "harmony_bass"). Use ONE valid role per part.
+
+POLYPHONY (Chords and Simultaneous Notes):
+You can create chords by setting the same start_time for multiple notes:
+- To play a C Major chord (C-E-G) at beat 1:
+  {{"note_name": "C4", "start_time": 0.0, "duration": 2.0, "velocity": 75}}
+  {{"note_name": "E4", "start_time": 0.0, "duration": 2.0, "velocity": 75}}
+  {{"note_name": "G4", "start_time": 0.0, "duration": 2.0, "velocity": 75}}
+
+- The start_time is the ABSOLUTE position in quarter notes from the part start
+- Notes with the same start_time play simultaneously (creating chords)
+- Notes with different start_times play sequentially
+- If start_time is omitted, notes play sequentially (one after another)
+
+Use polyphony for:
+- Piano chords and harmonies
+- String sections
+- Brass stabs
+- Any time multiple notes should sound together
+
+CONTINUOUS CONTROLLERS (Expression):
+For piano/keyboard parts, use sustain_pedal or add cc_events:
+- "sustain_pedal": true - Automatically adds sustain pedal (CC64) for the duration
+- Manual CC events: "cc_events": [{{"controller": 64, "value": 127, "time": 0}}, {{"controller": 64, "value": 0, "time": 32}}]
+
+Useful CC numbers:
+- 64: Sustain pedal (value 127=on, 0=off)
+- 11: Expression (0-127, for crescendo/decrescendo)
+- 7: Volume (0-127)
+- 10: Pan (0=center, 0=left, 127=right)
+- 1: Modulation/vibrato depth
+
+Example string swell with expression:
+"cc_events": [
+  {{"controller": 11, "value": 60, "time": 0}},   # Start quiet
+  {{"controller": 11, "value": 100, "time": 4}},  # Crescendo
+  {{"controller": 11, "value": 60, "time": 8}}    # Diminuendo
+]
+
+TEMPO AND TIME SIGNATURE CHANGES:
+You can change tempo and time signature during the piece:
+- "tempo_changes": [{{"time": 0, "bpm": 120}}, {{"time": 48, "bpm": 100}}, {{"time": 56, "bpm": 80}}]
+- "time_signature_changes": [{{"measure": 17, "numerator": 3, "denominator": 4}}, {{"measure": 33, "numerator": 4, "denominator": 4}}]
+
+Common patterns:
+- Ritardando (slow down): Gradually decrease BPM in tempo_changes
+- Accelerando (speed up): Gradually increase BPM
+- Time signature change: Switch to 3/4 for waltz section, then back to 4/4
 """
 
     def _build_user_prompt(self, user_prompt: str) -> str:

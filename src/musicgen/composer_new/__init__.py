@@ -13,6 +13,10 @@ from musicgen.composer_new.presets import (
     get_preset,
     list_presets,
 )
+from musicgen.composer_new.sectional import (
+    SectionalComposer,
+    generate_sectional,
+)
 
 __all__ = [
     "AIComposer",
@@ -24,4 +28,7 @@ __all__ = [
     "apply_modifier",
     "PRESETS",
     "MODIFIERS",
+    # Sectional composition
+    "SectionalComposer",
+    "generate_sectional",
 ]

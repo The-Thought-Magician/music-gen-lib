@@ -165,5 +165,68 @@ class AIRest(BaseModel):
     )
 
 
+class ControlChangeEvent(BaseModel):
+    """A MIDI Continuous Controller event for expression.
+
+    Used for dynamics, articulation, and other expressive controls.
+    """
+
+    controller: int = Field(
+        ...,
+        ge=0,
+        le=127,
+        description="MIDI CC number (64=sustain, 11=expression, 7=volume, 10=pan, etc.)"
+    )
+    value: int = Field(
+        ...,
+        ge=0,
+        le=127,
+        description="Controller value (0-127)"
+    )
+    time: float = Field(
+        default=0.0,
+        ge=0,
+        description="Time in quarter notes from part start"
+    )
+
+
+# Common CC constants
+class CC:
+    """MIDI Continuous Controller numbers."""
+
+    # Bank and Program
+    BANK_SELECT_MSB = 0
+    BANK_SELECT_LSB = 32
+    MODULATION = 1
+
+    # Channel
+    BREATH_CONTROLLER = 2
+    FOOT_CONTROLLER = 4
+    PORTAMENTO_TIME = 5
+    DATA_ENTRY_MSB = 7
+    VOLUME = 7
+    BALANCE = 8
+    PAN = 10
+    EXPRESSION = 11
+
+    # Effects
+    DAMPER_PEDAL = 64  # Sustain
+    PORTAMENTO = 65
+    SOSTENUTO = 66
+    SOFT_PEDAL = 67
+    HOLD_2 = 69
+
+    # Sound Control
+    SOUND_VARIATION = 70
+    TIMBRE = 71
+    RELEASE_TIME = 72
+    ATTACK_TIME = 73
+    BRIGHTNESS = 74
+    DECAY_TIME = 75
+    VIBRATO_RATE = 76
+    VIBRATO_DEPTH = 77
+    VIBRATO_DELAY = 78
+
+
 # Union type for note events
 AINoteEvent = Union[AINote, AIRest]
