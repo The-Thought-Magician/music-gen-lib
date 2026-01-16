@@ -136,7 +136,10 @@ class GeminiClient:
             InvalidResponseError: If response cannot be parsed.
         """
         # Build prompts
-        prompt_builder = PromptBuilder(system_instructions=system_instructions)
+        prompt_builder = PromptBuilder(
+            system_instructions=system_instructions,
+            tools=tools
+        )
         system_prompt, user_prompt = prompt_builder.build_prompt(prompt, schema)
 
         # Log the request
