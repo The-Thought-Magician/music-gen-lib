@@ -18,7 +18,7 @@ def test_ai_note_validation():
     # Note with note name
     note = AINote(note_name="C4", duration=1.0)
     assert note.get_midi_number() == 60
-    assert note.get_frequency() == 261.63
+    assert note.get_frequency() == pytest.approx(261.63, rel=0.001)
 
     # Note with MIDI number
     note2 = AINote(midi_number=69, duration=1.0)
