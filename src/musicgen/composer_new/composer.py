@@ -29,6 +29,7 @@ class AIComposer:
         max_tokens: int | None = None,
         schema_config: SchemaConfig | None = None,
         config: Config | None = None,
+        log_requests: bool = True,
     ):
         """Initialize the AI composer.
 
@@ -39,9 +40,11 @@ class AIComposer:
             max_tokens: Max output tokens (default: from config)
             schema_config: Optional schema configuration
             config: Optional config object
+            log_requests: Whether to log AI requests/responses to files
         """
         self.config = config or get_config()
         self.schema_config = schema_config
+        self.log_requests = log_requests
 
         # Initialize AI client
         self.client = GeminiClient(
@@ -50,6 +53,7 @@ class AIComposer:
             temperature=temperature,
             max_tokens=max_tokens,
             config=self.config,
+            log_requests=log_requests,
         )
 
         # Schema generator
