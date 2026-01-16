@@ -60,7 +60,7 @@ class AIComposer:
             log_requests: Whether to log AI requests/responses to files
             tools: Optional list of function declarations for tool calling.
                     If None and enable_tools is True, uses DEFAULT_COMPOSITION_TOOLS.
-            enable_tools: Whether to enable function calling tools (default: True)
+            enable_tools: Whether to enable function calling tools (default: False - experimental)
         """
         self.config = config or get_config()
         self.schema_config = schema_config

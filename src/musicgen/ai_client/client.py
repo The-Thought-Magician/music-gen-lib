@@ -253,8 +253,8 @@ class GeminiClient:
         if tools:
             kwargs["tools"] = tools
 
-        # Make the call
-        response = self.client.models.generate_content(**kwargs)
+        # Make the call - use client.generate_content() for tool support
+        response = self.client.generate_content(**kwargs)
 
         # Check for tool calls in response
         if hasattr(response, 'candidates') and response.candidates:
