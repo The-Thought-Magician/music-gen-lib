@@ -1,0 +1,1814 @@
+# Orchestral Instrument Definitions for V3 Music Generation System
+# This file defines all orchestral instruments with SFZ-specific properties,
+# including ranges, articulations, keyswitches, and dynamic layers.
+#
+# Structure based on V3-02 SFZ Instrument Definition Layer specification
+
+instruments:
+  # ============================================
+  # STRINGS FAMILY
+  # ============================================
+
+  violin_section:
+    name: "Violin Section"
+    family: "strings"
+    midi_program: 40
+    default_clef: "treble"
+    range:
+      min: 55  # G3
+      max: 123 # B7
+    dynamic_ranges:
+      ppp: {min: 60, max: 84}
+      pp:  {min: 55, max: 88}
+      p:   {min: 55, max: 96}
+      mp:  {min: 55, max: 103}
+      mf:  {min: 55, max: 110}
+      f:   {min: 55, max: 116}
+      ff:  {min: 55, max: 120}
+      fff: {min: 60, max: 123}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bowing, sustained notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.4
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      pizzicato:
+        keyswitch: 26
+        duration_mod: 0.3
+        velocity_mod: 1.2
+        description: "Plucked strings"
+      tremolo:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Rapid bow motion"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      spiccato:
+        keyswitch: 29
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Bounced bow"
+      sul_ponticello:
+        keyswitch: 30
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Bowing near bridge, metallic"
+      col_legno:
+        keyswitch: 31
+        duration_mod: 0.5
+        velocity_mod: 0.8
+        description: "With wood of the bow"
+      sforzando:
+        keyswitch: 32
+        duration_mod: 1.0
+        velocity_mod: 1.3
+        description: "Strong accent with immediate decay"
+      marcato:
+        keyswitch: 33
+        duration_mod: 0.8
+        velocity_mod: 1.2
+        description: "Strongly accented, detached"
+    sfz_file: "libraries/sso/strings/violin_section.sfz"
+    sfz_library: "sso"
+    midi_channel: 0
+
+  violin_solo:
+    name: "Violin Solo"
+    family: "strings"
+    midi_program: 40
+    default_clef: "treble"
+    range:
+      min: 55  # G3
+      max: 127 # G9
+    dynamic_ranges:
+      ppp: {min: 60, max: 84}
+      pp:  {min: 55, max: 88}
+      p:   {min: 55, max: 96}
+      mp:  {min: 55, max: 103}
+      mf:  {min: 55, max: 110}
+      f:   {min: 55, max: 116}
+      ff:  {min: 55, max: 120}
+      fff: {min: 60, max: 127}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bowing, sustained notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.35
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      pizzicato:
+        keyswitch: 26
+        duration_mod: 0.25
+        velocity_mod: 1.2
+        description: "Plucked strings"
+      tremolo:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Rapid bow motion"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      spiccato:
+        keyswitch: 29
+        duration_mod: 0.25
+        velocity_mod: 1.1
+        description: "Bounced bow"
+      sul_ponticello:
+        keyswitch: 30
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Bowing near bridge, metallic"
+      col_legno:
+        keyswitch: 31
+        duration_mod: 0.45
+        velocity_mod: 0.8
+        description: "With wood of the bow"
+      harmonics:
+        keyswitch: 32
+        duration_mod: 1.2
+        velocity_mod: 0.7
+        description: "Natural harmonics, ethereal"
+      sforzando:
+        keyswitch: 33
+        duration_mod: 1.0
+        velocity_mod: 1.3
+        description: "Strong accent with immediate decay"
+    sfz_file: "libraries/vpo/strings/violin_solo.sfz"
+    sfz_library: "vpo"
+    midi_channel: 1
+
+  viola_section:
+    name: "Viola Section"
+    family: "strings"
+    midi_program: 41
+    default_clef: "alto"
+    range:
+      min: 48  # C3
+      max: 110 # A6
+    dynamic_ranges:
+      ppp: {min: 52, max: 76}
+      pp:  {min: 48, max: 81}
+      p:   {min: 48, max: 88}
+      mp:  {min: 48, max: 96}
+      mf:  {min: 48, max: 103}
+      f:   {min: 48, max: 108}
+      ff:  {min: 48, max: 110}
+      fff: {min: 52, max: 110}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bowing, sustained notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.4
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      pizzicato:
+        keyswitch: 26
+        duration_mod: 0.3
+        velocity_mod: 1.2
+        description: "Plucked strings"
+      tremolo:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Rapid bow motion"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      spiccato:
+        keyswitch: 29
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Bounced bow"
+      sul_ponticello:
+        keyswitch: 30
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Bowing near bridge, metallic"
+      col_legno:
+        keyswitch: 31
+        duration_mod: 0.5
+        velocity_mod: 0.8
+        description: "With wood of the bow"
+    sfz_file: "libraries/sso/strings/viola_section.sfz"
+    sfz_library: "sso"
+    midi_channel: 2
+
+  viola_solo:
+    name: "Viola Solo"
+    family: "strings"
+    midi_program: 41
+    default_clef: "alto"
+    range:
+      min: 48  # C3
+      max: 116 # C7
+    dynamic_ranges:
+      ppp: {min: 52, max: 76}
+      pp:  {min: 48, max: 81}
+      p:   {min: 48, max: 88}
+      mp:  {min: 48, max: 96}
+      mf:  {min: 48, max: 103}
+      f:   {min: 48, max: 108}
+      ff:  {min: 48, max: 112}
+      fff: {min: 52, max: 116}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bowing, sustained notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.4
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      pizzicato:
+        keyswitch: 26
+        duration_mod: 0.3
+        velocity_mod: 1.2
+        description: "Plucked strings"
+      tremolo:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Rapid bow motion"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      spiccato:
+        keyswitch: 29
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Bounced bow"
+      sul_ponticello:
+        keyswitch: 30
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Bowing near bridge, metallic"
+    sfz_file: "libraries/vpo/strings/viola_solo.sfz"
+    sfz_library: "vpo"
+    midi_channel: 3
+
+  cello_section:
+    name: "Cello Section"
+    family: "strings"
+    midi_program: 42
+    default_clef: "bass"
+    range:
+      min: 36  # C2
+      max: 76  # E5
+    dynamic_ranges:
+      ppp: {min: 40, max: 52}
+      pp:  {min: 36, max: 57}
+      p:   {min: 36, max: 64}
+      mp:  {min: 36, max: 69}
+      mf:  {min: 36, max: 73}
+      f:   {min: 36, max: 76}
+      ff:  {min: 36, max: 76}
+      fff: {min: 40, max: 76}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bowing, sustained notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.45
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      pizzicato:
+        keyswitch: 26
+        duration_mod: 0.35
+        velocity_mod: 1.2
+        description: "Plucked strings"
+      tremolo:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Rapid bow motion"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      spiccato:
+        keyswitch: 29
+        duration_mod: 0.35
+        velocity_mod: 1.1
+        description: "Bounced bow"
+      sul_ponticello:
+        keyswitch: 30
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Bowing near bridge, metallic"
+      col_legno:
+        keyswitch: 31
+        duration_mod: 0.5
+        velocity_mod: 0.8
+        description: "With wood of the bow"
+    sfz_file: "libraries/sso/strings/cello_section.sfz"
+    sfz_library: "sso"
+    midi_channel: 4
+
+  cello_solo:
+    name: "Cello Solo"
+    family: "strings"
+    midi_program: 42
+    default_clef: "bass"
+    range:
+      min: 36  # C2
+      max: 82  # A5
+    dynamic_ranges:
+      ppp: {min: 40, max: 52}
+      pp:  {min: 36, max: 57}
+      p:   {min: 36, max: 64}
+      mp:  {min: 36, max: 71}
+      mf:  {min: 36, max: 76}
+      f:   {min: 36, max: 79}
+      ff:  {min: 36, max: 82}
+      fff: {min: 40, max: 82}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bowing, sustained notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.45
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      pizzicato:
+        keyswitch: 26
+        duration_mod: 0.35
+        velocity_mod: 1.2
+        description: "Plucked strings"
+      tremolo:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Rapid bow motion"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      spiccato:
+        keyswitch: 29
+        duration_mod: 0.35
+        velocity_mod: 1.1
+        description: "Bounced bow"
+      sul_ponticello:
+        keyswitch: 30
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Bowing near bridge, metallic"
+      harmonics:
+        keyswitch: 32
+        duration_mod: 1.2
+        velocity_mod: 0.7
+        description: "Natural harmonics, ethereal"
+    sfz_file: "libraries/vpo/strings/cello_solo.sfz"
+    sfz_library: "vpo"
+    midi_channel: 5
+
+  double_bass_section:
+    name: "Double Bass Section"
+    family: "strings"
+    midi_program: 43
+    default_clef: "bass"
+    range:
+      min: 28  # E1
+      max: 67  # G4
+    dynamic_ranges:
+      ppp: {min: 32, max: 45}
+      pp:  {min: 28, max: 50}
+      p:   {min: 28, max: 55}
+      mp:  {min: 28, max: 60}
+      mf:  {min: 28, max: 64}
+      f:   {min: 28, max: 67}
+      ff:  {min: 28, max: 67}
+      fff: {min: 32, max: 67}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bowing, sustained notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.5
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      pizzicato:
+        keyswitch: 26
+        duration_mod: 0.4
+        velocity_mod: 1.2
+        description: "Plucked strings (jazz standard)"
+      tremolo:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Rapid bow motion"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      spiccato:
+        keyswitch: 29
+        duration_mod: 0.4
+        velocity_mod: 1.1
+        description: "Bounced bow"
+      sul_ponticello:
+        keyswitch: 30
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Bowing near bridge, metallic"
+    sfz_file: "libraries/sso/strings/double_bass_section.sfz"
+    sfz_library: "sso"
+    midi_channel: 6
+
+  double_bass_solo:
+    name: "Double Bass Solo"
+    family: "strings"
+    midi_program: 43
+    default_clef: "bass"
+    range:
+      min: 28  # E1
+      max: 70  # Bb4
+    dynamic_ranges:
+      ppp: {min: 32, max: 45}
+      pp:  {min: 28, max: 50}
+      p:   {min: 28, max: 55}
+      mp:  {min: 28, max: 60}
+      mf:  {min: 28, max: 64}
+      f:   {min: 28, max: 67}
+      ff:  {min: 28, max: 70}
+      fff: {min: 32, max: 70}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bowing, sustained notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.5
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      pizzicato:
+        keyswitch: 26
+        duration_mod: 0.4
+        velocity_mod: 1.2
+        description: "Plucked strings"
+      tremolo:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Rapid bow motion"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      spiccato:
+        keyswitch: 29
+        duration_mod: 0.4
+        velocity_mod: 1.1
+        description: "Bounced bow"
+    sfz_file: "libraries/vpo/strings/double_bass_solo.sfz"
+    sfz_library: "vpo"
+    midi_channel: 7
+
+  harp:
+    name: "Harp"
+    family: "strings"
+    midi_program: 46
+    default_clef: "grand_staff"
+    range:
+      min: 23  # B0
+      max: 103 # G7
+    dynamic_ranges:
+      ppp: {min: 30, max: 60}
+      pp:  {min: 23, max: 72}
+      p:   {min: 23, max: 84}
+      mp:  {min: 23, max: 96}
+      mf:  {min: 23, max: 103}
+      f:   {min: 23, max: 103}
+      ff:  {min: 23, max: 103}
+      fff: {min: 30, max: 103}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal plucked notes"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Short, dry plucks"
+      harmonic:
+        keyswitch: 26
+        duration_mod: 1.5
+        velocity_mod: 0.6
+        description: "Harmonics, bell-like"
+      glissando:
+        keyswitch: 27
+        duration_mod: 0.8
+        velocity_mod: 0.9
+        description: "Sweeping across strings"
+      pres_de_la_table:
+        keyswitch: 28
+        duration_mod: 1.2
+        velocity_mod: 0.7
+        description: "Near soundboard, resonant"
+      xylophonique:
+        keyswitch: 29
+        duration_mod: 0.5
+        velocity_mod: 1.0
+        description: "Damped, percussive"
+    sfz_file: "libraries/vpo/strings/harp.sfz"
+    sfz_library: "vpo"
+    midi_channel: 8
+
+  # ============================================
+  # WOODWINDS FAMILY
+  # ============================================
+
+  piccolo:
+    name: "Piccolo"
+    family: "woodwinds"
+    midi_program: 71
+    default_clef: "treble"
+    range:
+      min: 74  # D5
+      max: 127 # G9
+    dynamic_ranges:
+      ppp: {min: 81, max: 96}
+      pp:  {min: 77, max: 103}
+      p:   {min: 74, max: 110}
+      mp:  {min: 74, max: 116}
+      mf:  {min: 74, max: 120}
+      f:   {min: 74, max: 124}
+      ff:  {min: 74, max: 127}
+      fff: {min: 81, max: 127}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal sustained tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.25
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      flutter_tongue:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter, texture"
+      trill:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Rapid alternation"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+    sfz_file: "libraries/vpo/woodwinds/piccolo.sfz"
+    sfz_library: "vpo"
+    midi_channel: 9
+
+  flute:
+    name: "Flute"
+    family: "woodwinds"
+    midi_program: 73
+    default_clef: "treble"
+    range:
+      min: 60  # C4
+      max: 96  # C7
+    dynamic_ranges:
+      ppp: {min: 67, max: 76}
+      pp:  {min: 64, max: 81}
+      p:   {min: 60, max: 88}
+      mp:  {min: 60, max: 92}
+      mf:  {min: 60, max: 96}
+      f:   {min: 60, max: 96}
+      ff:  {min: 60, max: 96}
+      fff: {min: 67, max: 96}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal sustained tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      flutter_tongue:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter, texture"
+      trill:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Rapid alternation"
+      legato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      vibrato:
+        keyswitch: 29
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Expressive vibrato"
+    sfz_file: "libraries/vpo/woodwinds/flute.sfz"
+    sfz_library: "vpo"
+    midi_channel: 10
+
+  oboe:
+    name: "Oboe"
+    family: "woodwinds"
+    midi_program: 74
+    default_clef: "treble"
+    range:
+      min: 58  # Bb3
+      max: 88  # E6
+    dynamic_ranges:
+      ppp: {min: 62, max: 72}
+      pp:  {min: 60, max: 76}
+      p:   {min: 58, max: 81}
+      mp:  {min: 58, max: 84}
+      mf:  {min: 58, max: 88}
+      f:   {min: 58, max: 88}
+      ff:  {min: 58, max: 88}
+      fff: {min: 62, max: 88}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal sustained tone, nasal"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.35
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      trill:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Rapid alternation"
+      vibrato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Expressive vibrato"
+    sfz_file: "libraries/vpo/woodwinds/oboe.sfz"
+    sfz_library: "vpo"
+    midi_channel: 11
+
+  english_horn:
+    name: "English Horn"
+    family: "woodwinds"
+    midi_program: 75
+    default_clef: "treble"
+    range:
+      min: 52  # E3
+      max: 76  # E5
+    dynamic_ranges:
+      ppp: {min: 55, max: 64}
+      pp:  {min: 53, max: 67}
+      p:   {min: 52, max: 71}
+      mp:  {min: 52, max: 74}
+      mf:  {min: 52, max: 76}
+      f:   {min: 52, max: 76}
+      ff:  {min: 52, max: 76}
+      fff: {min: 55, max: 76}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Warm, melancholic tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.35
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      trill:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Rapid alternation"
+      vibrato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Expressive vibrato"
+    sfz_file: "libraries/vpo/woodwinds/english_horn.sfz"
+    sfz_library: "vpo"
+    midi_channel: 12
+
+  clarinet:
+    name: "Clarinet (Bb)"
+    family: "woodwinds"
+    midi_program: 76
+    default_clef: "treble"
+    range:
+      min: 50  # D3
+      max: 94  # E6
+    dynamic_ranges:
+      ppp: {min: 55, max: 67}
+      pp:  {min: 52, max: 72}
+      p:   {min: 50, max: 79}
+      mp:  {min: 50, max: 85}
+      mf:  {min: 50, max: 90}
+      f:   {min: 50, max: 94}
+      ff:  {min: 50, max: 94}
+      fff: {min: 55, max: 94}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Warm, flexible tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      flutter_tongue:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter"
+      trill:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Rapid alternation"
+      slap:
+        keyswitch: 29
+        duration_mod: 0.2
+        velocity_mod: 1.3
+        description: "Jazz slap tongue, percussive"
+    sfz_file: "libraries/vpo/woodwinds/clarinet.sfz"
+    sfz_library: "vpo"
+    midi_channel: 13
+
+  bass_clarinet:
+    name: "Bass Clarinet"
+    family: "woodwinds"
+    midi_program: 77
+    default_clef: "treble"
+    range:
+      min: 38  # D2
+      max: 76  # E5
+    dynamic_ranges:
+      ppp: {min: 43, max: 50}
+      pp:  {min: 40, max: 55}
+      p:   {min: 38, max: 62}
+      mp:  {min: 38, max: 69}
+      mf:  {min: 38, max: 73}
+      f:   {min: 38, max: 76}
+      ff:  {min: 38, max: 76}
+      fff: {min: 43, max: 76}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Deep, rich tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.35
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      flutter_tongue:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter"
+    sfz_file: "libraries/vpo/woodwinds/bass_clarinet.sfz"
+    sfz_library: "vpo"
+    midi_channel: 14
+
+  bassoon:
+    name: "Bassoon"
+    family: "woodwinds"
+    midi_program: 78
+    default_clef: "bass"
+    range:
+      min: 34  # Bb1
+      max: 76  # E5
+    dynamic_ranges:
+      ppp: {min: 38, max: 48}
+      pp:  {min: 36, max: 53}
+      p:   {min: 34, max: 60}
+      mp:  {min: 34, max: 67}
+      mf:  {min: 34, max: 72}
+      f:   {min: 34, max: 76}
+      ff:  {min: 34, max: 76}
+      fff: {min: 38, max: 76}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Rich, reedy tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.35
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      staccatissimo:
+        keyswitch: 27
+        duration_mod: 0.2
+        velocity_mod: 1.15
+        description: "Very short, sharp"
+      vibrato:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Expressive vibrato"
+    sfz_file: "libraries/vpo/woodwinds/bassoon.sfz"
+    sfz_library: "vpo"
+    midi_channel: 15
+
+  contrabassoon:
+    name: "Contrabassoon"
+    family: "woodwinds"
+    midi_program: 79
+    default_clef: "bass"
+    range:
+      min: 28  # E1
+      max: 62  # D4
+    dynamic_ranges:
+      ppp: {min: 31, max: 38}
+      pp:  {min: 29, max: 43}
+      p:   {min: 28, max: 48}
+      mp:  {min: 28, max: 53}
+      mf:  {min: 28, max: 57}
+      f:   {min: 28, max: 62}
+      ff:  {min: 28, max: 62}
+      fff: {min: 31, max: 62}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Deep, rasping tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.4
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+    sfz_file: "libraries/vpo/woodwinds/contrabassoon.sfz"
+    sfz_library: "vpo"
+    midi_channel: 0
+
+  # ============================================
+  # BRASS FAMILY
+  # ============================================
+
+  trumpet_c:
+    name: "Trumpet in C"
+    family: "brass"
+    midi_program: 56
+    default_clef: "treble"
+    range:
+      min: 52  # E3
+      max: 83  # Bb5
+    dynamic_ranges:
+      ppp: {min: 58, max: 67}
+      pp:  {min: 55, max: 72}
+      p:   {min: 52, max: 76}
+      mp:  {min: 52, max: 79}
+      mf:  {min: 52, max: 81}
+      f:   {min: 52, max: 83}
+      ff:  {min: 52, max: 83}
+      fff: {min: 58, max: 83}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal sustained tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.3
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      mute:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Muted, softer tone"
+      flutter_tongue:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter"
+      fall:
+        keyswitch: 29
+        duration_mod: 0.8
+        velocity_mod: 1.0
+        description: "Pitch drop at end"
+      doits:
+        keyswitch: 30
+        duration_mod: 0.6
+        velocity_mod: 1.1
+        description: "Scoop up at end"
+    sfz_file: "libraries/vpo/brass/trumpet_c.sfz"
+    sfz_library: "vpo"
+    midi_channel: 1
+
+  trumpet_bb:
+    name: "Trumpet in Bb"
+    family: "brass"
+    midi_program: 56
+    default_clef: "treble"
+    range:
+      min: 54  # F#3
+      max: 85  # C6
+    dynamic_ranges:
+      ppp: {min: 60, max: 69}
+      pp:  {min: 57, max: 74}
+      p:   {min: 54, max: 78}
+      mp:  {min: 54, max: 81}
+      mf:  {min: 54, max: 83}
+      f:   {min: 54, max: 85}
+      ff:  {min: 54, max: 85}
+      fff: {min: 60, max: 85}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal sustained tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.3
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      mute:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Muted, softer tone"
+      flutter_tongue:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter"
+    sfz_file: "libraries/vpo/brass/trumpet_bb.sfz"
+    sfz_library: "vpo"
+    midi_channel: 2
+
+  french_horn:
+    name: "French Horn"
+    family: "brass"
+    midi_program: 60
+    default_clef: "treble"
+    range:
+      min: 34  # Bb1
+      max: 77  # F5
+    dynamic_ranges:
+      ppp: {min: 40, max: 55}
+      pp:  {min: 37, max: 62}
+      p:   {min: 34, max: 69}
+      mp:  {min: 34, max: 73}
+      mf:  {min: 34, max: 76}
+      f:   {min: 34, max: 77}
+      ff:  {min: 34, max: 77}
+      fff: {min: 40, max: 77}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Warm, noble tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.35
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      mute:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.8
+        description: "Stopped hand, metallic"
+      flutter_tongue:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter"
+      brassy:
+        keyswitch: 29
+        duration_mod: 1.0
+        velocity_mod: 1.1
+        description: "Bright, aggressive"
+    sfz_file: "libraries/vpo/brass/french_horn.sfz"
+    sfz_library: "vpo"
+    midi_channel: 3
+
+  trombone:
+    name: "Trombone"
+    family: "brass"
+    midi_program: 57
+    default_clef: "bass"
+    range:
+      min: 34  # Bb1
+      max: 76  # E5
+    dynamic_ranges:
+      ppp: {min: 40, max: 52}
+      pp:  {min: 37, max: 58}
+      p:   {min: 34, max: 65}
+      mp:  {min: 34, max: 70}
+      mf:  {min: 34, max: 73}
+      f:   {min: 34, max: 76}
+      ff:  {min: 34, max: 76}
+      fff: {min: 40, max: 76}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal sustained tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.35
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      mute:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.85
+        description: "Muted, softer tone"
+      flutter_tongue:
+        keyswitch: 28
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter"
+      fall:
+        keyswitch: 29
+        duration_mod: 0.8
+        velocity_mod: 1.0
+        description: "Pitch drop at end"
+      growl:
+        keyswitch: 30
+        duration_mod: 1.0
+        velocity_mod: 1.1
+        description: "Rough, aggressive"
+    sfz_file: "libraries/vpo/brass/trombone.sfz"
+    sfz_library: "vpo"
+    midi_channel: 4
+
+  bass_trombone:
+    name: "Bass Trombone"
+    family: "brass"
+    midi_program: 57
+    default_clef: "bass"
+    range:
+      min: 34  # Bb1
+      max: 73  # D5
+    dynamic_ranges:
+      ppp: {min: 38, max: 50}
+      pp:  {min: 36, max: 55}
+      p:   {min: 34, max: 62}
+      mp:  {min: 34, max: 67}
+      mf:  {min: 34, max: 70}
+      f:   {min: 34, max: 73}
+      ff:  {min: 34, max: 73}
+      fff: {min: 38, max: 73}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Deep, powerful tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.4
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      flutter_tongue:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter"
+    sfz_file: "libraries/vpo/brass/bass_trombone.sfz"
+    sfz_library: "vpo"
+    midi_channel: 5
+
+  tuba:
+    name: "Tuba"
+    family: "brass"
+    midi_program: 58
+    default_clef: "bass"
+    range:
+      min: 28  # E1
+      max: 64  # E4
+    dynamic_ranges:
+      ppp: {min: 32, max: 40}
+      pp:  {min: 30, max: 45}
+      p:   {min: 28, max: 52}
+      mp:  {min: 28, max: 57}
+      mf:  {min: 28, max: 60}
+      f:   {min: 28, max: 64}
+      ff:  {min: 28, max: 64}
+      fff: {min: 32, max: 64}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Deep, powerful tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.4
+        velocity_mod: 1.15
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      flutter_tongue:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.9
+        description: "Rapid tongue flutter"
+    sfz_file: "libraries/vpo/brass/tuba.sfz"
+    sfz_library: "vpo"
+    midi_channel: 6
+
+  # ============================================
+  # PERCUSSION FAMILY (Pitched)
+  # ============================================
+
+  timpani:
+    name: "Timpani"
+    family: "percussion"
+    midi_program: 47
+    default_clef: "bass"
+    range:
+      min: 36  # C2
+      max: 52  # E3
+    dynamic_ranges:
+      ppp: {min: 38, max: 43}
+      pp:  {min: 36, max: 45}
+      p:   {min: 36, max: 48}
+      mp:  {min: 36, max: 50}
+      mf:  {min: 36, max: 52}
+      f:   {min: 36, max: 52}
+      ff:  {min: 36, max: 52}
+      fff: {min: 38, max: 52}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal roll"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.5
+        velocity_mod: 1.2
+        description: "Single stroke"
+      roll:
+        keyswitch: 26
+        duration_mod: 1.5
+        velocity_mod: 1.1
+        description: "Sustained roll"
+      chord:
+        keyswitch: 27
+        duration_mod: 0.8
+        velocity_mod: 1.15
+        description: "Two drums simultaneously"
+    sfz_file: "libraries/vpo/percussion/timpani.sfz"
+    sfz_library: "vpo"
+    midi_channel: 7
+
+  glockenspiel:
+    name: "Glockenspiel"
+    family: "percussion"
+    midi_program: 9
+    default_clef: "treble"
+    range:
+      min: 84  # C6
+      max: 108 # C8
+    dynamic_ranges:
+      ppp: {min: 88, max: 100}
+      pp:  {min: 86, max: 103}
+      p:   {min: 84, max: 105}
+      mp:  {min: 84, max: 107}
+      mf:  {min: 84, max: 108}
+      f:   {min: 84, max: 108}
+      ff:  {min: 84, max: 108}
+      fff: {min: 88, max: 108}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bell tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Short, dry stroke"
+      roll:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 1.05
+        description: "Rapid repeated strokes"
+    sfz_file: "libraries/vpo/percussion/glockenspiel.sfz"
+    sfz_library: "vpo"
+    midi_channel: 8
+
+  xylophone:
+    name: "Xylophone"
+    family: "percussion"
+    midi_program: 13
+    default_clef: "treble"
+    range:
+      min: 60  # C4
+      max: 96  # C7
+    dynamic_ranges:
+      ppp: {min: 64, max: 84}
+      pp:  {min: 62, max: 88}
+      p:   {min: 60, max: 91}
+      mp:  {min: 60, max: 94}
+      mf:  {min: 60, max: 96}
+      f:   {min: 60, max: 96}
+      ff:  {min: 60, max: 96}
+      fff: {min: 64, max: 96}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal wooden tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.25
+        velocity_mod: 1.1
+        description: "Short, dry stroke"
+      roll:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 1.05
+        description: "Rapid repeated strokes"
+    sfz_file: "libraries/vpo/percussion/xylophone.sfz"
+    sfz_library: "vpo"
+    midi_channel: 9
+
+  marimba:
+    name: "Marimba"
+    family: "percussion"
+    midi_program: 12
+    default_clef: "treble"
+    range:
+      min: 48  # C3
+      max: 84  # C6
+    dynamic_ranges:
+      ppp: {min: 52, max: 72}
+      pp:  {min: 50, max: 76}
+      p:   {min: 48, max: 79}
+      mp:  {min: 48, max: 82}
+      mf:  {min: 48, max: 84}
+      f:   {min: 48, max: 84}
+      ff:  {min: 48, max: 84}
+      fff: {min: 52, max: 84}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal warm tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Short, dry stroke"
+      roll:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 1.05
+        description: "Rapid repeated strokes"
+      hard_mallet:
+        keyswitch: 27
+        duration_mod: 0.9
+        velocity_mod: 1.15
+        description: "Brighter, harder attack"
+    sfz_file: "libraries/vpo/percussion/marimba.sfz"
+    sfz_library: "vpo"
+    midi_channel: 10
+
+  vibraphone:
+    name: "Vibraphone"
+    family: "percussion"
+    midi_program: 11
+    default_clef: "treble"
+    range:
+      min: 48  # C3
+      max: 79  # G5
+    dynamic_ranges:
+      ppp: {min: 52, max: 69}
+      pp:  {min: 50, max: 72}
+      p:   {min: 48, max: 75}
+      mp:  {min: 48, max: 77}
+      mf:  {min: 48, max: 79}
+      f:   {min: 48, max: 79}
+      ff:  {min: 48, max: 79}
+      fff: {min: 52, max: 79}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal metallic tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.4
+        velocity_mod: 1.1
+        description: "Short, dry stroke"
+      roll:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 1.05
+        description: "Rapid repeated strokes"
+      motor_on:
+        keyswitch: 27
+        duration_mod: 1.5
+        velocity_mod: 0.95
+        description: "Vibrato motor engaged"
+    sfz_file: "libraries/vpo/percussion/vibraphone.sfz"
+    sfz_library: "vpo"
+    midi_channel: 11
+
+  celesta:
+    name: "Celesta"
+    family: "percussion"
+    midi_program: 8
+    default_clef: "treble"
+    range:
+      min: 60  # C4
+      max: 96  # C7
+    dynamic_ranges:
+      ppp: {min: 64, max: 84}
+      pp:  {min: 62, max: 88}
+      p:   {min: 60, max: 91}
+      mp:  {min: 60, max: 94}
+      mf:  {min: 60, max: 96}
+      f:   {min: 60, max: 96}
+      ff:  {min: 60, max: 96}
+      fff: {min: 64, max: 96}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal bell-like tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.3
+        velocity_mod: 1.1
+        description: "Short, dry stroke"
+    sfz_file: "libraries/vpo/percussion/celesta.sfz"
+    sfz_library: "vpo"
+    midi_channel: 12
+
+  tubular_bells:
+    name: "Tubular Bells (Chimes)"
+    family: "percussion"
+    midi_program: 14
+    default_clef: "treble"
+    range:
+      min: 48  # C3
+      max: 77  # F5
+    dynamic_ranges:
+      ppp: {min: 53, max: 67}
+      pp:  {min: 50, max: 70}
+      p:   {min: 48, max: 73}
+      mp:  {min: 48, max: 75}
+      mf:  {min: 48, max: 77}
+      f:   {min: 48, max: 77}
+      ff:  {min: 48, max: 77}
+      fff: {min: 53, max: 77}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal resonant tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.5
+        velocity_mod: 1.1
+        description: "Dampened stroke"
+    sfz_file: "libraries/vpo/percussion/tubular_bells.sfz"
+    sfz_library: "vpo"
+    midi_channel: 13
+
+  # ============================================
+  # KEYBOARDS FAMILY
+  # ============================================
+
+  piano:
+    name: "Piano"
+    family: "keyboards"
+    midi_program: 0
+    default_clef: "grand_staff"
+    range:
+      min: 21  # A0
+      max: 108 # C8
+    dynamic_ranges:
+      ppp: {min: 21, max: 108}
+      pp:  {min: 21, max: 108}
+      p:   {min: 21, max: 108}
+      mp:  {min: 21, max: 108}
+      mf:  {min: 21, max: 108}
+      f:   {min: 21, max: 108}
+      ff:  {min: 21, max: 108}
+      fff: {min: 21, max: 108}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal piano tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.4
+        velocity_mod: 1.1
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      una_corda:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 0.8
+        description: "Soft pedal, softer tone"
+      sustain_pedal:
+        keyswitch: 28
+        duration_mod: 1.3
+        velocity_mod: 1.0
+        description: "Damper pedal engaged"
+    sfz_file: "libraries/salamander/piano.sfz"
+    sfz_library: "custom"
+    midi_channel: 14
+
+  harpsichord:
+    name: "Harpsichord"
+    family: "keyboards"
+    midi_program: 6
+    default_clef: "grand_staff"
+    range:
+      min: 21  # A0
+      max: 108 # C8
+    dynamic_ranges:
+      ppp: {min: 21, max: 108}
+      pp:  {min: 21, max: 108}
+      p:   {min: 21, max: 108}
+      mp:  {min: 21, max: 108}
+      mf:  {min: 21, max: 108}
+      f:   {min: 21, max: 108}
+      ff:  {min: 21, max: 108}
+      fff: {min: 21, max: 108}
+    articulations:
+      sustain:
+        keyswitch: 24
+        duration_mod: 1.0
+        velocity_mod: 1.0
+        description: "Normal plucked tone"
+      staccato:
+        keyswitch: 25
+        duration_mod: 0.35
+        velocity_mod: 1.05
+        description: "Short, detached notes"
+      legato:
+        keyswitch: 26
+        duration_mod: 1.0
+        velocity_mod: 0.95
+        description: "Smooth, connected notes"
+      coupler:
+        keyswitch: 27
+        duration_mod: 1.0
+        velocity_mod: 1.15
+        description: "Additional manual, richer"
+    sfz_file: "libraries/vpo/keyboards/harpsichord.sfz"
+    sfz_library: "vpo"
+    midi_channel: 15
+
+# ============================================
+# ENSEMBLE DEFINITIONS
+# ============================================
+
+ensembles:
+  string_quartet:
+    name: "String Quartet"
+    description: "Standard string quartet: 2 violins, viola, cello"
+    instruments:
+      - violin_solo      # Violin I
+      - violin_solo      # Violin II
+      - viola_solo       # Viola
+      - cello_solo       # Cello
+
+  string_orchestra:
+    name: "String Orchestra"
+    description: "Full string section with divisi"
+    instruments:
+      - violin_section   # Violins I
+      - violin_section   # Violins II
+      - viola_section    # Violas
+      - cello_section    # Cellos
+      - double_bass_section # Basses
+      - harp             # Harp (optional)
+
+  woodwind_quintet:
+    name: "Woodwind Quintet"
+    description: "Standard woodwind quintet"
+    instruments:
+      - flute            # Flute
+      - oboe             # Oboe
+      - clarinet         # Clarinet
+      - bassoon          # Bassoon
+      - french_horn      # French Horn
+
+  brass_quintet:
+    name: "Brass Quintet"
+    description: "Standard brass quintet"
+    instruments:
+      - trumpet_c        # Trumpet I
+      - trumpet_c        # Trumpet II
+      - french_horn      # French Horn
+      - trombone         # Trombone
+      - tuba             # Tuba
+
+  chamber_orchestra:
+    name: "Chamber Orchestra"
+    description: "Small orchestra with reduced forces"
+    instruments:
+      # Strings (single desks)
+      - violin_solo      # Violins I
+      - violin_solo      # Violins II
+      - viola_solo       # Violas
+      - cello_solo       # Cellos
+      - double_bass_solo # Basses
+      # Woodwinds (pairs)
+      - flute
+      - oboe
+      - clarinet
+      - bassoon
+      # Brass (singles)
+      - french_horn
+      - trumpet_c
+      # Keyboards
+      - harp
+
+  full_orchestra:
+    name: "Full Orchestra"
+    description: "Complete symphony orchestra"
+    instruments:
+      # Strings (full sections)
+      - violin_section   # Violins I (8-12 players)
+      - violin_section   # Violins II (6-8 players)
+      - viola_section    # Violas (4-6 players)
+      - cello_section    # Cellos (4-6 players)
+      - double_bass_section # Basses (3-5 players)
+      - harp             # Harp
+      # Woodwinds (2 of each)
+      - flute            # Flute I
+      - flute            # Flute II
+      - piccolo          # Piccolo (doubling)
+      - oboe             # Oboe I
+      - oboe             # Oboe II
+      - english_horn     # English Horn (doubling)
+      - clarinet         # Clarinet I
+      - clarinet         # Clarinet II
+      - bass_clarinet    # Bass Clarinet (doubling)
+      - bassoon          # Bassoon I
+      - bassoon          # Bassoon II
+      - contrabassoon    # Contrabassoon (doubling)
+      # Brass (4 horns, 3 trumpets, 3 trombones, tuba)
+      - french_horn      # Horn I
+      - french_horn      # Horn II
+      - french_horn      # Horn III
+      - french_horn      # Horn IV
+      - trumpet_c        # Trumpet I
+      - trumpet_c        # Trumpet II
+      - trumpet_bb       # Trumpet III
+      - trombone         # Trombone I
+      - trombone         # Trombone II
+      - bass_trombone    # Bass Trombone
+      - tuba             # Tuba
+      # Percussion (timpani + pitched)
+      - timpani          # Timpani
+      - glockenspiel     # Glockenspiel
+      - xylophone        # Xylophone
+      - marimba          # Marimba
+      - vibraphone       # Vibraphone
+      - celesta          # Celesta
+      - tubular_bells    # Chimes
+      # Keyboards
+      - piano            # Piano (optional)
+
+  symphony_orchestra:
+    name: "Symphony Orchestra"
+    description: "Large symphony orchestra with maximum forces"
+    instruments:
+      # Strings (large sections)
+      - violin_section   # Violins I (14-18 players)
+      - violin_section   # Violins II (12-14 players)
+      - viola_section    # Violas (10-12 players)
+      - cello_section    # Cellos (10-12 players)
+      - double_bass_section # Basses (8-10 players)
+      - harp             # Harp I
+      - harp             # Harp II
+      # Woodwinds (3-4 of each)
+      - piccolo          # Piccolo
+      - flute            # Flute I
+      - flute            # Flute II
+      - flute            # Flute III (doubling piccolo)
+      - oboe             # Oboe I
+      - oboe             # Oboe II
+      - english_horn     # English Horn I
+      - english_horn     # English Horn II
+      - clarinet         # Clarinet I
+      - clarinet         # Clarinet II
+      - bass_clarinet    # Bass Clarinet
+      - bassoon          # Bassoon I
+      - bassoon          # Bassoon II
+      - contrabassoon    # Contrabassoon
+      # Brass (4-8 horns, 3-4 trumpets, 3 trombones, tuba)
+      - french_horn      # Horn I
+      - french_horn      # Horn II
+      - french_horn      # Horn III
+      - french_horn      # Horn IV
+      - trombone         # Trombone I
+      - trombone         # Trombone II
+      - trombone         # Trombone III (bass)
+      - tuba             # Tuba
+      - trumpet_c        # Trumpet I
+      - trumpet_c        # Trumpet II
+      - trumpet_bb       # Trumpet III
+      # Percussion (full section)
+      - timpani          # Timpani (4-5 drums)
+      - glockenspiel     # Glockenspiel
+      - xylophone        # Xylophone
+      - marimba          # Marimba
+      - vibraphone       # Vibraphone
+      - celesta          # Celesta
+      - tubular_bells    # Chimes
+      # Keyboards
+      - piano            # Piano
+      - harpsichord      # Harpsichord (baroque repertoire)
+
+  wind_ensemble:
+    name: "Wind Ensemble"
+    description: "Concert band without strings"
+    instruments:
+      # Woodwinds
+      - piccolo          # Piccolo
+      - flute            # Flute I
+      - flute            # Flute II
+      - oboe             # Oboe I
+      - oboe             # Oboe II
+      - english_horn     # English Horn
+      - clarinet         # Clarinet I
+      - clarinet         # Clarinet II
+      - bass_clarinet    # Bass Clarinet
+      - bassoon          # Bassoon I
+      - bassoon          # Bassoon II
+      - contrabassoon    # Contrabassoon
+      # Brass
+      - trumpet_c        # Trumpet I
+      - trumpet_c        # Trumpet II
+      - trumpet_bb       # Trumpet III
+      - french_horn      # Horn I
+      - french_horn      # Horn II
+      - trombone         # Trombone I
+      - trombone         # Trombone II
+      - bass_trombone    # Bass Trombone
+      - tuba             # Tuba
+      # Percussion
+      - timpani
+      - glockenspiel
+      - xylophone
+      - marimba
+      - vibraphone
+      - tubular_bells
+
+  early_music_ensemble:
+    name: "Early Music Ensemble"
+    description: "Baroque/classical period orchestra"
+    instruments:
+      # Strings (smaller forces)
+      - violin_solo      # Violins I
+      - violin_solo      # Violins II
+      - viola_solo       # Violas
+      - cello_solo       # Cellos
+      - double_bass_solo # Basses (continuo)
+      # Woodwinds (pairs)
+      - flute
+      - oboe
+      - bassoon
+      # Brass (natural horns/trumpets)
+      - french_horn      # Natural Horn I
+      - french_horn      # Natural Horn II
+      # Keyboards (continuo)
+      - harpsichord      # Basso continuo
