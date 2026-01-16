@@ -30,6 +30,7 @@ class AINote(BaseModel):
     # Pitch (one of these must be provided)
     note_name: str | None = Field(
         None,
+        alias="pitch",
         description="Note name with octave, e.g., 'C4', 'Ab3', 'F#5'",
         pattern=r"^[A-G][#b]?[0-8]$"
     )

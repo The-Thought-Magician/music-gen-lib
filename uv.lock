@@ -926,6 +926,7 @@ dependencies = [
     { name = "numpy", version = "2.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' and sys_platform == 'linux'" },
     { name = "pretty-midi", marker = "sys_platform == 'linux'" },
     { name = "pydantic", marker = "sys_platform == 'linux'" },
+    { name = "pydub", marker = "sys_platform == 'linux'" },
     { name = "python-dotenv", marker = "sys_platform == 'linux'" },
     { name = "pyyaml", marker = "sys_platform == 'linux'" },
 ]
@@ -986,6 +987,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.24" },
     { name = "pretty-midi", specifier = ">=0.2" },
     { name = "pydantic", specifier = ">=2.0" },
+    { name = "pydub", specifier = ">=0.25.1" },
     { name = "pydub", marker = "extra == 'audio'", specifier = ">=0.25.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },

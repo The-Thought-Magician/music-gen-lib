@@ -46,7 +46,7 @@ class AIComposer:
         config: Config | None = None,
         log_requests: bool = True,
         tools: list[FunctionDeclaration] | None = None,
-        enable_tools: bool = True,
+        enable_tools: bool = False,
     ):
         """Initialize the AI composer.
 

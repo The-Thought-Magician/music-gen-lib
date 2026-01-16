@@ -243,6 +243,10 @@ class GeminiClient:
         if self.max_tokens is not None:
             config_dict["max_output_tokens"] = self.max_tokens
 
+        # Add tools if provided - tools go in the config for the Google GenAI SDK
+        if tools:
+            config_dict["tools"] = [types.Tool(**tools)]
+
         generation_config = types.GenerateContentConfig(**config_dict)
 
         # Build kwargs for API call
@@ -252,12 +256,8 @@ class GeminiClient:
             "config": generation_config,
         }
 
-        # Add tools if provided
-        if tools:
-            kwargs["tools"] = tools
-
-        # Make the call - use client.generate_content() for tool support
-        response = self.client.generate_content(**kwargs)
+        # Make the call - use client.models.generate_content() for tool support
+        response = self.client.models.generate_content(**kwargs)
 
         # Check for tool calls in response
         if hasattr(response, 'candidates') and response.candidates:
@@ -304,12 +304,27 @@ class GeminiClient:
 
         # Parse JSON
         try:
-            return json.loads(cleaned)
+            parsed = json.loads(cleaned)
         except json.JSONDecodeError as e:
             raise InvalidResponseError(
                 f"Failed to parse JSON response: {e}\n\nResponse was:\n{response[:500]}...",
                 cause=e
             )
+
+        # Handle nested composition structure - if response has a 'composition' key,
+        # unwrap it to match the AIComposition model structure
+        if isinstance(parsed, dict) and "composition" in parsed:
+            composition_data = parsed.get("composition", {})
+            # Merge top-level metadata with composition data
+            if isinstance(composition_data, dict):
+                result = {**composition_data}
+                # Preserve certain top-level metadata if not in composition
+                for key in ["version", "description", "note_format", "duration_unit", "pitch_representation"]:
+                    if key in parsed:
+                        result[key] = parsed[key]
+                return result
+
+        return parsed
 
     def _clean_json_response(self, response: str) -> str:
         """Clean response text to extract JSON.

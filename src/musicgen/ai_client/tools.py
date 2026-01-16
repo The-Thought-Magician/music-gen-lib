@@ -91,7 +91,8 @@ def create_chord_tool() -> FunctionDeclaration:
                 "inversion": {
                     "type": "integer",
                     "description": "Chord inversion (0=root position, 1=first, 2=second)",
-                    "enum": [0, 1, 2],
+                    "minimum": 0,
+                    "maximum": 2,
                 },
                 "duration": {
                     "type": "number",
@@ -343,8 +344,9 @@ def create_section_tool() -> FunctionDeclaration:
                 },
                 "time_signature_denominator": {
                     "type": "integer",
-                    "description": "Bottom number of time signature (optional)",
-                    "enum": [2, 4, 8, 16],
+                    "description": "Bottom number of time signature (optional, 2/4/8/16)",
+                    "minimum": 2,
+                    "maximum": 16,
                 },
                 "dynamic_level": {
                     "type": "string",
