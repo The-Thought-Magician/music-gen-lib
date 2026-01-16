@@ -181,3 +181,9 @@ target-version = ["py310", "py311", "py312"]
 [tool.uv]
 # Only resolve for the current Python version to avoid abjad Python <3.12 constraint issues
 environments = ["sys_platform == 'linux'"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+]

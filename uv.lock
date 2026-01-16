@@ -972,6 +972,12 @@ lilypond = [
     { name = "abjad", marker = "python_full_version < '3.12' and sys_platform == 'linux'" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "pytest", marker = "sys_platform == 'linux'" },
+    { name = "pytest-cov", marker = "sys_platform == 'linux'" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "abjad", marker = "python_full_version < '3.12' and extra == 'lilypond'", specifier = ">=3.0" },
@@ -999,6 +1005,12 @@ requires-dist = [
     { name = "sphinx-rtd-theme", marker = "extra == 'dev'", specifier = ">=1.0" },
 ]
 provides-extras = ["dev", "audio", "lilypond", "ai", "all"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "pytest-cov", specifier = ">=7.0.0" },
+]
 
 [[package]]
 name = "mypy"
