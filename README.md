@@ -1,21 +1,21 @@
-# Music Generation Library
+# MusicGen
 
-A Python library for rule-based orchestral music generation using traditional music theory principles.
+**MusicGen** is a Python library for AI-powered orchestral music generation. Using Google's Gemini AI, it transforms natural language descriptions into complete musical compositions with proper voice leading, orchestration, and structure.
 
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)]()
-[![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen)]()
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue)]()
-[![License](https://img.shields.io/badge/license-MIT-blue)]()
+## What This Project Is Achieving
+
+The goal of MusicGen is to make orchestral music composition accessible through natural language. By describing what you want—"a heroic battle theme," "a peaceful piano melody in G major," or "a jazz trio piece"—you get a complete composition with multiple instrument parts, proper harmony, and realistic musical structure. The library handles the complex music theory behind voice leading, chord progressions, orchestration, and formal structure, while you focus on the creative vision.
 
 ## Features
 
-- **Music Theory Foundation**: Complete implementation of scales, keys, chords, and progressions
-- **Melody Generation**: Rule-based melody creation with motivic development
-- **Orchestration**: Support for orchestral instruments with realistic ranges
-- **Export Formats**: MIDI, WAV, FLAC, MusicXML, and PDF (LilyPond)
-- **Mood-Based**: Generate music based on mood presets (epic, peaceful, mysterious, etc.)
-- **Voice Leading**: Classical counterpoint rules for smooth part writing
-- **Musical Forms**: Binary, ternary, rondo, and sonata form structures
+- **AI-Powered Composition**: Uses Google Gemini 2.5 Pro for intelligent music generation
+- **Natural Language Interface**: Describe music in plain English—no music theory knowledge required
+- **Full Orchestration Support**: Generates realistic multi-instrument arrangements
+- **Proper Voice Leading**: Classical counterpoint rules for smooth, musical part writing
+- **Multiple Output Formats**: MIDI, WAV, MP3, and JSON export
+- **Musical Form Support**: Handles binary, ternary, rondo, and sonata forms
+- **Dynamic Expression**: Includes tempo changes, key changes, and dynamic markings
+- **Quality Validation**: Ensures generated compositions meet minimum duration and note count requirements
 
 ## Installation
 
@@ -23,179 +23,148 @@ A Python library for rule-based orchestral music generation using traditional mu
 pip install musicgen
 ```
 
-For development:
+For development with all dependencies:
 
 ```bash
 git clone https://github.com/musicgen/music-gen-lib.git
 cd music-gen-lib
-pip install -e ".[dev]"
+uv sync
 ```
+
+### Requirements
+
+- Python 3.10+
+- Google API key (set `GOOGLE_API_KEY` environment variable)
+- Optional: FluidSynth for audio synthesis
 
 ## Quick Start
 
-```python
-from musicgen import generate, CompositionRequest
+### Command Line
 
-# Generate music based on mood
-request = CompositionRequest(
-    mood="peaceful",
-    duration=60,
-    title="Peaceful Morning"
-)
-
-result = generate(request)
-
-print(f"Generated: {result.midi_path}")
-```
-
-## Basic Usage
-
-### Creating Notes and Scales
-
-```python
-from musicgen import Note, Scale, Chord, MAJOR
-
-# Create notes
-note = Note("C4", duration=1.0, velocity=90)
-print(f"MIDI: {note.midi_number}, Freq: {note.frequency:.2f}Hz")
-
-# Create scales
-scale = Scale("C", "major")
-print(f"Notes: {scale.notes}")
-
-# Get scale degrees
-tonic = scale.get_degree(1)  # C
-dominant = scale.get_degree(5)  # G
-```
-
-### Creating Chord Progressions
-
-```python
-from musicgen import Progression, Key
-
-key = Key("C", "major")
-
-# From Roman numerals
-prog = Progression.from_roman("I-IV-V-I", key="C")
-for chord in prog.chords:
-    print(f"{chord.root_name} {chord.quality}")
-```
-
-### Generating Melodies
-
-```python
-from musicgen import MelodyGenerator, MelodicContour
-
-scale = Scale("D", "minor")
-key = Key("D", "minor")
-
-generator = MelodyGenerator(scale, key, tempo=120)
-melody = generator.generate_melody(
-    contour=MelodicContour.ARCH,
-    motivic_unity=0.8
-)
-```
-
-### Exporting Music
-
-```python
-from musicgen import MIDIWriter, Score, Part
-
-# Create a score
-score = Score()
-part = Part(name="violin")
-part.notes = melody.notes
-score.add_part(part)
-
-# Export to MIDI
-MIDIWriter.write(score, "output.mid")
-```
-
-## Mood Presets
-
-| Mood | Key | Scale | Tempo | Style |
-|------|-----|-------|-------|-------|
-| `epic` | D minor | Harmonic minor | 120-140 | Grand, orchestral |
-| `peaceful` | G major | Major | 60-80 | Gentle, flowing |
-| `mysterious` | D minor | Harmonic minor | 80-100 | Dark, enigmatic |
-| `triumphant` | C major | Major | 110-130 | Bold, celebratory |
-| `melancholic` | A minor | Natural minor | 60-80 | Sad, reflective |
-| `playful` | G major | Major pentatonic | 100-120 | Light, bouncy |
-| `romantic` | F major | Major | 70-90 | Warm, expressive |
-| `tense` | C minor | Harmonic minor | 90-110 | Dramatic, anxious |
-
-## Command Line Interface
+Generate a composition from a natural language prompt:
 
 ```bash
-# Generate music by mood
-python -m musicgen generate --mood epic --duration 60
+# Set your API key first
+export GOOGLE_API_KEY="your-api-key-here"
 
-# List available moods
-python -m musicgen list-moods
+# Generate music
+musicgen compose "A heroic battle theme" --format midi mp3
 
-# Specify output directory
-python -m musicgen generate --mood peaceful --output-dir ./music
+# Use a preset
+musicgen compose --preset epic_orchestral --format midi wav mp3
+
+# List available presets
+musicgen presets list
+```
+
+### Python API
+
+```python
+from musicgen.composer_new import AIComposer
+
+# Initialize composer
+composer = AIComposer()
+
+# Generate from natural language
+composition = composer.generate(
+    "A peaceful piano melody in C major with gentle arpeggios"
+)
+
+# Export to files
+from musicgen.renderer import Renderer
+renderer = Renderer(output_dir="output")
+renderer.render(composition, formats=["midi", "mp3"])
+
+# Access composition details
+print(f"Title: {composition.title}")
+print(f"Key: {composition.key}")
+print(f"Tempo: {composition.tempo} BPM")
+print(f"Duration: {composition.duration_seconds:.1f}s")
+print(f"Instruments: {', '.join(composition.instrument_names)}")
+```
+
+## Available Presets
+
+| Preset | Description |
+|--------|-------------|
+| `classical_piano` | Expressive piano with rich harmonies |
+| `jazz_trio` | Piano trio with swing and ii-V-I progressions |
+| `epic_orchestral` | Full orchestra with building intensity |
+| `ambient_pad` | Evolving synth pads with slow harmonies |
+| `folk_acoustic` | Simple acoustic guitar melodies |
+| `blues` | 12-bar blues with guitar, bass, drums |
+| `minimalist` | Repetitive patterns with gradual changes |
+| `romantic_string_quartet` | Expressive string quartet dialogue |
+
+## Output Formats
+
+- **MIDI**: Standard MIDI file (.mid) for use in DAWs and notation software
+- **WAV**: Uncompressed audio (requires FluidSynth)
+- **MP3**: Compressed audio for easy sharing (requires pydub)
+- **JSON**: Full composition data for further processing
+
+## Configuration
+
+Create a `config.toml` or set environment variables:
+
+```bash
+# Required
+export GOOGLE_API_KEY="your-key"
+
+# Optional
+export MUSICGEN_MODEL="gemini-2.5-pro"
+export MUSICGEN_TEMPERATURE="0.7"
+export MUSICGEN_MAX_TOKENS="8192"
 ```
 
 ## Documentation
 
 - [Getting Started Tutorial](docs/tutorials/01-getting-started.md)
-- [API Reference](docs/api/index.md)
-- [Examples](examples/)
+- [API Reference](docs/api/)
+- [Project Ideas](docs/idea.md)
+- [Research Notes](docs/research.md)
 
 ## Development
 
 ### Running Tests
 
 ```bash
-# Run all tests
 pytest
-
-# With coverage
-pytest --cov=src/musicgen --cov-report=html
 ```
 
-### Building Documentation
+### Type Checking
 
 ```bash
-cd docs/api
-make html
+mypy src/musicgen
 ```
 
-## Requirements
+### Code Formatting
 
-### Python Packages
-
-- Python 3.10+
-- music21 >= 9.0
-- mido >= 1.2
-- pretty-midi >= 0.2
-- numpy >= 1.24
-
-### System Dependencies (Optional)
-
-For audio synthesis:
 ```bash
-# Ubuntu/Debian
-sudo apt install fluidsynth
-
-# macOS
-brew install fluidsynth
+ruff check src/musicgen
+ruff format src/musicgen
 ```
 
-For PDF generation:
-```bash
-# Ubuntu/Debian
-sudo apt install lilypond
+## Project Status
 
-# macOS
-brew install lilypond
-```
+MusicGen is currently in active development. The AI composition system is functional, with ongoing work on:
+
+- Enhanced prompt engineering for better results
+- More sophisticated musical form templates
+- Improved orchestration presets
+- MusicXML export for notation software
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## Contributing
+## Acknowledgments
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- Uses [Google Gemini 2.5 Pro](https://ai.google.dev/) for AI-powered music generation
+- Built with [Pydantic](https://docs.pydantic.dev/) for type-safe data models
+- MIDI export via [mido](https://mido.readthedocs.io/)
+- Audio synthesis via [pretty-midi](https://github.com/craffel/pretty-midi)

@@ -1,128 +1,244 @@
 # Getting Started with MusicGen
 
-Welcome to the Music Generation Library! This tutorial will guide you through the basics of creating music programmatically using traditional music theory.
+Welcome to MusicGen! This tutorial will guide you through generating your first AI-powered orchestral composition using natural language.
+
+## What is MusicGen?
+
+MusicGen is a Python library that uses Google Gemini AI to transform natural language descriptions into complete musical compositions. Instead of writing notes manually, you describe what you want—"a heroic battle theme," "a peaceful piano melody," or "a jazz trio piece"—and MusicGen handles the music theory, orchestration, and structure.
+
+## Prerequisites
+
+1. **Python 3.10 or higher**
+2. **A Google API key** (get one at https://ai.google.dev/)
 
 ## Installation
 
-Install MusicGen using pip:
-
 ```bash
+# Install the package
 pip install musicgen
+
+# Or for development
+git clone https://github.com/musicgen/music-gen-lib.git
+cd music-gen-lib
+uv sync
 ```
 
-For development, install with optional dependencies:
+## Setting Up Your API Key
+
+Set your Google API key as an environment variable:
 
 ```bash
-pip install musicgen[dev]
+# Linux/macOS
+export GOOGLE_API_KEY="your-api-key-here"
+
+# Windows (PowerShell)
+$env:GOOGLE_API_KEY="your-api-key-here"
+
+# Windows (Command Prompt)
+set GOOGLE_API_KEY=your-api-key-here
 ```
 
-## Your First Note
+Or create a `.env` file in your project directory:
 
-Let's start by creating a simple musical note:
+```
+GOOGLE_API_KEY=your-api-key-here
+```
+
+## Quick Start: Command Line
+
+The fastest way to generate music is using the command line interface.
+
+### Your First Composition
+
+```bash
+musicgen compose "A heroic battle theme" --format midi mp3
+```
+
+This will:
+1. Send your prompt to Google Gemini
+2. Generate a complete orchestral composition
+3. Export to MIDI and MP3 files
+
+You should see output like:
+
+```
+Prompt: A heroic battle theme...
+Generating composition...
+Generated: The Siege of Crimson Peaks
+  Key: C minor
+  Tempo: 140 BPM
+  Duration: 177.4s
+  Instruments: Trumpet, String Section, Cello & Bass, Timpani
+Rendering MIDI to the_siege_of_crimson_peaks.mid
+Rendering MP3 to the_siege_of_crimson_peaks.mp3
+```
+
+### Using Presets
+
+MusicGen includes preset prompts for common styles:
+
+```bash
+# List all presets
+musicgen presets list
+
+# Use a preset
+musicgen compose --preset epic_orchestral --format midi wav mp3
+
+# Combine preset with your own ideas
+musicgen compose --preset classical_piano "with a melancholic mood"
+```
+
+### Available Formats
+
+- **midi**: Standard MIDI file (works in DAWs, notation software)
+- **wav**: Uncompressed audio
+- **mp3**: Compressed audio (easy sharing)
+- **json**: Full composition data
+
+## Quick Start: Python API
+
+For more control, use the Python API.
+
+### Basic Usage
 
 ```python
-from musicgen import Note, QUARTER
+from musicgen.composer_new import AIComposer
+from musicgen.renderer import Renderer
 
-# Create a C quarter note
-note = Note("C4", QUARTER)
+# Initialize the composer
+composer = AIComposer()
 
-print(f"Note: {note.name}{note.octave}")
-print(f"MIDI number: {note.midi_number}")
-print(f"Frequency: {note.frequency:.2f} Hz")
+# Generate from natural language
+composition = composer.generate(
+    "A peaceful piano melody in C major with gentle arpeggios"
+)
+
+# Export to files
+renderer = Renderer(output_dir="output")
+results = renderer.render(composition, formats=["midi", "mp3"])
+
+# Access composition details
+print(f"Title: {composition.title}")
+print(f"Key: {composition.key}")
+print(f"Tempo: {composition.tempo} BPM")
+print(f"Duration: {composition.duration_seconds:.1f}s")
+print(f"Instruments: {', '.join(composition.instrument_names)}")
 ```
 
-Output:
-```
-Note: C4
-MIDI number: 60
-Frequency: 261.63 Hz
-```
-
-## Creating a Scale
-
-Now let's create a musical scale and explore its properties:
+### Working with Parts
 
 ```python
-from musicgen import Scale
+# Access individual instrument parts
+for part in composition.parts:
+    print(f"\n{part.name} ({part.role}):")
+    print(f"  MIDI program: {part.midi_program}")
+    print(f"  Note events: {len(list(part.get_note_events()))}")
 
-# Create C major scale
-c_major = Scale("C", "major")
-
-print("Notes in C major:")
-for note_name in c_major.notes:
-    print(f"  {note_name}")
-
-# Access scale degrees
-tonic = c_major.get_degree(1)  # C
-dominant = c_major.get_degree(5)  # G
-
-print(f"\nTonic: {tonic}")
-print(f"Dominant: {dominant}")
+    # Access notes
+    for note in part.get_note_events():
+        if hasattr(note, 'note_name'):
+            print(f"  {note.note_name}: {note.duration} quarters @ {note.start_time}")
 ```
 
-## Building a Chord
-
-Create chords using the scale:
+### Customizing Generation
 
 ```python
-from musicgen import Chord, MAJOR
+# Set temperature (0.0 = more deterministic, 1.0 = more creative)
+composer = AIComposer(temperature=0.7)
 
-# C major triad
-c_chord = Chord(_root_name="C", _quality=MAJOR)
-
-print("C major chord notes:")
-for note in c_chord.notes:
-    print(f"  {note}")
+# Use a specific model
+composer = AIComposer(model="gemini-2.5-pro")
 ```
 
-## Generating a Simple Melody
+## Understanding the Output
 
-Create a simple ascending melody:
+### File Types
 
-```python
-from musicgen import Note, QUARTER, Scale
+| File | Description | Use With |
+|------|-------------|----------|
+| `.mid` | MIDI file | DAWs, notation software, media players |
+| `.wav` | Uncompressed audio | Audio editing, professional use |
+| `.mp3` | Compressed audio | Sharing, streaming, portable players |
+| `.json` | Composition data | Custom processing, analysis |
 
-# Create a scale
-scale = Scale("C", "major")
+### Composition Structure
 
-# Create an ascending scale melody
-notes = [scale.get_degree(i + 1) for i in range(8)]
+MusicGen generates compositions with:
 
-# Assign duration to each note
-for note in notes:
-    note.duration = QUARTER
+- **Multiple instrument parts** (melody, harmony, bass, percussion)
+- **Proper voice leading** (smooth motion between chords)
+- **Musical form** (intro, sections, outro)
+- **Dynamic expression** (tempo changes, key changes, dynamics)
 
-print("Simple ascending melody:")
-for note in notes:
-    print(f"  {note.name}{note.octave}")
+## Tips for Better Prompts
+
+1. **Be specific about mood**: "peaceful and relaxing" vs "music"
+2. **Specify instruments**: "piano and cello" vs generic "music"
+3. **Include tempo suggestions**: "at 120 BPM" or "slow and flowing"
+4. **Mention key if desired**: "in D minor" or "major key"
+5. **Describe form**: "with a recurring melody" or "through-composed"
+
+### Example Prompts
+
+```
+# Style-based
+"A jazz piece with walking bass and swing rhythm"
+"A classical string quartet with expressive melodies"
+"Ambient electronic with slow harmonic changes"
+
+# Mood-based
+"Epic and heroic with building intensity"
+"Gentle and peaceful for relaxation"
+"Dark and mysterious with dissonant harmonies"
+
+# Specific
+"Piano solo in C major, moderate tempo, minimal style"
+"Full orchestra, D minor, dramatic crescendo"
 ```
 
-## Exporting to MIDI
+## Checking System Capabilities
 
-Export your melody to a MIDI file:
+Verify your setup:
 
-```python
-from musicgen import MIDIWriter, Score, Part
-
-# Create a score
-score = Score()
-
-# Add a melody part
-part = Part(name="melody")
-part.notes = notes
-score.add_part(part)
-
-# Write to MIDI
-MIDIWriter.write(score, "my_first_melody.mid")
-
-print("MIDI file created: my_first_melody.mid")
+```bash
+musicgen check
 ```
 
-## What's Next
+This shows:
+- AI package availability
+- API key status
+- Rendering capabilities (MIDI, audio formats)
 
-In the next tutorial, you'll learn about:
-- Different scale types (minor, modes, pentatonic)
-- Key signatures and their relationships
-- Diatonic chords in a key
+## Next Steps
 
-Continue to [Scales and Keys](02-scales-and-keys.md).
+- [Scales and Keys](02-scales-and-keys.md) - Understanding musical keys and modes
+- [Melody Generation](03-melody-generation.md) - How melodies are structured
+- [Orchestration](04-orchestration.md) - Working with different instruments
+- [Exporting Music](05-exporting-music.md) - Advanced export options
+
+## Troubleshooting
+
+### "API key not set"
+
+Make sure your `GOOGLE_API_KEY` environment variable is set correctly.
+
+### "Package not found"
+
+Install with: `pip install musicgen[ai,audio]`
+
+### "Audio generation failed"
+
+For MP3/WAV export, ensure you have the required dependencies:
+```bash
+pip install pydub pretty-midi
+```
+
+### Empty or short compositions
+
+Try increasing the temperature (more creative freedom) or providing a more detailed prompt.
+
+## Getting Help
+
+- Check the [documentation](../)
+- Browse [examples](../../examples/)
+- Open an issue on [GitHub](https://github.com/musicgen/music-gen-lib/issues)

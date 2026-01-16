@@ -2,7 +2,9 @@
 
 ## Overview
 
-This document presents comprehensive research for building a Python library that generates orchestral instrumental music using traditional music theory principles (rule-based composition, not AI). The library will produce both sheet music (MusicXML/LilyPond) and audio files (WAV/FLAC) from programmatic input.
+> **Note**: This research was originally conducted for a rule-based composition system. MusicGen has since evolved to use Google Gemini AI for music generation, while still applying the music theory principles documented here.
+
+This document presents comprehensive research on orchestral music generation, covering music theory principles that inform both the AI prompting strategy and the validation rules for generated compositions.
 
 ---
 
