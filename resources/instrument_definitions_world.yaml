@@ -1,0 +1,428 @@
+# World Instrument Definitions for music-gen-lib V4
+#
+# This file contains definitions for world/ethnic instruments beyond the
+# orchestral instruments defined in instrument_definitions.yaml
+#
+# Format:
+# instrument_key:
+#   name: Display name
+#   family: Instrument family
+#   midi_program: GM program number (if applicable)
+#   midi_channel: MIDI channel (default: 0-15)
+#   range: {min: N, max: M}  # Playing range in MIDI notes
+#   transposition: N  # Octave shift from written
+#   articulations: []  # Available articulations
+#   sfz_file: path/to/instrument.sfz  # Optional SFZ definition
+
+# =============================================================================
+# Indian Classical Instruments
+# =============================================================================
+
+sitar:
+  name: "Sitar"
+  family: "world_strings"
+  region: "India"
+  midi_program: 104  # GM Sitar
+  range: {min: 48, max: 96}
+  microtonal: true
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "meend", keyswitch: null}
+    - {name: "gamak", keyswitch: null}
+  sfz_file: "libraries/world/sitar.sfz"
+
+sarod:
+  name: "Sarod"
+  family: "world_strings"
+  region: "India"
+  midi_program: 104  # GM Sitar (approximation)
+  range: {min: 48, max: 88}
+  microtonal: true
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "meend", keyswitch: null}
+  sfz_file: "libraries/world/sarod.sfz"
+
+bansuri:
+  name: "Bansuri"
+  family: "world_winds"
+  region: "India"
+  midi_program: 73  # GM Flute (approximation)
+  range: {min: 60, max: 84}
+  microtonal: false
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "meend", keyswitch: null}
+  sfz_file: "libraries/world/bansuri.sfz"
+
+tabla:
+  name: "Tabla"
+  family: "world_percussion"
+  region: "India"
+  midi_channel: 10
+  range: {min: 36, max: 60}
+  microtonal: false
+  techniques:
+    - {name: "bayan", midi_note: 36}
+    - {name: "dayan", midi_note: 60}
+    - {name: "ge", midi_note: 38}
+    - {name: "ke", midi_note: 40}
+  sfz_file: "libraries/world/tabla.sfz"
+
+tanpura:
+  name: "Tanpura"
+  family: "world_strings"
+  region: "India"
+  midi_program: null
+  range: {min: 36, max: 60}
+  microtonal: true
+  articulations:
+    - {name: "drone", keyswitch: null}
+  sfz_file: "libraries/world/tanpura.sfz"
+
+# =============================================================================
+# Middle Eastern Instruments
+# =============================================================================
+
+oud:
+  name: "Oud"
+  family: "world_strings"
+  region: "Middle East"
+  midi_program: 24  # GM Acoustic Guitar (approximation)
+  range: {min: 40, max: 76}
+  microtonal: true
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "tremolo", keyswitch: null}
+  sfz_file: "libraries/world/oud.sfz"
+
+ney:
+  name: "Ney"
+  family: "world_winds"
+  region: "Middle East"
+  midi_program: 73  # GM Flute (approximation)
+  range: {min: 60, max: 84}
+  microtonal: true
+  articulations:
+    - {name: "sustain", keyswitch: null}
+  sfz_file: "libraries/world/ney.sfz"
+
+darbuka:
+  name: "Darbuka"
+  family: "world_percussion"
+  region: "Middle East"
+  midi_channel: 10
+  range: {min: 36, max: 60}
+  microtonal: false
+  techniques:
+    - {name: "doum", midi_note: 36}
+    - {name: "tek", midi_note: 40}
+    - {name: "ka", midi_note: 42}
+  sfz_file: "libraries/world/darbuka.sfz"
+
+kanun:
+  name: "Kanun"
+  family: "world_strings"
+  region: "Middle East"
+  midi_program: 14  # GM Dulcimer (approximation)
+  range: {min: 48, max: 84}
+  microtonal: true
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "tremolo", keyswitch: null}
+  sfz_file: "libraries/world/kanun.sfz"
+
+# =============================================================================
+# East Asian Instruments
+# =============================================================================
+
+koto:
+  name: "Koto"
+  family: "world_strings"
+  region: "Japan"
+  midi_program: 107  # GM Koto
+  range: {min: 48, max: 84}
+  microtonal: false
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "bend", keyswitch: null}
+  sfz_file: "libraries/world/koto.sfz"
+
+shakuhachi:
+  name: "Shakuhachi"
+  family: "world_winds"
+  region: "Japan"
+  midi_program: 77  # GM Shakuhachi
+  range: {min: 60, max: 84}
+  microtonal: true
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "meri", keyswitch: null}
+    - {name: "kari", keyswitch: null}
+  sfz_file: "libraries/world/shakuhachi.sfz"
+
+guzheng:
+  name: "Guzheng"
+  family: "world_strings"
+  region: "China"
+  midi_program: 107  # GM Koto (approximation)
+  range: {min: 48, max: 84}
+  microtonal: false
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "glissando", keyswitch: null}
+  sfz_file: "libraries/world/guzheng.sfz"
+
+erhu:
+  name: "Erhu"
+  family: "world_strings"
+  region: "China"
+  midi_program: 40  # GM Violin (approximation)
+  range: {min: 55, max: 88}
+  microtonal: true
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "vibrato", keyswitch: null}
+  sfz_file: "libraries/world/erhu.sfz"
+
+taiko:
+  name: "Taiko"
+  family: "world_percussion"
+  region: "Japan"
+  midi_program: 116  # GM Taiko Drum
+  range: {min: 36, max: 48}
+  microtonal: false
+  techniques:
+    - {name: "center", midi_note: 36}
+    - {name: "rim", midi_note: 40}
+  sfz_file: "libraries/world/taiko.sfz"
+
+# =============================================================================
+# Other World Instruments
+# =============================================================================
+
+bagpipe:
+  name: "Bagpipe"
+  family: "world_winds"
+  region: "Scotland"
+  midi_program: 109  # GM Bagpipe
+  range: {min: 48, max: 72}
+  microtonal: false
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "grace", keyswitch: null}
+  sfz_file: "libraries/world/bagpipe.sfz"
+
+tin_whistle:
+  name: "Tin Whistle"
+  family: "world_winds"
+  region: "Ireland"
+  midi_program: 74  # GM Pan Flute/Recorder (approximation)
+  range: {min: 60, max: 84}
+  microtonal: false
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "cut", keyswitch: null}
+  sfz_file: "libraries/world/tin_whistle.sfz"
+
+djembe:
+  name: "Djembe"
+  family: "world_percussion"
+  region: "West Africa"
+  midi_channel: 10
+  range: {min: 36, max: 60}
+  microtonal: false
+  techniques:
+    - {name: "bass", midi_note: 36}
+    - {name: "tone", midi_note: 40}
+    - {name: "slap", midi_note: 42}
+  sfz_file: "libraries/world/djembe.sfz"
+
+conga:
+  name: "Conga"
+  family: "world_percussion"
+  region: "Cuba"
+  midi_channel: 10
+  range: {min: 36, max: 64}
+  microtonal: false
+  techniques:
+    - {name: "open", midi_note: 63}
+    - {name: "closed", midi_note: 62}
+    - {name: "slap", midi_note: 64}
+  sfz_file: "libraries/world/conga.sfz"
+
+bongo:
+  name: "Bongo"
+  family: "world_percussion"
+  region: "Cuba"
+  midi_channel: 10
+  range: {min: 48, max: 61}
+  microtonal: false
+  techniques:
+    - {name: "hembra", midi_note: 61}
+    - {name: "macho", midi_note: 60}
+  sfz_file: "libraries/world/bongo.sfz"
+
+steel_drum:
+  name: "Steel Drum"
+  family: "world_percussion"
+  region: "Trinidad & Tobago"
+  midi_program: 114  # GM Steel Drums
+  range: {min: 48, max: 84}
+  microtonal: false
+  articulations:
+    - {name: "strike", keyswitch: null}
+  sfz_file: "libraries/world/steel_drum.sfz"
+
+# =============================================================================
+# Guitars and Bass
+# =============================================================================
+
+acoustic_guitar_nylon:
+  name: "Acoustic Guitar (Nylon)"
+  family: "guitar"
+  midi_program: 24  # GM Acoustic Guitar (nylon)
+  range: {min: 40, max: 84}
+  string_count: 6
+  tuning: ["E2", "A2", "D3", "G3", "B3", "E4"]
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "strum", keyswitch: null}
+    - {name: "harmonics", keyswitch: null}
+  sfz_file: "libraries/guitars/acoustic_nylon.sfz"
+
+acoustic_guitar_steel:
+  name: "Acoustic Guitar (Steel)"
+  family: "guitar"
+  midi_program: 25  # GM Acoustic Guitar (steel)
+  range: {min: 40, max: 84}
+  string_count: 6
+  tuning: ["E2", "A2", "D3", "G3", "B3", "E4"]
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "strum", keyswitch: null}
+    - {name: "harmonics", keyswitch: null}
+  sfz_file: "libraries/guitars/acoustic_steel.sfz"
+
+electric_guitar_clean:
+  name: "Electric Guitar (Clean)"
+  family: "guitar"
+  midi_program: 27  # GM Electric Guitar (clean)
+  range: {min: 40, max: 84}
+  string_count: 6
+  tuning: ["E2", "A2", "D3", "G3", "B3", "E4"]
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "mute", keyswitch: null}
+    - {name: "harmonics", keyswitch: null}
+  sfz_file: "libraries/guitars/electric_clean.sfz"
+
+electric_guitar_jazz:
+  name: "Electric Guitar (Jazz)"
+  family: "guitar"
+  midi_program: 26  # GM Electric Guitar (jazz)
+  range: {min: 40, max: 84}
+  string_count: 6
+  tuning: ["E2", "A2", "D3", "G3", "B3", "E4"]
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "mute", keyswitch: null}
+  sfz_file: "libraries/guitars/electric_jazz.sfz"
+
+electric_guitar_overdrive:
+  name: "Electric Guitar (Overdrive)"
+  family: "guitar"
+  midi_program: 29  # GM Overdriven Guitar
+  range: {min: 40, max: 84}
+  string_count: 6
+  tuning: ["E2", "A2", "D3", "G3", "B3", "E4"]
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "mute", keyswitch: null}
+    - {name: "bend", keyswitch: null}
+  sfz_file: "libraries/guitars/electric_overdrive.sfz"
+
+electric_guitar_distortion:
+  name: "Electric Guitar (Distortion)"
+  family: "guitar"
+  midi_program: 30  # GM Distortion Guitar
+  range: {min: 40, max: 84}
+  string_count: 6
+  tuning: ["E2", "A2", "D3", "G3", "B3", "E4"]
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "palm_mute", keyswitch: null}
+    - {name: "power_chord", keyswitch: null}
+  sfz_file: "libraries/guitars/electric_distortion.sfz"
+
+electric_bass_finger:
+  name: "Electric Bass (Finger)"
+  family: "bass"
+  midi_program: 33  # GM Electric Bass (finger)
+  range: {min: 28, max: 64}
+  string_count: 4
+  tuning: ["E1", "A1", "D2", "G2"]
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "slap", keyswitch: null}
+    - {name: "ghost", keyswitch: null}
+  sfz_file: "libraries/bass/electric_finger.sfz"
+
+electric_bass_pick:
+  name: "Electric Bass (Pick)"
+  family: "bass"
+  midi_program: 34  # GM Electric Bass (pick)
+  range: {min: 28, max: 64}
+  string_count: 4
+  tuning: ["E1", "A1", "D2", "G2"]
+  articulations:
+    - {name: "sustain", keyswitch: null}
+    - {name: "ghost", keyswitch: null}
+  sfz_file: "libraries/bass/electric_pick.sfz"
+
+# =============================================================================
+# Drum Kits
+# =============================================================================
+
+drum_kit_standard:
+  name: "Standard Drum Kit"
+  family: "drum_kit"
+  midi_channel: 10
+  kit_pieces:
+    - {name: "kick", midi_note: 36}
+    - {name: "snare", midi_note: 38}
+    - {name: "hihat_closed", midi_note: 42}
+    - {name: "hihat_open", midi_note: 46}
+    - {name: "tom1", midi_note: 45}
+    - {name: "tom2", midi_note: 48}
+    - {name: "crash", midi_note: 49}
+    - {name: "ride", midi_note: 51}
+  sfz_file: "libraries/drums/standard_kit.sfz"
+
+drum_kit_jazz:
+  name: "Jazz Drum Kit"
+  family: "drum_kit"
+  midi_channel: 10
+  kit_pieces:
+    - {name: "kick", midi_note: 36}
+    - {name: "snare", midi_note: 38}
+    - {name: "hihat_closed", midi_note: 42}
+    - {name: "hihat_open", midi_note: 46}
+    - {name: "tom1", midi_note: 45}
+    - {name: "tom2", midi_note: 48}
+    - {name: "ride", midi_note: 51}
+    - {name: "ride_bell", midi_note: 53}
+  sfz_file: "libraries/drums/jazz_kit.sfz"
+
+drum_kit_electronic_808:
+  name: "TR-808 Drum Machine"
+  family: "electronic_drums"
+  midi_channel: 10
+  kit_pieces:
+    - {name: "kick", midi_note: 36}
+    - {name: "snare", midi_note: 38}
+    - {name: "hihat_closed", midi_note: 42}
+    - {name: "hihat_open", midi_note: 46}
+    - {name: "clap", midi_note: 39}
+    - {name: "cowbell", midi_note: 56}
+  sfz_file: "libraries/drums/808.sfz"

@@ -1,0 +1,301 @@
+# Scale Definitions for music-gen-lib V4
+#
+# This file contains scale definitions for Western, Indian, Arabic,
+# Japanese, and other world music scales.
+#
+# Format:
+# scale_key:
+#   name: Display name
+#   type: Scale type (major, minor, pentatonic, etc.)
+#   intervals: [intervals from tonic in semitones]
+#   notes: [scale degrees with octave adjustment]
+#   origin: Cultural/geographic origin
+#   mood: Emotional quality
+
+# =============================================================================
+# Western Major/Minor Scales
+# =============================================================================
+
+major:
+  name: "Major"
+  type: "diatonic"
+  intervals: [0, 2, 4, 5, 7, 9, 11]
+  notes: ["C", "D", "E", "F", "G", "A", "B"]
+  origin: "Western"
+  mood: "Bright, happy, optimistic"
+
+minor_natural:
+  name: "Natural Minor (Aeolian)"
+  type: "diatonic"
+  intervals: [0, 2, 3, 5, 7, 8, 10]
+  notes: ["C", "D", "Eb", "F", "G", "Ab", "Bb"]
+  origin: "Western"
+  mood: "Melancholic, serious"
+
+minor_harmonic:
+  name: "Harmonic Minor"
+  type: "diatonic"
+  intervals: [0, 2, 3, 5, 7, 8, 11]
+  notes: ["C", "D", "Eb", "F", "G", "Ab", "B"]
+  origin: "Western"
+  mood: "Dramatic, Eastern European"
+
+minor_melodic:
+  name: "Melodic Minor"
+  type: "diatonic"
+  intervals:
+    ascending: [0, 2, 3, 5, 7, 9, 11]
+    descending: [0, 2, 3, 5, 7, 8, 10]
+  notes:
+    ascending: ["C", "D", "Eb", "F", "G", "A", "B"]
+    descending: ["C", "D", "Eb", "F", "G", "Ab", "Bb"]
+  origin: "Western"
+  mood: "Jazz, sophisticated"
+
+dorian:
+  name: "Dorian"
+  type: "mode"
+  intervals: [0, 2, 3, 5, 7, 9, 10]
+  notes: ["C", "D", "Eb", "F", "G", "A", "Bb"]
+  origin: "Western (Greek mode)"
+  mood: "Jazz, folk, hopeful minor"
+
+phrygian:
+  name: "Phrygian"
+  type: "mode"
+  intervals: [0, 1, 3, 5, 7, 8, 10]
+  notes: ["C", "Db", "Eb", "F", "G", "Ab", "Bb"]
+  origin: "Western (Greek mode)"
+  mood: "Flamenco, dramatic, dark"
+
+lydian:
+  name: "Lydian"
+  type: "mode"
+  intervals: [0, 2, 4, 6, 7, 9, 11]
+  notes: ["C", "D", "E", "F#", "G", "A", "B"]
+  origin: "Western (Greek mode)"
+  mood: "Dreamy, floating"
+
+mixolydian:
+  name: "Mixolydian"
+  type: "mode"
+  intervals: [0, 2, 4, 5, 7, 9, 10]
+  notes: ["C", "D", "E", "F", "G", "A", "Bb"]
+  origin: "Western (Greek mode)"
+  mood: "Rock, folk, bluesy"
+
+locrian:
+  name: "Locrian"
+  type: "mode"
+  intervals: [0, 1, 3, 5, 6, 8, 10]
+  notes: ["C", "Db", "Eb", "F", "Gb", "Ab", "Bb"]
+  origin: "Western (Greek mode)"
+  mood: "Dark, unstable, diminished"
+
+# =============================================================================
+# Pentatonic Scales
+# =============================================================================
+
+pentatonic_major:
+  name: "Major Pentatonic"
+  type: "pentatonic"
+  intervals: [0, 2, 4, 7, 9]
+  notes: ["C", "D", "E", "G", "A"]
+  origin: "Universal"
+  mood: "Bright, folk-like"
+
+pentatonic_minor:
+  name: "Minor Pentatonic"
+  type: "pentatonic"
+  intervals: [0, 3, 5, 7, 10]
+  notes: ["C", "Eb", "F", "G", "Bb"]
+  origin: "Universal"
+  mood: "Bluesy, soulful"
+
+blues:
+  name: "Blues Scale"
+  type: "hexatonic"
+  intervals: [0, 3, 5, 6, 7, 10]
+  notes: ["C", "Eb", "F", "F#", "G", "Bb"]
+  origin: "African American"
+  mood: "Bluesy, gritty, soulful"
+
+# =============================================================================
+# Indian Ragas (Thats - parent scales)
+# =============================================================================
+
+raga_bilaval:
+  name: "That Bilaval (Indian major)"
+  type: "raga"
+  intervals: [0, 2, 4, 5, 7, 9, 11]
+  notes: ["C", "D", "E", "F", "G", "A", "B"]
+  origin: "India"
+  mood: "Peaceful, morning"
+
+raga_bhairavi:
+  name: "That Bhairavi (Indian natural minor)"
+  type: "raga"
+  intervals: [0, 1, 3, 5, 7, 8, 10]
+  notes: ["C", "Db", "Eb", "F", "G", "Ab", "Bb"]
+  origin: "India"
+  mood: "Devotional, early morning"
+
+raga_kalyan:
+  name: "That Kalyan (Lydian variant)"
+  type: "raga"
+  intervals: [0, 2, 4, 6, 7, 9, 11]
+  notes: ["C", "D", "E", "F#", "G", "A", "B"]
+  origin: "India"
+  mood: "Evening, devotional"
+
+raga_khamaj:
+  name: "That Khamaj (Mixolydian variant)"
+  type: "raga"
+  intervals: [0, 2, 4, 5, 7, 9, 10]
+  notes: ["C", "D", "E", "F", "G", "A", "Bb"]
+  origin: "India"
+  mood: "Romantic"
+
+raga_bhairav:
+  name: "That Bhairav (double harmonic)"
+  type: "raga"
+  intervals: [0, 1, 4, 5, 7, 8, 11]
+  notes: ["C", "Db", "E", "F", "G", "Ab", "B"]
+  origin: "India"
+  mood: "Serious, majestic"
+
+raga_todi:
+  name: "That Todi"
+  type: "raga"
+  intervals: [0, 1, 3, 6, 7, 8, 10]
+  notes: ["C", "Db", "Eb", "F#", "G", "Ab", "Bb"]
+  origin: "India"
+  mood: "Deep, serious"
+
+# =============================================================================
+# Arabic Maqamat
+# =============================================================================
+
+maqam_rast:
+  name: "Maqam Rast"
+  type: "maqam"
+  intervals: [0, 2, 3.5, 5, 7, 9, 10.5]
+  notes: ["C", "D", "E-half-flat", "F", "G", "A", "B-half-flat"]
+  origin: "Middle East"
+  mood: "Noble, proud"
+  quarter_tones: true
+
+maqam_bayati:
+  name: "Maqam Bayati"
+  type: "maqam"
+  intervals: [0, 1.5, 3, 5, 7, 8, 10]
+  notes: ["C", "D-half-flat", "Eb", "F", "G", "Ab", "Bb"]
+  origin: "Middle East"
+  mood: "Folk-like, popular"
+  quarter_tones: true
+
+maqam_hijaz:
+  name: "Maqam Hijaz"
+  type: "maqam"
+  intervals: [0, 1, 4, 5, 7, 9, 10.5]
+  notes: ["C", "Db", "E", "F", "G", "A", "B-half-flat"]
+  origin: "Middle East"
+  mood: "Deep, desert"
+  quarter_tones: true
+
+maqam_sikah:
+  name: "Maqam Sikah"
+  type: "maqam"
+  intervals: [0, 1.5, 3, 4.5, 6, 7, 9, 10.5]
+  notes: ["C-half-flat", "D", "E", "F-half-flat", "F#", "G", "A", "B-half-flat"]
+  origin: "Middle East"
+  mood: "Emotional"
+  quarter_tones: true
+
+maqam_nahawand:
+  name: "Maqam Nahawand"
+  type: "maqam"
+  intervals: [0, 2, 4, 5, 7, 8, 10]
+  notes: ["C", "D", "E", "F", "G", "Ab", "Bb"]
+  origin: "Middle East"
+  mood: "Romantic, European-influenced"
+
+# =============================================================================
+# Japanese Scales
+# =============================================================================
+
+scale_hirajoushi:
+  name: "Hirajoushi"
+  type: "pentatonic"
+  intervals: [0, 2, 4, 7, 9]
+  notes: ["C", "D", "E", "G", "B"]
+  origin: "Japan"
+  mood: "Peaceful, bright"
+
+scale_in_senpou:
+  name: "In Sen Pou"
+  type: "pentatonic"
+  intervals: [0, 1, 5, 7, 8]
+  notes: ["C", "Db", "F", "G", "Ab"]
+  origin: "Japan"
+  mood: "Dark, mysterious"
+
+scale_miyakobushi:
+  name: "Miyakobushi"
+  type: "pentatonic"
+  intervals: [0, 1, 5, 7, 8]
+  notes: ["C", "Db", "F", "G", "Ab"]
+  origin: "Japan (Ryukyu/Okinawa)"
+  mood: "Melancholic, distinctive"
+
+scale_kumoi:
+  name: "Kumoi Joshi"
+  type: "pentatonic"
+  intervals: [0, 2, 3, 7, 9]
+  notes: ["C", "D", "Eb", "G", "B"]
+  origin: "Japan"
+  mood: "Bright, playful"
+
+# =============================================================================
+# Other World Scales
+# =============================================================================
+
+scale_pelog:
+  name: "Pelog"
+  type: "pentatonic"
+  intervals: [0, 1, 3, 7, 8]
+  notes: ["C", "Db", "Eb", "G", "Ab"]
+  origin: "Indonesia (Bali)"
+  mood: "Mysterious"
+
+scale_slendro:
+  name: "Slendro"
+  type: "pentatonic"
+  intervals: [0, 2, 5, 7, 9]
+  notes: ["C", "D", "F", "G", "A"]
+  origin: "Indonesia (Java)"
+  mood: "Mystical, meditative"
+
+scale_hungarian_minor:
+  name: "Hungarian Minor"
+  type: "heptatonic"
+  intervals: [0, 2, 3, 6, 7, 8, 11]
+  notes: ["C", "D", "Eb", "F#", "G", "Ab", "B"]
+  origin: "Hungary/Romani"
+  mood: "Dramatic, exotic"
+
+scale_double_harmonic:
+  name: "Double Harmonic (Byzantine)"
+  type: "heptatonic"
+  intervals: [0, 1, 4, 5, 7, 8, 11]
+  notes: ["C", "Db", "E", "F", "G", "Ab", "B"]
+  origin: "Middle East/Byzantine"
+  mood: "Dramatic, Middle Eastern"
+
+scale_prometheus:
+  name: "Prometheus Scale"
+  type: "hexatonic"
+  intervals: [0, 2, 4, 6, 9, 10]
+  notes: ["C", "D", "E", "F#", "A", "Bb"]
+  origin: "Western (Scriabin)"
+  mood: "Mystical, innovative"

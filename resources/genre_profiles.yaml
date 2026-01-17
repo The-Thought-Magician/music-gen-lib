@@ -1,0 +1,237 @@
+# Genre Profiles for music-gen-lib V4
+#
+# This file contains genre-specific profiles including instrumentation
+# preferences, rhythmic patterns, chord progressions, and structural
+# conventions.
+#
+# Format:
+# genre_key:
+#   name: Display name
+#   tempo_range: {min: N, max: M}
+#   time_signatures: [{numerator: N, denominator: D}]
+#   instruments:
+#     category: [instrument_list]
+#   patterns:
+#     drums: [pattern_names]
+#     bass: [pattern_names]
+#   chord_progressions: [[chord_list]]
+#   forms: [form_names]
+#   dynamics: {key: value}
+
+# =============================================================================
+# Rock Genre
+# =============================================================================
+
+rock:
+  name: "Rock"
+  tempo_range: {min: 100, max: 140}
+  time_signatures:
+    - {numerator: 4, denominator: 4}
+    - {numerator: 6, denominator: 8}
+  instruments:
+    rhythm: ["electric_guitar_clean", "electric_guitar_overdrive"]
+    lead: ["electric_guitar_distortion"]
+    bass: ["electric_bass_pick", "electric_bass_finger"]
+    drums: ["drum_kit_standard"]
+    keyboards: ["electric_piano", "organ"]
+  patterns:
+    drums:
+      - {name: "basic_rock", notation: "bd sd ~ sd, hh*8"}
+      - {name: "hard_rock", notation: "bd bd bd bd, sd*2 ~ sd*2"}
+      - {name: "punk", notation: "bd*4, sd*4, hh*16"}
+      - {name: "half_time", notation: "bd ~ ~ ~, sd ~ ~ ~"}
+    bass:
+      - {name: "root_eighth", notation: "8 8 8 8"}
+      - {name: "root_fifth", notation: "8 5 8 5"}
+      - {name: "syncopated", notation: "8 ~ 8 ~ ~ 8 8 ~"}
+  chord_progressions:
+    - ["I", "IV", "V", "IV"]
+    - ["I", "V", "vi", "IV"]
+    - ["i", "III", "VII", "VI"]
+    - ["I", "bVII", "IV", "bVII"]
+  forms: ["verse_chorus", "bridge_solo"]
+  dynamics:
+    range: "wide"
+    pattern: "verse_quiet_chorus_loud"
+    accent: "strong_downbeat"
+
+# =============================================================================
+# Pop Genre
+# =============================================================================
+
+pop:
+  name: "Pop"
+  tempo_range: {min: 90, max: 130}
+  time_signatures:
+    - {numerator: 4, denominator: 4}
+  instruments:
+    rhythm: ["acoustic_guitar_steel", "piano", "electric_guitar_clean"]
+    lead: ["electric_guitar_clean", "synth_lead"]
+    bass: ["electric_bass_finger", "synth_bass"]
+    drums: ["drum_kit_standard"]
+    keyboards: ["piano", "electric_piano", "synth_pad"]
+    strings: ["string_section"]
+  patterns:
+    drums:
+      - {name: "basic_pop", notation: "bd sd ~ sd, hh*8"}
+      - {name: "disco", notation: "bd*4, hh*16, clap on 2,4"}
+      - {name: "dance_pop", notation: "bd*4, sd*2 ~ sd*2"}
+    bass:
+      - {name: "root_eighth", notation: "8 8 8 8"}
+      - {name: "syncopated", notation: "8 ~ 8 ~ ~ 8 8 ~"}
+  chord_progressions:
+    - ["I", "V", "vi", "IV"]
+    - ["I", "vi", "IV", "V"]
+    - ["I", "V", "vi", "iii", "IV", "I", "IV", "V"]
+    - ["vi", "IV", "I", "V"]
+  forms: ["verse_chorus", "pre_chorus", "bridge"]
+  dynamics:
+    range: "medium"
+    pattern: "chorus_louder"
+    accent: "backbeat"
+
+# =============================================================================
+# Jazz Genre
+# =============================================================================
+
+jazz:
+  name: "Jazz"
+  tempo_range: {min: 80, max: 200}
+  time_signatures:
+    - {numerator: 4, denominator: 4}
+    - {numerator: 3, denominator: 4}
+    - {numerator: 6, denominator: 8}
+  instruments:
+    rhythm: ["piano", "electric_guitar_jazz"]
+    lead: ["trumpet", "saxophone", "trombone", "flute"]
+    bass: ["acoustic_bass", "electric_bass_finger"]
+    drums: ["drum_kit_jazz"]
+    keyboards: ["piano", "electric_piano", "organ"]
+  patterns:
+    drums:
+      - {name: "swing_basic", notation: "hh~ hh ~ hh~ hh"}
+      - {name: "swing_traditional", notation: "ride*8, sd on 2,4"}
+      - {name: "bossa_nova", notation: "bd ~ sd ~, hh~ hh ~ hh~ hh"}
+    bass:
+      - {name: "walking", notation: "4 4 4 4 (chromatic approach)"}
+      - {name: "bossa", notation: "8 ~ 8 ~ ~ 8 8 ~"}
+  chord_progressions:
+    - ["ii7", "V7", "I", "vi7"]
+    - ["iii7", "vi7", "ii7", "V7"]
+    - ["I7", "IV7", "ii7", "V7"]
+    - ["iim7", "V7", "Imaj7", "VImaj7"]
+  forms: ["aaba", "blues_12_bar", "blues_32_bar"]
+  dynamics:
+    range: "wide"
+    pattern: "improvisational"
+    accent: "off_beat_swing"
+
+# =============================================================================
+# Electronic Genre
+# =============================================================================
+
+electronic:
+  name: "Electronic"
+  tempo_range: {min: 120, max: 180}
+  time_signatures:
+    - {numerator: 4, denominator: 4}
+  instruments:
+    lead: ["synth_lead_square", "synth_lead_sawtooth"]
+    pad: ["synth_pad_warm", "synth_pad_new_age"]
+    bass: ["synth_bass_1", "synth_bass_2"]
+    drums: ["drum_kit_electronic_808"]
+    fx: ["fx_rain", "fx_atmosphere"]
+  patterns:
+    drums:
+      - {name: "four_on_floor", notation: "bd*4, hh*16, clap on 2,4"}
+      - {name: "trance", notation: "bd*4, hh*16, clap*8"}
+      - {name: "dnb_amen", notation: "bd*8, sd*16, breakbeat"}
+    bass:
+      - {name: "four_on_floor", notation: "4 4 4 4"}
+      - {name: "off_beat", notation: "~ 4 ~ 4"}
+      - {name: "sub_bass", notation: "1 ~ ~ ~"}
+  chord_progressions:
+    - ["i", "VI", "iii", "VII"]
+    - ["I", "V", "vi", "IV"]
+    - ["i", "iv", "v", "v"]
+    - ["I", "III", "VI", "VII"]
+  forms: ["building_arrangement", "dj_transition"]
+  dynamics:
+    range: "compressed"
+    pattern: "building_breakdown"
+    accent: "four_on_floor"
+
+# =============================================================================
+# Classical Genre
+# =============================================================================
+
+classical:
+  name: "Classical"
+  tempo_range: {min: 40, max: 180}
+  time_signatures:
+    - {numerator: 4, denominator: 4}
+    - {numerator: 3, denominator: 4}
+    - {numerator: 6, denominator: 8}
+    - {numerator: 2, denominator: 4}
+  instruments:
+    strings: ["violin_section", "viola_section", "cello_section", "contrabass_section"]
+    woodwinds: ["flute", "oboe", "clarinet", "bassoon"]
+    brass: ["trumpet", "french_horn", "trombone", "tuba"]
+    percussion: ["timpani", "glockenspiel"]
+    keyboards: ["piano", "harpsichord"]
+    harp: ["orchestral_harp"]
+  patterns:
+    strings:
+      - {name: "legato", description: "Smooth connected bowing"}
+      - {name: "staccato", description: "Short detached bowing"}
+      - {name: "tremolo", description: "Rapid bowing"}
+      - {name: "pizzicato", description: "Plucked strings"}
+  chord_progressions:
+    - ["I", "IV", "V", "I"]
+    - ["I", "vi", "ii", "V"]
+    - ["I", "IV", "vii°", "I"]
+    - ["I", "V", "vi", "iii", "IV", "I", "IV", "V"]
+  forms: ["sonata", "rondo", "theme_and_variations", "minuet_and_trio"]
+  dynamics:
+    range: "extreme"
+    pattern: "arched_phrased"
+    accent: "metric"
+
+# =============================================================================
+# World Genre
+# =============================================================================
+
+world:
+  name: "World Music"
+  tempo_range: {min: 60, max: 140}
+  time_signatures:
+    - {numerator: 4, denominator: 4}
+    - {numerator: 3, denominator: 4}
+    - {numerator: 6, denominator: 8}
+    - {numerator: 7, denominator: 8}
+    - {numerator: 10, denominator: 8}
+  instruments:
+    indian: ["sitar", "tabla", "tanpura", "bansuri"]
+    middle_eastern: ["oud", "ney", "darbuka"]
+    east_asian: ["koto", "shakuhachi", "guzheng"]
+    latin: ["acoustic_guitar_nylon", "conga", "bongo"]
+    african: ["djembe", "balafon"]
+    celtic: ["fiddle", "tin_whistle", "bodhran"]
+  patterns:
+    indian:
+      - {name: "teental", notation: "16 beat cycle"}
+      - {name: "jhaptal", notation: "10 beat cycle"}
+    middle_eastern:
+      - {name: "baladi", notation: "4/4 with accents"}
+      - {name: "maqsoum", notation: "4/4 with doum on 1"}
+    latin:
+      - {name: "clave", notation: "3-2 or 2-3 pattern"}
+      - {name: "son_clave", notation: "3-2: xx..x..x.xx..x.."}
+  chord_progressions:
+    - ["I", "IV", "V", "I"]
+    - ["i", "IV", "i", "V"]
+  forms: ["raga", "maqam", "call_response"]
+  dynamics:
+    range: "medium"
+    pattern: "regional_specific"
+    accent: "microtiming"
