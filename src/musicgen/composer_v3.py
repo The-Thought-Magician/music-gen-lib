@@ -480,8 +480,7 @@ Your response must be valid JSON matching the Composition schema.
             prompt_parts.append("COMMON FIXES:\n")
             prompt_parts.append("  - tempo_marking: Must be LOWERCASE (andante, not Andante)\n")
             prompt_parts.append("  - musical_form: Use through_composed (with underscore), not through-composed\n")
-            prompt_parts.append("  - tempo_changes.tempo_marking: Must be a valid tempo name, NOT ritardando/rallentando\n")
-            prompt_parts.append("  - Notes MUST be sorted by start_time (earliest first)\n")
+            prompt_parts.append("  - Notes MUST be sorted by start_time (earliest first) - handled automatically\n")
             prompt_parts.append("  - All parts must have at least one note\n")
             prompt_parts.append("=" * 60)
             prompt_parts.append("\n")
@@ -577,7 +576,8 @@ Your response must be valid JSON matching the Composition schema.
   key_signature: string (required, e.g. "C major", "A minor")
   initial_tempo_bpm: number (required, >0)
   tempo_marking: string (optional, MUST be lowercase - one of: larghissimo, grave, largo, lento, adagio, larghetto,
-    adagietto, andante, andantino, moderato, allegretto, allegro, vivace, presto, prestissimo)
+    adagietto, andante, andantino, moderato, allegretto, allegro, vivace, presto, prestissimo,
+    ritardando, rallentando, accelerando, a_tempo)
     CRITICAL: Must be LOWERCASE (andante, NOT Andante)
   time_signature:
     numerator: int (required, >=1)
@@ -585,9 +585,7 @@ Your response must be valid JSON matching the Composition schema.
   tempo_changes: array (optional)
     - tempo_bpm: number
       time: number (seconds)
-      tempo_marking: string (optional, MUST be lowercase - one of: larghissimo, grave, largo, lento, adagio,
-        larghetto, adagietto, andante, andantino, moderato, allegretto, allegro, vivace, presto, prestissimo)
-      CRITICAL: ritardando, rallentando, accelerando are NOT valid - use tempo_bpm changes instead
+      tempo_marking: string (optional, MUST be lowercase - includes ritardando, rallentando, accelerando)
   time_signature_changes: array (optional)
     - time_signature: {numerator, denominator}
       time: number (seconds)

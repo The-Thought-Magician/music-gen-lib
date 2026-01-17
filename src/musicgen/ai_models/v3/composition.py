@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 # Type aliases for common values
 StylePeriod = Literal[
@@ -48,6 +48,11 @@ TempoMarking = Literal[
     "vivace",
     "presto",
     "prestissimo",
+    # Tempo change indications
+    "ritardando",
+    "rallentando",
+    "accelerando",
+    "a_tempo",
 ]
 
 DynamicMarking = Literal[
@@ -80,6 +85,11 @@ def get_tempo_bpm_range(tempo: TempoMarking) -> tuple[int, int]:
         "vivace": (135, 160),
         "presto": (150, 180),
         "prestissimo": (170, 220),
+        # Tempo change indications (return current tempo range)
+        "ritardando": (60, 120),
+        "rallentando": (60, 120),
+        "accelerando": (60, 120),
+        "a_tempo": (60, 120),
     }
     return ranges.get(tempo, (60, 120))
 
@@ -132,6 +142,14 @@ class TempoChange(BaseModel):
         description="Time in seconds"
     )
     tempo_marking: TempoMarking | None = None
+
+    @field_validator("tempo_marking", mode="before")
+    @classmethod
+    def normalize_tempo_marking(cls, v: str | None) -> str | None:
+        """Normalize tempo marking to lowercase before validation."""
+        if v is None:
+            return None
+        return v.lower()
 
 
 class TimeSignatureChange(BaseModel):
@@ -222,6 +240,23 @@ class Composition(BaseModel):
         default=None,
         description="Notes for performers/conductors"
     )
+
+    @field_validator("tempo_marking", mode="before")
+    @classmethod
+    def normalize_tempo_marking(cls, v: str | None) -> str | None:
+        """Normalize tempo marking to lowercase before validation."""
+        if v is None:
+            return None
+        return v.lower()
+
+    @field_validator("musical_form", mode="before")
+    @classmethod
+    def normalize_musical_form(cls, v: str | None) -> str | None:
+        """Normalize musical form (replace hyphens with underscores) before validation."""
+        if v is None:
+            return None
+        # Common AI mistake: "through-composed" -> "through_composed"
+        return v.replace("-", "_")
 
     @property
     def duration(self) -> float:
