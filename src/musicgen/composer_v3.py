@@ -631,8 +631,10 @@ Your response must be valid JSON matching the Composition schema.
             ValueError: If response is invalid.
         """
         try:
-            # Handle nested composition structure
-            data = raw_response.get("composition", raw_response)
+            # Handle nested composition structure (AI may return "Composition" or "composition")
+            data = raw_response.get("composition") or raw_response.get("Composition") or raw_response
+            if not isinstance(data, dict):
+                data = raw_response
 
             return Composition(**data)
 
@@ -937,17 +939,26 @@ Your response must be valid JSON matching the Composition schema.
         Args:
             prompt: Natural language description.
             output_path: Where to save the rendered audio.
-            **kwargs: Passed to compose().
+            **kwargs: Passed to compose() and render().
+                Render-specific: format, stems, normalize, fade_out
 
         Returns:
             Tuple of (composition, rendered_audio_path).
         """
+        # Extract render-specific kwargs
+        render_format = kwargs.pop("format", "wav")
+        stems = kwargs.pop("stems", False)
+        normalize = kwargs.pop("normalize", True)
+        fade_out = kwargs.pop("fade_out", 0.0)
+
         response = self.compose(prompt, **kwargs)
         audio_path = self.render(
             response.composition,
             output_path,
-            format=kwargs.get("format", "wav"),
-            stems=kwargs.get("stems", False),
+            format=render_format,
+            stems=stems,
+            normalize=normalize,
+            fade_out=fade_out,
         )
         return response.composition, audio_path
 
