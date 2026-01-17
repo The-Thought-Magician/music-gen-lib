@@ -48,7 +48,7 @@ from musicgen.validation import (
 logger = logging.getLogger(__name__)
 
 # Default configuration values
-DEFAULT_MAX_RETRIES = 3
+DEFAULT_MAX_RETRIES = 10  # Increased to allow AI more attempts to get validation right
 DEFAULT_SAMPLE_RATE = 44100
 DEFAULT_TEMPERATURE = 0.8
 DEFAULT_MODEL = "gemini-2.5-pro"
@@ -301,7 +301,7 @@ Your response must be valid JSON matching the Composition schema.
         # Clear previous feedback
         self._last_validation_feedback = []
 
-        # Generate with retry loop
+        # Generate with retry loop - NO FALLBACK to minimal composition
         last_error = None
         for attempt in range(max_retries):
             try:
@@ -319,14 +319,15 @@ Your response must be valid JSON matching the Composition schema.
                     f"Validation failed on attempt {attempt + 1}: {feedback}"
                 )
 
+                # Continue retrying - do NOT fall back to minimal composition
+                # The AI must generate valid output
                 if attempt >= max_retries - 1:
-                    # Last attempt failed, return response with errors
-                    logger.error("Max retries reached, returning with validation errors")
-                    return CompositionResponse(
-                        composition=self._create_minimal_composition(request),
-                        metadata={"attempts": attempt + 1, "max_retries_exceeded": True},
-                        validation_errors=self._last_validation_feedback,
-                    )
+                    # Last attempt failed - raise error instead of returning minimal composition
+                    logger.error(f"Max retries ({max_retries}) reached, all attempts failed validation")
+                    raise RuntimeError(
+                        f"Failed to generate valid composition after {max_retries} attempts. "
+                        f"Last error: {feedback}"
+                    ) from e
 
             except AIClientError as e:
                 # AI generation error - don't retry for API errors
@@ -467,14 +468,21 @@ Your response must be valid JSON matching the Composition schema.
         if request.instruments:
             prompt_parts.append(f"\nInstruments: {', '.join(request.instruments)}\n")
 
-        # Add retry feedback
+        # Add retry feedback with explicit corrections
         if attempt > 0 and self._last_validation_feedback:
             prompt_parts.append("\n")
             prompt_parts.append("=" * 60)
-            prompt_parts.append("\n[PREVIOUS ATTEMPT HAD VALIDATION ERRORS. ")
-            prompt_parts.append("PLEASE CORRECT THE FOLLOWING ISSUES:]\n")
-            for feedback in self._last_validation_feedback[-3:]:  # Last 3 feedbacks
-                prompt_parts.append(f"  - {feedback}\n")
+            prompt_parts.append("\n[CRITICAL: PREVIOUS ATTEMPT FAILED VALIDATION]\n")
+            prompt_parts.append("You MUST correct these errors in your response:\n\n")
+            for feedback in self._last_validation_feedback[-5:]:  # Last 5 feedbacks
+                prompt_parts.append(f"  ❌ {feedback}\n")
+            prompt_parts.append("\n")
+            prompt_parts.append("COMMON FIXES:\n")
+            prompt_parts.append("  - tempo_marking: Must be LOWERCASE (andante, not Andante)\n")
+            prompt_parts.append("  - musical_form: Use through_composed (with underscore), not through-composed\n")
+            prompt_parts.append("  - tempo_changes.tempo_marking: Must be a valid tempo name, NOT ritardando/rallentando\n")
+            prompt_parts.append("  - Notes MUST be sorted by start_time (earliest first)\n")
+            prompt_parts.append("  - All parts must have at least one note\n")
             prompt_parts.append("=" * 60)
             prompt_parts.append("\n")
 
@@ -564,20 +572,22 @@ Your response must be valid JSON matching the Composition schema.
   composer: string (optional, default "AI Composer")
   description: string (optional)
   style_period: string (optional: baroque, classical, romantic, modern, film_score)
-  musical_form: string (optional: binary, ternary, rondo, sonata, theme_and_variations)
+  musical_form: string (optional: binary, ternary, rondo, sonata, theme_and_variations, minuet, scherzo, through_composed, strophic)
+    WARNING: Use through_composed with underscore, NOT through-composed with hyphen
   key_signature: string (required, e.g. "C major", "A minor")
   initial_tempo_bpm: number (required, >0)
-  tempo_marking: string (optional, MUST be one of: larghissimo, grave, largo, lento, adagio, larghetto,
+  tempo_marking: string (optional, MUST be lowercase - one of: larghissimo, grave, largo, lento, adagio, larghetto,
     adagietto, andante, andantino, moderato, allegretto, allegro, vivace, presto, prestissimo)
+    CRITICAL: Must be LOWERCASE (andante, NOT Andante)
   time_signature:
     numerator: int (required, >=1)
     denominator: int (required, >=1)
   tempo_changes: array (optional)
     - tempo_bpm: number
       time: number (seconds)
-      tempo_marking: string (optional, MUST be one of: larghissimo, grave, largo, lento, adagio,
+      tempo_marking: string (optional, MUST be lowercase - one of: larghissimo, grave, largo, lento, adagio,
         larghetto, adagietto, andante, andantino, moderato, allegretto, allegro, vivace, presto, prestissimo)
-      NOTE: ritardando, rallentando, accelerando are NOT valid - use tempo_bpm changes instead
+      CRITICAL: ritardando, rallentando, accelerando are NOT valid - use tempo_bpm changes instead
   time_signature_changes: array (optional)
     - time_signature: {numerator, denominator}
       time: number (seconds)
@@ -595,7 +605,7 @@ Your response must be valid JSON matching the Composition schema.
       midi_channel: int (required, 0-15)
       midi_program: int (required, 0-127)
       solo: boolean (optional, default false)
-      notes: array (required)
+      notes: array (required, MUST be sorted by start_time - earliest notes first!)
         - pitch: int (0-127, required)
           start_time: float (seconds, >=0, required)
           duration: float (seconds, >0, required)
