@@ -10,11 +10,10 @@ from pathlib import Path
 
 from musicgen.composer_v3 import AIComposerV3
 
-# Set API key (use environment variable or default)
-GOOGLE_API_KEY = os.environ.get(
-    "GOOGLE_API_KEY",
-    "***REMOVED***"
-)
+# API key must be set via environment variable GOOGLE_API_KEY
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+if not GOOGLE_API_KEY:
+    raise ValueError("Please set GOOGLE_API_KEY environment variable")
 
 # 5 human-like prompts for music generation
 PROMPTS = [

@@ -6,8 +6,9 @@ from pathlib import Path
 
 from musicgen.composer_v3 import AIComposerV3
 
-# Set API key
-os.environ["GOOGLE_API_KEY"] = "***REMOVED***"
+# API key must be set via environment variable GOOGLE_API_KEY
+if not os.environ.get("GOOGLE_API_KEY"):
+    raise ValueError("Please set GOOGLE_API_KEY environment variable")
 
 
 def main():
