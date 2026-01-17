@@ -69,13 +69,13 @@ class PatternParser:
         if not pattern_str:
             return Pattern()
 
-        # Handle polymetric patterns (comma-separated)
-        if "," in pattern_str:
+        # Handle polymetric patterns (comma-separated, but not inside parentheses)
+        if "," in pattern_str and not ("(" in pattern_str and ")" in pattern_str):
             return self._parse_polymetric(pattern_str)
 
         # Parse single pattern
         events = self._parse_sequence(pattern_str)
-        return Pattern(events=events)
+        return Pattern(events=events, length=float(len(events)))
 
     def _parse_polymetric(self, pattern_str: str) -> Pattern:
         """Parse a polymetric pattern (comma-separated parts)."""
@@ -175,22 +175,41 @@ class PatternParser:
         if hits >= steps:
             return [True] * steps
 
-        # Bjorklund algorithm
-        counts: list[list[int]] = [[hits] if i < hits else [0] for i in range(steps)]
+        # Bjorklund algorithm using recursive remainder method
+        def bjorklund_recursive(onsets: int, total: int) -> list[list[int]]:
+            """Recursive Bjorklund algorithm."""
+            if onsets == 0:
+                return [[0]] * total
+            if onsets == total:
+                return [[1]] * total
 
-        divisor = steps - hits
-        while divisor > 1:
-            for i in range(len(counts)):
-                if len(counts[i]) == 1 and counts[i][0] >= divisor:
-                    counts[i] = [divisor, counts[i][0] - divisor]
-            divisor = steps % divisor if steps % divisor != 0 else 1
+            # Calculate the base pattern and remainder
+            counts = []
+            remainder = onsets
+            divisor = total
 
-        # Flatten the pattern
-        pattern: list[bool] = []
-        for count in counts:
-            pattern.extend([True] if c == 1 else [False] for c in count)
+            while remainder > 0:
+                count = divisor // remainder
+                counts.append(count)
+                new_remainder = divisor % remainder
+                divisor = remainder
+                remainder = new_remainder
 
-        return pattern[:steps]
+            # Build the pattern from counts
+            result: list[list[int]] = []
+            for c in counts:
+                result.append([1])
+                result.extend([[0]] * (c - 1))
+
+            return result
+
+        # Simple Euclidean distribution
+        result: list[bool] = [False] * steps
+        for i in range(hits):
+            pos = int(i * steps / hits)
+            result[pos] = True
+
+        return result
 
 
 def parse_pattern(pattern_str: str) -> Pattern:
