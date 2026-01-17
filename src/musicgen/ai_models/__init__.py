@@ -13,18 +13,17 @@ from musicgen.ai_models.composition import (
     TimeSignatureEvent,
 )
 from musicgen.ai_models.notes import (
+    CC,
     AINote,
     AINoteEvent,
     AIRest,
     ArticulationType,
-    CC,
     ControlChangeEvent,
 )
 from musicgen.ai_models.parts import (
     AIPart,
     InstrumentRole,
 )
-from musicgen.ai_models.sections import AISection
 
 # Post-processing
 from musicgen.ai_models.postprocess import (
@@ -35,6 +34,7 @@ from musicgen.ai_models.postprocess import (
     is_harmony_role,
     validate_composition,
 )
+from musicgen.ai_models.sections import AISection
 
 __all__ = [
     # Notes

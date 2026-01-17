@@ -12,8 +12,8 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any
 
+from musicgen.ai_models.notes import AINote, AINoteEvent, AIRest
 from musicgen.ai_models.parts import AIPart, InstrumentRole
-from musicgen.ai_models.notes import AINote, AIRest, AINoteEvent
 
 logger = logging.getLogger(__name__)
 
@@ -360,7 +360,7 @@ def auto_fix_composition(composition: Any) -> Any:
     Returns:
         The composition with fixes applied (in-place modification)
     """
-    result = validate_composition(composition, auto_fix=True)
+    validate_composition(composition, auto_fix=True)
     return composition
 
 

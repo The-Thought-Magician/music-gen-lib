@@ -4,7 +4,8 @@ Demonstrates generating music for different moods using presets.
 """
 
 from pathlib import Path
-from musicgen import generate, CompositionRequest
+
+from musicgen import CompositionRequest, generate
 
 
 def main():

@@ -37,6 +37,7 @@ dependencies = [
     "google-api-core>=2.29.0",
     "python-dotenv>=1.2.1",
     "pydub>=0.25.1",
+    "scipy>=1.15.3",
 ]
 
 [project.optional-dependencies]

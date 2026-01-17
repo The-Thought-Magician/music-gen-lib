@@ -7,8 +7,9 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from musicgen.schema import get_schema, SchemaGenerator
 from musicgen.ai_client.prompts import PromptBuilder
+from musicgen.schema import get_schema
+
 
 def show_prompt_for(user_prompt: str):
     """Show the full prompt that would be sent to AI for a given user prompt.

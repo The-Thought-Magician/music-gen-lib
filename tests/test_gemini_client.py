@@ -3,11 +3,10 @@
 import pytest
 
 from musicgen.ai_client import (
+    APIKeyError,
     GeminiClient,
     PromptBuilder,
     check_availability,
-    AIClientError,
-    APIKeyError,
 )
 from musicgen.ai_client.exceptions import InvalidResponseError
 

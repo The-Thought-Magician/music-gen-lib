@@ -1,15 +1,14 @@
 """Test AI composition models."""
 
 import json
+
 import pytest
 
 from musicgen.ai_models import (
-    AINote,
-    AIRest,
-    AIPart,
     AIComposition,
-    TimeSignature,
-    KeySignature,
+    AINote,
+    AIPart,
+    AIRest,
 )
 
 

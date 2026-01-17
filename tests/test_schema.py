@@ -1,6 +1,6 @@
 """Test schema generation."""
 
-from musicgen.schema import SchemaGenerator, SchemaConfig, get_schema
+from musicgen.schema import SchemaConfig, SchemaGenerator, get_schema
 
 
 def test_schema_generation():

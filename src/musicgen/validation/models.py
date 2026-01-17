@@ -11,7 +11,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from musicgen.ai_models.v3.parts import InstrumentPart
+    pass
 
 
 class ValidationSeverity(str, Enum):

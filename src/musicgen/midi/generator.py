@@ -21,8 +21,8 @@ except ImportError:
 
 if TYPE_CHECKING:
     from musicgen.ai_models.v3.composition import Composition
-    from musicgen.ai_models.v3.parts import InstrumentPart
     from musicgen.ai_models.v3.notes import Note
+    from musicgen.ai_models.v3.parts import InstrumentPart
 
 from musicgen.ai_models.v3.articulation import (
     DEFAULT_DURATION_MULTIPLIERS,
@@ -179,7 +179,7 @@ class EnhancedMIDIGenerator:
     def _collect_events(
         self,
         part: InstrumentPart,
-        composition: Composition,
+        _composition: Composition,
     ) -> list[dict]:
         """Collect all MIDI events for a part, sorted by time."""
         events = []

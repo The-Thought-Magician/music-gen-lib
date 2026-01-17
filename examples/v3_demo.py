@@ -12,17 +12,12 @@ from pathlib import Path
 
 from musicgen.ai_models.v3 import (
     ArticulationType,
-    CC,
     Composition,
-    DynamicMarking,
     InstrumentPart,
     KeyswitchEvent,
-    MusicalForm,
     Note,
     SectionMarker,
-    StylePeriod,
     TimeSignature,
-    TempoMarking,
     get_dynamic_velocity,
     get_tempo_bpm_range,
 )
@@ -217,7 +212,7 @@ def main():
         print(f"     Notes: {part.note_count()}")
         print(f"     Keyswitches: {len(part.keyswitches)}")
         print(f"     CC events: {len(part.cc_events)}")
-        print(f"     Articulations used: {set(n.articulation for n in part.notes if n.articulation)}")
+        print(f"     Articulations used: { {n.articulation for n in part.notes if n.articulation} }")
     print()
 
     print("=" * 60)

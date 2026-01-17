@@ -1,7 +1,8 @@
 """Tests for Note and Rest classes."""
 
 import pytest
-from musicgen.core.note import Note, Rest, QUARTER, HALF, EIGHTH, MF, F, PP, FF
+
+from musicgen.core.note import FF, HALF, MF, PP, QUARTER, Note, Rest
 
 
 class TestNoteCreation:

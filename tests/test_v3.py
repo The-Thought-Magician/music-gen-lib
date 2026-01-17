@@ -15,26 +15,20 @@ import pytest
 from pydantic import ValidationError
 
 from musicgen.ai_models.v3 import (
-    ArticulationType,
     CC,
+    ArticulationType,
     CCEvent,
     Composition,
     CompositionRequest,
     CompositionResponse,
     DynamicChange,
-    DynamicMarking,
     InstrumentPart,
     KeyswitchEvent,
-    MusicalForm,
     Note,
     PitchBendEvent,
     ProgramChangeEvent,
-    SectionMarker,
-    StylePeriod,
     TempoChange,
-    TempoMarking,
     TimeSignature,
-    TimeSignatureChange,
     get_dynamic_velocity,
     get_tempo_bpm_range,
 )
@@ -46,7 +40,6 @@ from musicgen.validation import (
     VoiceLeadingValidator,
 )
 from musicgen.validation.models import ValidationSeverity
-
 
 # ============================================================================
 # V3 Model Tests

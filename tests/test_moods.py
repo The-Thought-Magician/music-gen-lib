@@ -1,7 +1,8 @@
 """Tests for mood configuration system."""
 
 import pytest
-from musicgen.config.moods import MoodPreset, get_mood_preset, list_moods, get_all_presets
+
+from musicgen.config.moods import MoodPreset, get_all_presets, get_mood_preset, list_moods
 from musicgen.generator import CompositionRequest
 
 
@@ -59,7 +60,7 @@ class TestMoodPreset:
         presets = get_all_presets()
         assert isinstance(presets, dict)
         assert len(presets) > 0
-        for mood, preset in presets.items():
+        for _mood, preset in presets.items():
             assert isinstance(preset, MoodPreset)
 
 

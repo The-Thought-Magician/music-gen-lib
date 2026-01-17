@@ -4,8 +4,7 @@
 This demonstrates the simplest way to generate music with the library.
 """
 
-from musicgen import generate, CompositionRequest
-
+from musicgen import CompositionRequest, generate
 
 # Generate music with a single line of code
 result = generate(CompositionRequest(
@@ -16,5 +15,5 @@ result = generate(CompositionRequest(
 print(f"Generated {result.title}!")
 print(f"  Key: {result.key}")
 print(f"  Tempo: {result.tempo} BPM")
-print(f"  Duration: 30 seconds")
+print("  Duration: 30 seconds")
 print(f"  MIDI: {result.midi_path}")

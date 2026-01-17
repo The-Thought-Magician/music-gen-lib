@@ -1,9 +1,7 @@
 """Tests for the command-line interface."""
 
-import pytest
 import subprocess
 import sys
-from pathlib import Path
 
 
 class TestCLI:

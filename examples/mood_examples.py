@@ -6,7 +6,8 @@ to create music with different moods.
 """
 
 from pathlib import Path
-from musicgen import generate, CompositionRequest
+
+from musicgen import CompositionRequest, generate
 
 
 def example_epic():

@@ -6,11 +6,9 @@ that would exceed token limits in a single generation.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
-from musicgen.ai_models import AIComposition, AISection, AIPart, AINote, KeySignature, TimeSignature
-from musicgen.ai_client.prompts import PromptBuilder
+from musicgen.ai_models import AIComposition, AINote, AIPart, AISection, KeySignature, TimeSignature
 
 
 class SectionalComposer:
@@ -113,7 +111,7 @@ class SectionalComposer:
 
         # If we have a client, generate notes
         if self.client:
-            section_prompt = self._build_section_prompt(
+            self._build_section_prompt(
                 prompt=prompt,
                 section_name=section_name,
                 start_bar=start_bar,

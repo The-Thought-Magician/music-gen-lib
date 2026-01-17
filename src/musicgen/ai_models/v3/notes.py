@@ -6,14 +6,12 @@ pitch bends, and other MIDI events with full SFZ rendering support.
 
 from __future__ import annotations
 
-from typing import Literal
-
 from pydantic import BaseModel, Field, field_validator
 
 from musicgen.ai_models.v3.articulation import (
-    ArticulationType,
     DEFAULT_DURATION_MULTIPLIERS,
     DEFAULT_VELOCITY_MULTIPLIERS,
+    ArticulationType,
 )
 
 

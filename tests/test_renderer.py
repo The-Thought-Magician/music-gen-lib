@@ -1,10 +1,10 @@
 """Test rendering engine."""
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 from musicgen.ai_models import AIComposition
-from musicgen.renderer import Renderer, MIDIRenderer
+from musicgen.renderer import MIDIRenderer, Renderer
 
 
 def test_midi_renderer():

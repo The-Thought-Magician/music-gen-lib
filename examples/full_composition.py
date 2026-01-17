@@ -4,11 +4,19 @@ Demonstrates a complete music generation workflow from scale to export.
 """
 
 from pathlib import Path
+
 from musicgen import (
-    Scale, Key, Progression,
-    MelodyGenerator, MelodicContour,
-    Ensemble, Texture,
-    MIDIWriter, Score, Part, Note, QUARTER
+    QUARTER,
+    Ensemble,
+    Key,
+    MelodicContour,
+    MelodyGenerator,
+    MIDIWriter,
+    Note,
+    Part,
+    Progression,
+    Scale,
+    Score,
 )
 
 

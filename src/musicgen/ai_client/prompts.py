@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from musicgen.ai_client.tools import (
-    DEFAULT_COMPOSITION_TOOLS,
     FunctionDeclaration,
 )
 from musicgen.schema import SchemaConfig, get_schema

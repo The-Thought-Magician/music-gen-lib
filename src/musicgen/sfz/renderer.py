@@ -12,6 +12,7 @@ The renderer supports:
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import shutil
 import subprocess
@@ -104,8 +105,8 @@ class SFZRenderer:
         # First check if command exists
         if not shutil.which(self.sfizz_path):
             raise SFZNotAvailableError(
-                f"sfizz-render not found. "
-                f"Install with: sudo apt install sfizz (Linux) or brew install sfizz (macOS)"
+                "sfizz-render not found. "
+                "Install with: sudo apt install sfizz (Linux) or brew install sfizz (macOS)"
             )
 
         # Try to run it
@@ -122,13 +123,13 @@ class SFZRenderer:
                     f"sfizz-render exists but failed to run. "
                     f"Output: {result.stderr}"
                 )
-        except subprocess.TimeoutExpired:
-            raise SFZNotAvailableError("sfizz-render timed out during availability check")
-        except FileNotFoundError:
+        except subprocess.TimeoutExpired as err:
+            raise SFZNotAvailableError("sfizz-render timed out during availability check") from err
+        except FileNotFoundError as err:
             raise SFZNotAvailableError(
                 f"sfizz-render not found at '{self.sfizz_path}'. "
                 f"Install with: sudo apt install sfizz (Linux) or brew install sfizz (macOS)"
-            )
+            ) from err
 
     def render(
         self,
@@ -192,11 +193,11 @@ class SFZRenderer:
                 check=False,
             )
         except subprocess.TimeoutExpired as e:
-            raise SFZRenderError(f"sfizz-render timed out after 5 minutes") from e
-        except FileNotFoundError:
+            raise SFZRenderError("sfizz-render timed out after 5 minutes") from e
+        except FileNotFoundError as err:
             raise SFZNotAvailableError(
                 f"sfizz-render not found at '{self.sfizz_path}'"
-            )
+            ) from err
 
         # Check result
         if result.returncode != 0:
@@ -457,8 +458,8 @@ class MultiInstrumentRenderer:
         """
         try:
             import mido
-        except ImportError:
-            raise RuntimeError("mido library is required. Install with: pip install mido")
+        except ImportError as err:
+            raise RuntimeError("mido library is required. Install with: pip install mido") from err
 
         mid = mido.MidiFile(str(midi_path))
         output_mid = mido.MidiFile(ticks_per_beat=mid.ticks_per_beat)
@@ -487,8 +488,8 @@ class MultiInstrumentRenderer:
         """
         try:
             from pydub import AudioSegment
-        except ImportError:
-            raise RuntimeError("pydub library is required for mixing. Install with: pip install pydub")
+        except ImportError as err:
+            raise RuntimeError("pydub library is required for mixing. Install with: pip install pydub") from err
 
         if not stems:
             raise ValueError("No stems to mix")
@@ -532,10 +533,8 @@ class MultiInstrumentRenderer:
 
         # Also clean up extracted MIDI files
         for midi_file in self.temp_dir.glob("ch*_*.mid"):
-            try:
+            with contextlib.suppress(Exception):
                 midi_file.unlink()
-            except Exception:
-                pass
 
 
 def render_midi_to_audio(

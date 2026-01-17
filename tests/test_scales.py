@@ -1,7 +1,8 @@
 """Tests for Scale class."""
 
 import pytest
-from musicgen.theory.scales import Scale, ScaleType
+
+from musicgen.theory.scales import Scale
 
 
 class TestScaleCreation:

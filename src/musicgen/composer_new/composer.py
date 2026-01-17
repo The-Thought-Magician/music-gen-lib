@@ -13,7 +13,7 @@ from musicgen.ai_client.tools import (
     FunctionDeclaration,
     ToolCallResult,
 )
-from musicgen.ai_models import AIComposition, validate_composition
+from musicgen.ai_models import AIComposition
 from musicgen.config import Config, get_config
 from musicgen.schema import SchemaConfig, SchemaGenerator
 
@@ -492,7 +492,7 @@ class AIComposer:
             # Inversion handling - rotate notes
             if inversion > 0:
                 # Move bottom notes up an octave
-                inv_note_idx = (i - inversion) % len(pattern)
+                (i - inversion) % len(pattern)
                 octave_offset += 1 if i < inversion else 0
 
             chord_notes.append(note + "4" if octave_offset == 0 else note + "5")

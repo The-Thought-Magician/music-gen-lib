@@ -1,11 +1,18 @@
 """Tests for Chord class."""
 
 import pytest
+
 from musicgen.core.chord import (
-    Chord, MAJOR, MINOR, DIMINISHED, AUGMENTED,
-    MAJOR_SEVENTH, MINOR_SEVENTH, DOMINANT_SEVENTH
+    AUGMENTED,
+    DIMINISHED,
+    DOMINANT_SEVENTH,
+    MAJOR,
+    MAJOR_SEVENTH,
+    MINOR,
+    MINOR_SEVENTH,
+    Chord,
 )
-from musicgen.core.note import Note, QUARTER
+from musicgen.core.note import Note
 
 
 class TestChordCreation:

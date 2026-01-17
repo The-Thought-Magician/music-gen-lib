@@ -3,19 +3,16 @@
 These tests verify that all components work together correctly.
 """
 
-import pytest
-import os
 from pathlib import Path
 
-from musicgen.core.note import Note, QUARTER
-from musicgen.core.chord import Chord, MAJOR
-from musicgen.theory.scales import Scale
+import pytest
+
+from musicgen.composition.melody import MelodyGenerator
+from musicgen.core.note import QUARTER, Note
+from musicgen.generator import CompositionRequest, generate
+from musicgen.io.midi_writer import MIDIWriter, Part, Score
 from musicgen.theory.keys import Key
-from musicgen.theory.progressions import Progression
-from musicgen.composition.melody import MelodyGenerator, MelodicContour
-from musicgen.orchestration.ensembles import Ensemble
-from musicgen.io.midi_writer import MIDIWriter, Score, Part
-from musicgen.generator import generate, CompositionRequest
+from musicgen.theory.scales import Scale
 
 
 class TestFullPipeline:
@@ -93,7 +90,6 @@ class TestFullPipeline:
 
     def test_scale_key_progression_integration(self, c_major_key):
         """Test that Scale, Key, and Progression work together."""
-        scale = c_major_key.scale
         progression = c_major_key.diatonic_chords()
 
         assert len(progression) == 7
@@ -178,7 +174,7 @@ class TestMoodPresets:
         """Test generation for each mood preset."""
         from musicgen.config.moods import MOOD_PRESETS
 
-        for mood_name, preset in MOOD_PRESETS.items():
+        for mood_name, _preset in MOOD_PRESETS.items():
             request = CompositionRequest(
                 mood=mood_name,
                 duration=10,  # Short for testing
@@ -209,7 +205,7 @@ class TestReproducibility:
 
         # Notes should be identical
         assert len(melody1.notes) == len(melody2.notes)
-        for n1, n2 in zip(melody1.notes, melody2.notes):
+        for n1, n2 in zip(melody1.notes, melody2.notes, strict=False):
             if isinstance(n1, Note) and isinstance(n2, Note):
                 assert n1.name == n2.name
                 assert n1.octave == n2.octave

@@ -10,9 +10,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from musicgen.ai_models.v3.articulation import ArticulationType
-from musicgen.ai_models.v3.notes import Note
 from musicgen.orchestration.definitions import (
-    DynamicMarking,
     get_instrument_library,
 )
 from musicgen.validation.models import ValidationResult, ValidationSeverity
@@ -384,14 +382,14 @@ class OrchestrationValidator:
 
     def _get_dynamic_at_time(
         self,
-        part: InstrumentPart,
+        _part: InstrumentPart,
         composition: Composition,
         time: float,
     ) -> str:
         """Get the effective dynamic marking at a given time.
 
         Args:
-            part: Instrument part
+            _part: Instrument part (unused)
             composition: Full composition with dynamic changes
             time: Time in seconds
 

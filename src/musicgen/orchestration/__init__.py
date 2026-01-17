@@ -4,6 +4,22 @@ This module provides classes for instruments, ensembles, and orchestration strat
 """
 
 # V1/V2 orchestration (existing)
+# V3 instrument definitions (new)
+from musicgen.orchestration.definitions import (
+    Articulation,
+    Clef,
+    DynamicMarking,
+    DynamicRange,
+    EnsembleDefinition,
+    InstrumentDefinition,
+    InstrumentFamily,
+    get_ensemble,
+    get_instrument,
+    get_instrument_library,
+    list_ensembles,
+    list_instruments_by_family,
+    load_instrument_definitions,
+)
 from musicgen.orchestration.ensembles import (
     Ensemble,
     Texture,
@@ -11,8 +27,10 @@ from musicgen.orchestration.ensembles import (
 )
 from musicgen.orchestration.instruments import (
     Instrument,
-    InstrumentFamily as InstrumentFamilyV2,
     Voice,
+)
+from musicgen.orchestration.instruments import (
+    InstrumentFamily as InstrumentFamilyV2,
 )
 from musicgen.orchestration.strategies import (
     OrchestrationBuilder,
@@ -20,23 +38,6 @@ from musicgen.orchestration.strategies import (
     TextureDensity,
     TexturePlan,
     get_preset,
-)
-
-# V3 instrument definitions (new)
-from musicgen.orchestration.definitions import (
-    Articulation,
-    DynamicMarking,
-    DynamicRange,
-    EnsembleDefinition,
-    Clef,
-    get_ensemble,
-    get_instrument,
-    get_instrument_library,
-    InstrumentDefinition,
-    InstrumentFamily,
-    list_ensembles,
-    list_instruments_by_family,
-    load_instrument_definitions,
 )
 
 # Re-export V2 InstrumentFamily with alias to maintain compatibility

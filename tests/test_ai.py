@@ -3,22 +3,22 @@
 Tests the AI client, models, and composition building.
 """
 
-import pytest
 import json
-from pathlib import Path
 
+import pytest
+
+from musicgen.ai.composer import build_composition_from_plan
 from musicgen.ai.models import (
-    OrchestrationPlan,
-    Section,
-    InstrumentAssignment,
+    DynamicsLevel,
     DynamicsPlan,
+    FormType,
+    InstrumentAssignment,
     InstrumentRole,
     InstrumentSection,
-    DynamicsLevel,
+    OrchestrationPlan,
     ScaleType,
-    FormType,
+    Section,
 )
-from musicgen.ai.composer import build_composition_from_plan
 
 
 class TestOrchestrationPlan:

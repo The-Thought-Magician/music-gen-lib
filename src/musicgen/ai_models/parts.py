@@ -6,7 +6,7 @@ from enum import Enum
 
 from pydantic import BaseModel, Field, field_validator
 
-from musicgen.ai_models.notes import AINote, AINoteEvent, AIRest, ControlChangeEvent, CC
+from musicgen.ai_models.notes import CC, AINote, AINoteEvent, AIRest, ControlChangeEvent
 
 
 class InstrumentRole(str, Enum):

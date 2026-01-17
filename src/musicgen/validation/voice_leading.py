@@ -229,8 +229,8 @@ class VoiceLeadingValidator:
         part1: InstrumentPart,
         part2: InstrumentPart,
         interval: int,
-        tonic_pc: int,
-        is_minor: bool,
+        _tonic_pc: int,
+        _is_minor: bool,
         result: ValidationResult,
     ) -> None:
         """Check for direct perfect intervals by skip motion.
@@ -242,8 +242,8 @@ class VoiceLeadingValidator:
             part1: First instrument part
             part2: Second instrument part
             interval: Interval to check (7 for 5th, 12 for octave)
-            tonic_pc: Pitch class of tonic (for key context)
-            is_minor: Whether the key is minor
+            _tonic_pc: Pitch class of tonic (unused, reserved for future use)
+            _is_minor: Whether the key is minor (unused, reserved for future use)
             result: ValidationResult to add errors to
         """
         interval_name = "fifth" if interval == PERFECT_FIFTH else "octave"
@@ -308,7 +308,6 @@ class VoiceLeadingValidator:
             result: ValidationResult to add errors to
         """
         tonic_pc = self._parse_tonic_pitch_class(key_signature)
-        is_minor = "minor" in key_signature.lower()
 
         for part in parts:
             notes = part.notes
@@ -327,24 +326,22 @@ class VoiceLeadingValidator:
                 # Leading tone is one semitone below tonic
                 leading_tone_pc = (tonic_pc - 1) % 12
 
-                if current_pc == leading_tone_pc:
-                    # Check if it resolves to tonic
-                    if next_pc != tonic_pc:
-                        # Check if it's at least moving upward
-                        interval = next_note.pitch - current_note.pitch
-                        if interval <= 0:
-                            result.add_voice_leading_error(
-                                error_type="leading_tone_resolution",
-                                location=current_note.start_time,
-                                voice1=part.instrument_name,
-                                voice2="(tonic)",
-                                description=(
-                                    f"Leading tone at {current_note.pitch} "
-                                    f"does not resolve upward to tonic "
-                                    f"(moves {interval:+d} instead)"
-                                ),
-                                severity=ValidationSeverity.WARNING,
-                            )
+                if current_pc == leading_tone_pc and next_pc != tonic_pc:
+                    # Check if it's at least moving upward
+                    interval = next_note.pitch - current_note.pitch
+                    if interval <= 0:
+                        result.add_voice_leading_error(
+                            error_type="leading_tone_resolution",
+                            location=current_note.start_time,
+                            voice1=part.instrument_name,
+                            voice2="(tonic)",
+                            description=(
+                                f"Leading tone at {current_note.pitch} "
+                                f"does not resolve upward to tonic "
+                                f"(moves {interval:+d} instead)"
+                            ),
+                            severity=ValidationSeverity.WARNING,
+                        )
 
     def _get_simultaneous_note_pairs(
         self,

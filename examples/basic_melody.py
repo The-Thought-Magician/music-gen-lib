@@ -4,10 +4,7 @@ This example demonstrates how to create a simple melody
 using MusicGen's core classes.
 """
 
-from musicgen import (
-    Note, Chord, Scale, Key,
-    QUARTER, HALF, EIGHTH, MAJOR, MINOR
-)
+from musicgen import HALF, MAJOR, QUARTER, Chord, Scale
 
 
 def main():

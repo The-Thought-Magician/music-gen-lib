@@ -11,29 +11,25 @@ This module provides the AIComposerV3 class that integrates all V3 components:
 
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    pass
 
+from musicgen.ai_client import GeminiClient
+from musicgen.ai_client.exceptions import AIClientError
 from musicgen.ai_models.v3 import (
     Composition,
     CompositionRequest,
     CompositionResponse,
-    DynamicMarking,
     MusicalForm,
     StylePeriod,
-    TempoMarking,
     TimeSignature,
 )
-from musicgen.ai_client import GeminiClient
-from musicgen.ai_client.exceptions import AIClientError
 from musicgen.midi import EnhancedMIDIGenerator
 from musicgen.orchestration.definitions import (
-    EnsembleDefinition,
     InstrumentDefinition,
     InstrumentLibrary,
     get_instrument_library,
@@ -227,12 +223,12 @@ Your response must be valid JSON matching the Composition schema.
 
     def _load_instrument_definitions(
         self,
-        path: Path | str | None,
+        _path: Path | str | None,
     ) -> InstrumentLibrary:
         """Load instrument definitions from YAML.
 
         Args:
-            path: Path to instrument definitions YAML.
+            _path: Path to instrument definitions YAML (unused, loads from default location).
 
         Returns:
             InstrumentLibrary with all definitions.
@@ -636,10 +632,7 @@ Your response must be valid JSON matching the Composition schema.
         """
         try:
             # Handle nested composition structure
-            if "composition" in raw_response:
-                data = raw_response["composition"]
-            else:
-                data = raw_response
+            data = raw_response.get("composition", raw_response)
 
             return Composition(**data)
 
@@ -811,16 +804,12 @@ Your response must be valid JSON matching the Composition schema.
         mapping = {}
 
         for part in composition.parts:
-            # Look up instrument by name
-            inst_name = part.instrument_name.lower().replace(" ", "_")
-
             # Try to find matching instrument definition
             sfz_file = None
-            for key, inst in self.instrument_library.instruments.items():
-                if isinstance(inst, InstrumentDefinition):
-                    if inst.name.lower() == part.instrument_name.lower():
-                        sfz_file = inst.sfz_file
-                        break
+            for inst in self.instrument_library.instruments.values():
+                if isinstance(inst, InstrumentDefinition) and inst.name.lower() == part.instrument_name.lower():
+                    sfz_file = inst.sfz_file
+                    break
 
             mapping[part.midi_channel] = sfz_file
 
@@ -863,11 +852,11 @@ Your response must be valid JSON matching the Composition schema.
         """
         try:
             import pretty_midi
-        except ImportError:
+        except ImportError as err:
             raise RuntimeError(
                 "pretty_midi library is required for fallback rendering. "
                 "Install with: pip install pretty-midi"
-            )
+            ) from err
 
         midi = pretty_midi.PrettyMIDI(str(midi_path))
         audio = midi.synthesize(fs=self.config.default_sample_rate)
@@ -896,11 +885,11 @@ Your response must be valid JSON matching the Composition schema.
         try:
             import numpy as np
             from scipy.io import wavfile
-        except ImportError:
+        except ImportError as err:
             raise RuntimeError(
                 "numpy and scipy are required for WAV output. "
                 "Install with: pip install numpy scipy"
-            )
+            ) from err
 
         # Convert to int16
         audio_int16 = (audio * 32767).astype(np.int16)
@@ -920,11 +909,11 @@ Your response must be valid JSON matching the Composition schema.
         """
         try:
             from pydub import AudioSegment
-        except ImportError:
+        except ImportError as err:
             raise RuntimeError(
                 "pydub library is required for MP3 output. "
                 "Install with: pip install pydub"
-            )
+            ) from err
 
         # First save as temporary WAV
         temp_wav = output_path.with_suffix(".temp.wav")

@@ -23,8 +23,8 @@ Example usage:
 
 from musicgen.validation.models import (
     OrchestrationError,
-    ValidationSeverity,
     ValidationResult,
+    ValidationSeverity,
     VoiceLeadingError,
 )
 from musicgen.validation.orchestration import OrchestrationValidator

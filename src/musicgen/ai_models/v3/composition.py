@@ -10,7 +10,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 # Type aliases for common values
 StylePeriod = Literal[
     "baroque",
@@ -258,7 +257,9 @@ class Composition(BaseModel):
 
 
 # Import InstrumentPart for type hints and update forward references
+# ruff: noqa: E402
 from musicgen.ai_models.v3.parts import InstrumentPart
+
 Composition.model_rebuild()
 
 

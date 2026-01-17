@@ -3,7 +3,7 @@
 Demonstrates various chord progression patterns and how to use them.
 """
 
-from musicgen import Scale, Key, Progression
+from musicgen import Key, Progression
 
 
 def main():

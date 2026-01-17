@@ -10,9 +10,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-from musicgen.ai_models.v3.articulation import ArticulationType, KeyswitchEvent
+from musicgen.ai_models.v3.articulation import KeyswitchEvent
 from musicgen.ai_models.v3.notes import CCEvent, Note, PitchBendEvent, ProgramChangeEvent
-
 
 # Type aliases for instrument family and clef
 InstrumentFamily = Literal[

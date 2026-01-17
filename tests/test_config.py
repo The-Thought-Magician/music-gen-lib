@@ -1,10 +1,8 @@
 """Test configuration system."""
 
 import os
-from pathlib import Path
 import tempfile
-
-import pytest
+from pathlib import Path
 
 from musicgen.config import Config, get_config
 

@@ -8,29 +8,11 @@ with articulations, keyswitches, and full validation.
 # Articulation Models
 # ============================================================================
 from musicgen.ai_models.v3.articulation import (
+    DEFAULT_DURATION_MULTIPLIERS,
+    DEFAULT_VELOCITY_MULTIPLIERS,
     ArticulationDefinition,
     ArticulationType,
     KeyswitchEvent,
-    DEFAULT_DURATION_MULTIPLIERS,
-    DEFAULT_VELOCITY_MULTIPLIERS,
-)
-
-# ============================================================================
-# Note and Event Models
-# ============================================================================
-from musicgen.ai_models.v3.notes import (
-    CC,
-    CCEvent,
-    Note,
-    PitchBendEvent,
-    ProgramChangeEvent,
-)
-
-# ============================================================================
-# Part Models
-# ============================================================================
-from musicgen.ai_models.v3.parts import (
-    InstrumentPart,
 )
 
 # ============================================================================
@@ -51,6 +33,24 @@ from musicgen.ai_models.v3.composition import (
     TimeSignatureChange,
     get_dynamic_velocity,
     get_tempo_bpm_range,
+)
+
+# ============================================================================
+# Note and Event Models
+# ============================================================================
+from musicgen.ai_models.v3.notes import (
+    CC,
+    CCEvent,
+    Note,
+    PitchBendEvent,
+    ProgramChangeEvent,
+)
+
+# ============================================================================
+# Part Models
+# ============================================================================
+from musicgen.ai_models.v3.parts import (
+    InstrumentPart,
 )
 
 __all__ = [

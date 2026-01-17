@@ -2,8 +2,8 @@
 
 import pytest
 
-from musicgen.composer_new import AIComposer, ValidationError
 from musicgen.ai_models import AIComposition
+from musicgen.composer_new import AIComposer, ValidationError
 
 
 def test_composer_initialization():
@@ -26,9 +26,9 @@ def test_generate_requires_validation():
 def test_preset_system():
     """Test prompt presets."""
     from musicgen.composer_new.presets import (
+        apply_modifier,
         get_preset,
         list_presets,
-        apply_modifier,
     )
 
     presets = list_presets()

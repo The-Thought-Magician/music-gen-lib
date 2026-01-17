@@ -70,9 +70,9 @@ from musicgen.sfz.renderer import (
     MultiInstrumentRenderer,
     SFZNotAvailableError,
     SFZNotFoundError,
-    SFZRenderError,
     SFZRenderer,
     SFZRendererError,
+    SFZRenderError,
     render_midi_to_audio,
     render_multitrack,
 )

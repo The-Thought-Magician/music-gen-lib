@@ -1,33 +1,30 @@
 """Pytest configuration and shared fixtures for musicgen tests."""
 
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from musicgen.core.note import Note as CoreNote, Rest, QUARTER, WHOLE, HALF, MF
-from musicgen.core.chord import Chord, MAJOR, MINOR
-from musicgen.theory.scales import Scale
-from musicgen.theory.keys import Key
-from musicgen.theory.progressions import Progression
-
 # V3 imports
 from musicgen.ai_models.v3 import (
-    ArticulationType,
     CC,
+    ArticulationType,
     CCEvent,
     Composition,
-    DynamicChange,
     InstrumentPart,
     KeyswitchEvent,
-    Note as V3Note,
-    PitchBendEvent,
-    ProgramChangeEvent,
-    TempoChange,
     TimeSignature,
 )
+from musicgen.ai_models.v3 import (
+    Note as V3Note,
+)
+from musicgen.core.chord import MAJOR, Chord
+from musicgen.core.note import QUARTER, Note
+from musicgen.theory.keys import Key
+from musicgen.theory.progressions import Progression
+from musicgen.theory.scales import Scale
 
 
 @pytest.fixture

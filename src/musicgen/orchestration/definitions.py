@@ -8,11 +8,10 @@ and ensemble presets.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Literal
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, Field, field_validator
-
 
 # Type aliases
 InstrumentFamily = Literal[
