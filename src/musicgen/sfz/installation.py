@@ -61,10 +61,10 @@ def check_sfizz_installation() -> Mapping[str, bool | DependencyStatus]:
     """
     results: dict[str, bool | DependencyStatus] = {}
 
-    # Check sfizz-render
+    # Check sfizz_render
     try:
         result = subprocess.run(
-            ["sfizz-render", "--version"],
+            ["sfizz_render", "--version"],
             capture_output=True,
             text=True,
             timeout=5,

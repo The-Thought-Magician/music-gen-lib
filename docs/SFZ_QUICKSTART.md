@@ -20,8 +20,8 @@ sudo apt install sfizz
 
 ## Verify Installation
 ```bash
-# Check if sfizz-render is available (should be bundled with sfizz)
-which sfizz-render || echo "sfizz-render not found - will use fallback"
+# Check if sfizz_render is available (bundled with sfizz package)
+which sfizz_render || echo "sfizz_render not found - will use fallback"
 ```
 
 ## SFZ Sound Libraries

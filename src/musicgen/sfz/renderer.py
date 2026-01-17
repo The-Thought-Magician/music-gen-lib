@@ -70,7 +70,7 @@ class SFZRenderer:
 
     def __init__(
         self,
-        sfizz_path: str | Path = "sfizz-render",
+        sfizz_path: str | Path = "sfizz_render",
         libraries_root: Path | str | None = None,
         sample_rate: int = 44100,
         bit_depth: int = 24,
