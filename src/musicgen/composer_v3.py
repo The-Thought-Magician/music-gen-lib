@@ -567,14 +567,17 @@ Your response must be valid JSON matching the Composition schema.
   musical_form: string (optional: binary, ternary, rondo, sonata, theme_and_variations)
   key_signature: string (required, e.g. "C major", "A minor")
   initial_tempo_bpm: number (required, >0)
-  tempo_marking: string (optional: adagio, andante, moderato, allegro, presto)
+  tempo_marking: string (optional, MUST be one of: larghissimo, grave, largo, lento, adagio, larghetto,
+    adagietto, andante, andantino, moderato, allegretto, allegro, vivace, presto, prestissimo)
   time_signature:
     numerator: int (required, >=1)
     denominator: int (required, >=1)
   tempo_changes: array (optional)
     - tempo_bpm: number
       time: number (seconds)
-      tempo_marking: string (optional)
+      tempo_marking: string (optional, MUST be one of: larghissimo, grave, largo, lento, adagio,
+        larghetto, adagietto, andante, andantino, moderato, allegretto, allegro, vivace, presto, prestissimo)
+      NOTE: ritardando, rallentando, accelerando are NOT valid - use tempo_bpm changes instead
   time_signature_changes: array (optional)
     - time_signature: {numerator, denominator}
       time: number (seconds)
@@ -787,7 +790,7 @@ Your response must be valid JSON matching the Composition schema.
         # Fallback to pretty_midi
         return self._render_with_pretty_midi(
             midi_path,
-            output_path.with_suffix(".wav"),
+            output_path,
             format,
         )
 
@@ -865,7 +868,8 @@ Your response must be valid JSON matching the Composition schema.
 
         # Save audio
         output_path = Path(output_path)
-        if not output_path.suffix:
+        # Ensure correct extension
+        if output_path.suffix != f".{format}":
             output_path = output_path.with_suffix(f".{format}")
 
         if format == "wav":

@@ -107,9 +107,8 @@ class InstrumentPart(BaseModel):
     def validate_notes(cls, notes: list[Note]) -> list[Note]:
         """Ensure notes are sorted by start time."""
         if notes:
-            sorted_notes = sorted(notes, key=lambda n: n.start_time)
-            if notes != sorted_notes:
-                raise ValueError("Notes must be sorted by start_time")
+            # Auto-sort notes by start time instead of raising error
+            return sorted(notes, key=lambda n: n.start_time)
         return notes
 
     def get_duration(self) -> float:

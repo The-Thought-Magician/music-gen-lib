@@ -1812,3 +1812,9 @@ ensembles:
       - french_horn      # Natural Horn II
       # Keyboards (continuo)
       - harpsichord      # Basso continuo
+
+  solo_piano:
+    name: "Solo Piano"
+    description: "Single piano instrument"
+    instruments:
+      - piano            # Piano
