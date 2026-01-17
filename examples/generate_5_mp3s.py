@@ -5,9 +5,16 @@ This script demonstrates the V3 AI composer by generating 5 different
 compositions from natural language prompts and rendering them to MP3.
 """
 
+import os
 from pathlib import Path
 
 from musicgen.composer_v3 import AIComposerV3
+
+# Set API key (use environment variable or default)
+GOOGLE_API_KEY = os.environ.get(
+    "GOOGLE_API_KEY",
+    "***REMOVED***"
+)
 
 # 5 human-like prompts for music generation
 PROMPTS = [
@@ -62,7 +69,7 @@ def main():
 
     # Initialize composer
     print("Initializing AI Composer...")
-    composer = AIComposerV3()
+    composer = AIComposerV3(gemini_api_key=GOOGLE_API_KEY)
     print(f"Output directory: {output_dir.absolute()}")
     print()
 
