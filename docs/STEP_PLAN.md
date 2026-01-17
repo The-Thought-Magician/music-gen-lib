@@ -2,9 +2,11 @@
 
 ## Project Overview
 
-Building an AI-first music generation library that uses Google Gemini 2.5 Pro to generate note-level compositions directly from natural language prompts, then renders them to MIDI/audio.
+Building an AI-first music generation library that uses Google Gemini 2.5 Pro to generate note-level compositions directly from natural language prompts, then renders them to MIDI/audio with SFZ high-quality sound rendering.
 
 **Repository:** `/home/chiranjeet/projects-cc/projects/music-gen-lib`
+**Current Version:** V3.0 (Fully Implemented)
+**Last Updated:** January 17, 2026
 
 ---
 
@@ -439,4 +441,358 @@ EOF
 GOOGLE_API_KEY=AIzaSy...  # Required
 GEMINI_MODEL=gemini-2.5-pro  # Optional
 GEMINI_TEMPERATURE=0.5        # Optional
+```
+
+---
+
+## V3 Implementation Status (COMPLETED - January 17, 2026)
+
+### ✅ All V3 Steps Completed (1-11)
+
+| Step | Description | Status |
+|------|-------------|--------|
+| V3-01 | SFZ Introduction and Research | ✅ Completed |
+| V3-02 | SFZ Instrument Definition Layer | ✅ Completed |
+| V3-03 | SFZ Renderer Integration | ✅ Completed |
+| V3-04 | Articulation System | ✅ Completed |
+| V3-05 | Music Theory System Prompt | ✅ Completed |
+| V3-06 | Composition Schema | ✅ Completed |
+| V3-07 | Validation Tools | ✅ Completed |
+| V3-08 | MIDI Generator with Keyswitch Support | ✅ Completed |
+| V3-09 | AI Composer Integration | ✅ Completed |
+| V3-10 | Testing | ✅ Completed |
+| V3-11 | Documentation | ✅ Completed |
+
+### Supported Instruments - Current Inventory
+
+#### ✅ Western Orchestral (Fully Implemented via SFZ)
+
+| Family | Instruments |
+|--------|-------------|
+| **Strings** | Violin (Solo/Section), Viola (Solo/Section), Cello (Solo/Section), Double Bass (Solo/Section), Harp |
+| **Woodwinds** | Piccolo, Flute, Oboe, English Horn, Clarinet (Bb), Bass Clarinet, Bassoon, Contrabassoon |
+| **Brass** | Trumpet (C/Bb), French Horn, Trombone, Bass Trombone, Tuba |
+| **Percussion** | Timpani, Glockenspiel, Xylophone, Marimba, Vibraphone, Celesta, Tubular Bells |
+| **Keyboards** | Piano, Harpsichord |
+
+#### ✅ Ensemble Presets
+
+- String Quartet, String Orchestra, Woodwind Quintet, Brass Quintet
+- Chamber Orchestra, Full Orchestra, Symphony Orchestra
+- Wind Ensemble, Early Music Ensemble, Solo Piano
+
+#### ❌ NOT Currently Implemented
+
+| Category | Missing Instruments |
+|----------|---------------------|
+| **World Strings** | Sitar, Balalaika, Bouzouki, Ukulele, Mandolin, Banjo, Shamisen, Koto |
+| **World Plucked** | Oud, Santoor, Sarod, Veena, Charango, Tar |
+| **World Bowed** | Erhu, Morin Khuur, Hardanger Fiddle, Nyckelharpa |
+| **World Winds** | Shakuhachi, Bansuri, Dizi, Ney, Shakuhachi, Irish Tin Whistle |
+| **World Percussion** | Tabla, Djembe, Conga, Bongo, Cajon, Doumbek, Taiko, Bodhrán |
+| **Electronic** | Synthesizers, Drum Machines, Electronic Pads |
+| **Guitars** | Acoustic Guitar, Electric Guitar, Hawaiian Guitar (Steel Guitar) |
+| **Bass Guitars** | Electric Bass, Upright Bass (jazz) |
+| **Drum Kits** | Standard Rock Kit, Jazz Kit, Electronic Kit |
+| **Keyboards (Extended)** | Organ, Accordion, Harmonium |
+| **Other** | Bagpipe, Harmonica, Melodica, Glass Armonica |
+
+### Recent Test Results (January 17, 2026)
+
+**SFZ High-Energy Test:**
+- Prompt: "An epic battle scene with explosive energy! Thunderous timpani rolls..."
+- Generated: "The Sundering of Ages"
+- Key: D minor, Tempo: 140 BPM, Duration: 85.3s
+- Instruments: Violins, Brass Section, Cello & Double Bass, Orchestral Percussion
+- Output: `epic_battle_sfz.mid` (3.3K), `epic_battle_sfz.mp3` (1.1M)
+- Status: ✅ SFZ rendering working
+
+---
+
+## Phase 4: World Instruments Integration (NEXT STEPS)
+
+### Overview
+
+To enable world-class music generation across all genres, we need to expand the instrument library beyond Western orchestral instruments to include:
+1. World/ethnic instruments
+2. Contemporary instruments (guitars, basses, drums)
+3. Electronic instruments
+4. Extended articulations and techniques
+
+### Step W1: Research World Instrument SFZ Libraries
+
+**Goal:** Identify and document free SFZ libraries for world instruments.
+
+**Tasks:**
+- Research free SFZ libraries for: Sitar, Tabla, Hawaiian Guitar, etc.
+- Document licensing and usage terms
+- Create compatibility matrix
+
+**Potential Sources:**
+- [SFZ Instruments](https://sfzinstruments.github.io/) - Community SFZ library index
+- [Versilian Studios](https://versilian.studio/) - Free VST/SFZ instruments
+- [SKYLER](https://sampleswap.org/) - Free samples
+- [Philharmonia](https://philharmonia.co.uk/resources/sound-samples/) - Free samples
+- [University of Iowa](https://theremin.music.uiowa.edu/) - MIS instrument samples
+
+### Step W2: Extend Instrument Definition Schema
+
+**Goal:** Add world instrument categories to `instrument_definitions.yaml`.
+
+**New Categories:**
+```yaml
+instruments:
+  # World Strings
+  sitar:
+    name: "Sitar"
+    family: "world_strings"
+    midi_program: 104  # GM Sitar
+    range: {min: 48, max: 96}
+    articulations: [sustain, meend, gamak, krintan]
+    sfz_file: "libraries/world/sitar.sfz"
+
+  tabla:
+    name: "Tabla"
+    family: "world_percussion"
+    midi_program: 115  # GM - custom assignment
+    articulations: [bayan, dayan, gehi, ke]
+    sfz_file: "libraries/world/tabla.sfz"
+
+  # Guitars
+  acoustic_guitar:
+    name: "Acoustic Guitar"
+    family: "guitars"
+    midi_program: 24  # GM Acoustic Guitar (steel)
+    range: {min: 40, max: 84}
+    articulations: [sustain, strum, pick, harmonics, palm_mute]
+    sfz_file: "libraries/guitars/acoustic.sfz"
+
+  electric_guitar:
+    name: "Electric Guitar"
+    family: "guitars"
+    midi_program: 27  # GM Electric Guitar (clean)
+    range: {min: 40, max: 84}
+    articulations: [sustain, mute, harmonics, slide, bend]
+    sfz_file: "libraries/guitars/electric_clean.sfz"
+
+  # Drum Kits
+  drum_kit_standard:
+    name: "Standard Drum Kit"
+    family: "drum_kits"
+    midi_program: 0  # Channel 10
+    kit_pieces: [kick, snare, hihat_closed, hihat_open, tom1, tom2, crash, ride]
+    sfz_file: "libraries/drums/standard_kit.sfz"
+```
+
+### Step W3: Create Custom SFZ Instruments
+
+**Goal:** Build custom SFZ instruments for instruments without free libraries.
+
+**Approach:**
+1. Source sample recordings (Creative Commons or public domain)
+2. Create SFZ definition files with:
+   - Round-robin samples for variation
+   - Velocity layers
+   - Articulation keyswitches
+   - Proper release/decay envelopes
+
+**Tools:**
+- [SFZ Editor](https://sfzeditor.github.io/) - For editing SFZ files
+- [Peaks](https://github.com/jpcima/peaks) - For sample analysis
+- Audacity - For sample editing
+
+### Step W4: Extend AI Prompts for World Instruments
+
+**Goal:** Update system prompt to include world instrument knowledge.
+
+**Add to `resources/system_prompt_v3.txt`:**
+- World instrument characteristics and playing techniques
+- Genre-appropriate instrument combinations
+- Cultural context and authentic usage patterns
+
+### Step W5: Add Genre-Specific Ensembles
+
+**New Ensemble Presets:**
+```yaml
+ensembles:
+  indian_classical:
+    name: "Indian Classical Ensemble"
+    instruments: [sitar, tabla, tanpura, bansuri, sarod]
+
+  latin_band:
+    name: "Latin Band"
+    instruments: [acoustic_guitar, trumpet, trombone, congas, bongos, piano, bass]
+
+  rock_band:
+    name: "Rock Band"
+    instruments: [electric_guitar, electric_bass, drum_kit, keyboard]
+
+  jazz_combo:
+    name: "Jazz Combo"
+    instruments: [piano, acoustic_bass, drum_kit_jazz, trumpet, saxophone]
+
+  celtic:
+    name: "Celtic Ensemble"
+    instruments: [fiddle, tin_whistle, bodhran, acoustic_guitar, bouzouki]
+
+  middle_eastern:
+    name: "Middle Eastern Ensemble"
+    instruments: [oud, ney, darbuka, kanun, violin]
+
+  african:
+    name: "African Ensemble"
+    instruments: [kora, djembe, balafon, talking_drum, shaker]
+
+  electronic:
+    name: "Electronic Setup"
+    instruments: [synth_lead, synth_pad, synth_bass, drum_machine, sampler]
+```
+
+### Step W6: Update MIDI Program Mapping
+
+**Goal:** Ensure proper GM/GM2/GS standard mappings.
+
+**File:** `src/musicgen/ai_models/instruments.py` (create)
+
+```python
+# MIDI Program Numbers (0-127)
+# Standard GM (0-127)
+MIDI_PROGRAMS = {
+    # Piano (0-7)
+    0: "acoustic_grand",
+    1: "bright_acoustic",
+    2: "electric_grand",
+    3: "honky_tonk",
+    4: "electric_piano_1",
+    5: "electric_piano_2",
+    6: "harpsichord",
+    7: "clavinet",
+
+    # Chromatic Percussion (8-15)
+    8: "celesta",
+    9: "glockenspiel",
+    # ...
+
+    # Guitars (24-31)
+    24: "acoustic_guitar_nylon",
+    25: "acoustic_guitar_steel",
+    26: "electric_guitar_jazz",
+    27: "electric_guitar_clean",
+    28: "electric_guitar_muted",
+    29: "overdriven_guitar",
+    30: "distortion_guitar",
+    31: "guitar_harmonics",
+
+    # Ethnic (104-111)
+    104: "sitar",
+    105: "banjo",
+    106: "shamisen",
+    107: "koto",
+    108: "kalimba",
+    109: "bagpipe",
+    110: "fiddle",
+    111: "shanai",
+}
+```
+
+### Step W7: Extend Validation for World Instruments
+
+**Goal:** Add music theory validation for non-Western scales and modes.
+
+**New Scales to Add:**
+- Indian: Raga scales (Bhairavi, Yaman, Bhairav, etc.)
+- Middle Eastern: Maqam scales (Hijaz, Sikah, etc.)
+- Japanese: Pentatonic variations (In, Hirajoshi, etc.)
+- Blues: Minor/major pentatonic, blues scale
+- Latin: Montuno, Bossa Nova patterns
+
+### Implementation Priority
+
+#### Phase 4A: Guitars and Bass (High Priority)
+1. Acoustic Guitar (steel/nylon)
+2. Electric Guitar (clean/distortion)
+3. Electric Bass
+4. Drum Kit (standard/jazz)
+
+#### Phase 4B: World Percussion (High Priority)
+1. Tabla
+2. Djembe
+3. Conga/Bongo
+4. Cajon
+5. Taiko
+
+#### Phase 4C: Indian Instruments (Medium Priority)
+1. Sitar
+2. Sarod
+3. Bansuri
+4. Tanpura
+5. Indian Raga scales
+
+#### Phase 4D: Other World Instruments (Medium Priority)
+1. Hawaiian/Steel Guitar
+2. Bagpipe
+3. Irish Tin Whistle
+4. Oud
+5. Koto
+
+#### Phase 4E: Electronic (Lower Priority)
+1. Synthesizers
+2. Drum machines
+3. Electronic pads
+
+### Files to Create/Modify
+
+**New Files:**
+- `src/musicgen/ai_models/instruments.py` - MIDI program mappings
+- `src/musicgen/theory/world_scales.py` - Non-Western scales
+- `resources/instrument_definitions_world.yaml` - World instrument defs
+
+**Modified Files:**
+- `resources/instrument_definitions.yaml` - Add world instruments
+- `resources/system_prompt_v3.txt` - Add world instrument knowledge
+- `src/musicgen/validation/orchestration.py` - Add world instrument validation
+
+---
+
+## Quick Reference
+
+### Generate Music
+
+```bash
+# Activate venv
+source .venv/bin/activate
+
+# Basic generation
+musicgen compose "A peaceful piano melody"
+
+# With output options
+musicgen compose "Epic orchestral battle" --output-dir output --output-name my_piece --format mp3
+
+# Verbose output
+musicgen compose "Jazz trio in a smoky bar" --verbose
+```
+
+### Check System
+
+```bash
+musicgen check
+```
+
+### List Available Moods
+
+```bash
+musicgen list-moods
+```
+
+### Using Python API
+
+```python
+from musicgen.composer_new import AIComposer
+from musicgen.renderer import Renderer
+
+composer = AIComposer()
+composition = composer.generate("Your prompt here")
+
+renderer = Renderer(output_dir="output")
+renderer.render(composition, formats=["midi", "mp3"])
 ```
