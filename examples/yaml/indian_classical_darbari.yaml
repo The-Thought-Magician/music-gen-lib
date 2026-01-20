@@ -1,0 +1,120 @@
+# Indian Classical Music: Raga Darbari - Late Night Raga
+#
+# Darbari is a profound, midnight raga with deep emotional character.
+# Known for its distinctive phrase patterns and low register emphasis.
+#
+# Usage: musicgen yaml indian_classical_darbari.yaml
+
+title: "Raga Darbari - Midnight Raga"
+composer: "MusicGen Indian Classical"
+duration_seconds: 360  # 6 minutes for full development
+
+key:
+  root: "C"
+  mode: "major"
+  octave: 4
+
+tempo:
+  bpm: 60  # Very slow for deep expression
+
+time_signature:
+  numerator: 4
+  denominator: 4
+
+genre: "indian_classical"
+
+style:
+  complexity: "high"
+  mood: "deep"
+  ornamentation: "heavy"
+
+sections:
+  - name: "alap"
+    duration_bars: 24  # Extended slow alap
+    tempo_multiplier: 0.6
+    tala: null
+    laya: "vilambit"
+
+  - name: "vilambit_gat"
+    duration_bars: 48  # Slow composition
+    tempo_multiplier: 1.0
+    tala: "teental"
+    laya: "vilambit"
+
+  - name: "drut_gat"
+    duration_bars: 32  # Fast finale
+    tempo_multiplier: 1.8
+    tala: "teental"
+    laya: "drut"
+
+instruments:
+  - name: "Rudra Veena"
+    family: "strings"
+    role: "melody"
+    channel: 0
+    midi_program: 24  # Sitar as substitute
+
+  - name: "Tabla"
+    family: "percussion"
+    role: "rhythm"
+    channel: 2
+    stroke_mapping:
+      "ghe": 43
+      "ke": 40
+      "na": 52
+      "tun": 57
+      "dha": 50
+      "dhin": 49
+      "kat": 45
+
+  - name: "Tanpura"
+    family: "drone"
+    role: "drone"
+    channel: 3
+    drone_notes:
+      - note: "C3"
+        velocity: 65  # Stronger drone
+        start_offset: 0.0
+      - note: "G3"
+        velocity: 55
+        start_offset: 0.0
+      - note: "C4"
+        velocity: 60
+        start_offset: 0.1
+
+  - name: "Sarangi"
+    family: "strings"
+    role: "melody"
+    channel: 1
+    midi_program: 40  # Violin as sarangi substitute
+
+melody_rules:
+  source: "raga"
+  raga: "darbari"
+
+  density:
+    notes_per_minute: [40, 70]  # Sparse for emotional effect
+    avg_duration_beats: [0.8, 2.0]
+    duration_range: [0.5, 3.0]
+
+  phrases:
+    length_bars: [8, 16]
+    development: "mixed"
+    repetition: true
+
+  register:
+    lowest_octave: 3  # Lower register emphasis
+    highest_octave: 5
+    emphasis: "low"
+
+  ornamentation:
+    meend: "frequent"       # Essential for Darbari
+    gamaka: "occasional"
+    krintan: "rare"         # Fewer grace notes
+
+rhythm_rules:
+  source: "tala"
+  tala: "teental"
+  cycle_beats: 16
+  division: [4, 4, 4, 4]
+  accent_pattern: [3, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0]

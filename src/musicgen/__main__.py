@@ -23,6 +23,13 @@ except ImportError:
 
 from musicgen.generator import CompositionRequest, generate, list_available_moods
 
+# Try to import YAML engine
+try:
+    from musicgen.engine import generate_from_yaml
+    YAML_ENGINE_AVAILABLE = True
+except ImportError:
+    YAML_ENGINE_AVAILABLE = False
+
 # Try to import AI note-level components
 try:
     from musicgen.composer import AIComposer, ValidationError
@@ -223,6 +230,26 @@ def main(argv: list = None) -> int:
             help="Preset name (for 'show' action)"
         )
 
+    # YAML command (generate from YAML specification)
+    if YAML_ENGINE_AVAILABLE:
+        yaml_parser = subparsers.add_parser(
+            "yaml",
+            help="Generate music from YAML specification"
+        )
+        yaml_parser.add_argument(
+            "yaml_file",
+            help="Path to YAML specification file"
+        )
+        yaml_parser.add_argument(
+            "--output", "-o",
+            help="Output MIDI file path (default: same as yaml_file with .mid extension)"
+        )
+        yaml_parser.add_argument(
+            "--verbose", "-v",
+            action="store_true",
+            help="Verbose output"
+        )
+
     # List moods command
     list_parser = subparsers.add_parser("list-moods", help="List available mood presets")
 
@@ -252,6 +279,9 @@ def main(argv: list = None) -> int:
 
     elif args.command == "presets" and AI_COMPOSE_AVAILABLE:
         return cmd_presets(args)
+
+    elif args.command == "yaml" and YAML_ENGINE_AVAILABLE:
+        return cmd_yaml(args)
 
     else:
         print(f"Command '{args.command}' not available", file=sys.stderr)
@@ -509,6 +539,45 @@ def cmd_presets(args) -> int:
         except KeyError:
             logger.error(f"Unknown preset: {args.name}")
             return 1
+
+
+def cmd_yaml(args) -> int:
+    """Execute yaml command (generate from YAML specification).
+
+    Args:
+        args: Parsed arguments
+
+    Returns:
+        Exit code
+    """
+    if not YAML_ENGINE_AVAILABLE:
+        logger.error("YAML engine not available")
+        return 1
+
+    # Set log level
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    yaml_path = Path(args.yaml_file)
+    if not yaml_path.exists():
+        logger.error(f"YAML file not found: {yaml_path}")
+        return 1
+
+    try:
+        output_path = args.output or None
+        logger.info(f"Generating from YAML: {yaml_path}")
+
+        result_path = generate_from_yaml(yaml_path, output_path)
+
+        logger.info(f"Generated MIDI: {result_path}")
+        return 0
+
+    except Exception as e:
+        logger.error(f"Error generating from YAML: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        return 1
 
 
 def _get_prompt(args) -> str | None:

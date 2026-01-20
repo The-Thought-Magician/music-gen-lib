@@ -1,0 +1,121 @@
+# Indian Classical Music: Raga Bhairavi in Jhaptal
+#
+# Morning raga with 10-beat rhythmic cycle.
+# Bhairavi is a versatile raga that can be played at any time.
+#
+# Usage: musicgen yaml indian_classical_bhairavi.yaml
+
+title: "Raga Bhairavi - Morning Meditation"
+composer: "MusicGen Indian Classical"
+duration_seconds: 300  # 5 minutes
+
+# Key and time signature
+key:
+  root: "C"
+  mode: "major"
+  octave: 4
+
+tempo:
+  bpm: 75  # Slower, meditative tempo
+
+time_signature:
+  numerator: 4
+  denominator: 4
+
+genre: "indian_classical"
+
+style:
+  complexity: "high"
+  mood: "devotional"
+  ornamentation: "heavy"
+
+sections:
+  - name: "alap"
+    duration_bars: 20  # Extended alap
+    tempo_multiplier: 0.7
+    tala: null
+    laya: "vilambit"
+
+  - name: "jhaptal_gat"
+    duration_bars: 40  # Main composition in 10-beat cycle
+    tempo_multiplier: 1.0
+    tala: "jhaptal"
+    laya: "madhya"
+
+  - name: "teental_vilambit"
+    duration_bars: 32  # Transition to 16-beat cycle
+    tempo_multiplier: 1.2
+    tala: "teental"
+    laya: "madhya"
+
+instruments:
+  - name: "Sitar"
+    family: "strings"
+    role: "melody"
+    channel: 0
+    midi_program: 24
+
+  - name: "Tabla"
+    family: "percussion"
+    role: "rhythm"
+    channel: 2
+    stroke_mapping:
+      "ghe": 43
+      "ke": 40
+      "na": 52
+      "tun": 57
+      "dha": 50
+      "dhin": 49
+      "kat": 45
+
+  - name: "Tanpura"
+    family: "drone"
+    role: "drone"
+    channel: 3
+    drone_notes:
+      - note: "C3"
+        velocity: 60
+        start_offset: 0.0
+      - note: "G3"
+        velocity: 50
+        start_offset: 0.0
+      - note: "C4"
+        velocity: 55
+        start_offset: 0.1
+
+  - name: "Bansuri"
+    family: "winds"
+    role: "melody"
+    channel: 1
+    midi_program: 73  # Flute
+
+melody_rules:
+  source: "raga"
+  raga: "bhairavi"
+
+  density:
+    notes_per_minute: [80, 120]  # Higher density for complexity
+    avg_duration_beats: [0.4, 1.2]
+    duration_range: [0.2, 1.5]
+
+  phrases:
+    length_bars: [6, 12]
+    development: "arc"  # Arch-shaped phrases
+    repetition: true
+
+  register:
+    lowest_octave: 4
+    highest_octave: 6
+    emphasis: "middle"
+
+  ornamentation:
+    meend: "frequent"       # Bhairavi uses lots of meend
+    gamaka: "occasional"
+    krintan: "frequent"     # Frequent grace notes
+
+rhythm_rules:
+  source: "tala"
+  tala: "jhaptal"
+  cycle_beats: 10
+  division: [2, 3, 2, 3]  # Jhaptal vibhag pattern
+  accent_pattern: [3, 0, 2, 0, 0, 1, 0, 2, 0, 0]

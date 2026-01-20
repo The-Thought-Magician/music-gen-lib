@@ -1,0 +1,131 @@
+# Indian Classical Music: Raga Yaman in Teental
+#
+# A complete specification for an authentic Indian classical music piece
+# using Raga Yaman (evening raga) with Teental (16-beat cycle).
+#
+# Usage: musicgen yaml indian_classical_yaman.yaml
+
+title: "Raga Yaman - Evening Melody"
+composer: "MusicGen Indian Classical"
+duration_seconds: 240  # 4 minutes
+
+# Key and time signature
+key:
+  root: "C"
+  mode: "major"
+  octave: 4
+
+tempo:
+  bpm: 80  # Medium tempo for vilambit laya
+
+time_signature:
+  numerator: 4
+  denominator: 4
+
+# Genre specifies the rule set to use
+genre: "indian_classical"
+
+style:
+  complexity: "medium"
+  mood: "peaceful"
+  ornamentation: "medium"
+
+# Sections: Alap (free rhythm), Gat (composition with tala)
+sections:
+  - name: "alap"
+    duration_bars: 16  # Slow introduction
+    tempo_multiplier: 0.8
+    tala: null  # Alap has no tala
+    laya: "vilambit"
+
+  - name: "gat_vilambit"
+    duration_bars: 32  # Main composition
+    tempo_multiplier: 1.0
+    tala: "teental"
+    laya: "vilambit"
+
+  - name: "gat_drut"
+    duration_bars: 32  # Fast section
+    tempo_multiplier: 1.5
+    tala: "teental"
+    laya: "drut"
+
+# Instruments
+instruments:
+  - name: "Sitar"
+    family: "strings"
+    role: "melody"
+    channel: 0
+    midi_program: 24  # Sitar
+
+  - name: "Tabla"
+    family: "percussion"
+    role: "rhythm"
+    channel: 2
+    midi_program: null  # Uses custom mapping
+    stroke_mapping:
+      "ghe": 43   # Bayan bass
+      "ke": 40    # Dayan closed
+      "na": 52    # Dayan open
+      "tun": 57   # Dayan high
+      "dha": 50   # Combined
+      "dhin": 49  # Combined resonant
+      "kat": 45   # Flat
+
+  - name: "Tanpura"
+    family: "drone"
+    role: "drone"
+    channel: 3
+    midi_program: null  # Drone doesn't need program
+    drone_notes:
+      - note: "C3"
+        detune_cents: 0
+        velocity: 60
+        start_offset: 0.0
+      - note: "G3"
+        detune_cents: 0
+        velocity: 50
+        start_offset: 0.0
+      - note: "C4"
+        detune_cents: 0
+        velocity: 55
+        start_offset: 0.1
+
+  - name: "Sarod"
+    family: "strings"
+    role: "melody"
+    channel: 1
+    midi_program: 104  # Sitar (use as sarod substitute)
+
+# Melody generation rules
+melody_rules:
+  source: "raga"
+  raga: "yaman"
+
+  density:
+    notes_per_minute: [60, 90]
+    avg_duration_beats: [0.5, 1.5]
+    duration_range: [0.25, 2.0]
+
+  phrases:
+    length_bars: [4, 8]
+    development: "mixed"
+    repetition: true
+
+  register:
+    lowest_octave: 4
+    highest_octave: 6
+    emphasis: "middle"
+
+  ornamentation:
+    meend: "occasional"      # Glissando between notes
+    gamaka: "rare"           # Pitch oscillation
+    krintan: "occasional"    # Grace notes
+
+# Rhythm generation rules
+rhythm_rules:
+  source: "tala"
+  tala: "teental"
+  cycle_beats: 16
+  division: [4, 4, 4, 4]  # Vibhag divisions
+  accent_pattern: [3, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0]
