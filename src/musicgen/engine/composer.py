@@ -111,7 +111,6 @@ class CompositionEngine:
         score = Score(
             title=spec.title,
             composer=spec.composer,
-            tempo=spec.tempo.bpm,
         )
 
         # Track current time for section placement
@@ -268,22 +267,10 @@ class CompositionEngine:
         Returns:
             MIDI Part
         """
-        # Convert our Notes to MIDI notes
-        midi_notes = []
-        for note in notes:
-            midi_notes.append({
-                "note": note.midi_number,
-                "start_time": note.start_time,
-                "duration": note.duration,
-                "velocity": note.velocity,
-            })
-
-        return Part(
-            name=instrument.name,
-            program=instrument.midi_program or 0,
-            channel=instrument.channel,
-            notes=midi_notes,
-        )
+        # Create a Part with the notes
+        part = Part(name=instrument.name)
+        part.notes = notes.copy()
+        return part
 
     def generate_to_midi(
         self,
@@ -311,8 +298,8 @@ class CompositionEngine:
             output_path = yaml_path.with_suffix(".mid")
 
         # Write MIDI
-        from musicgen.io.midi_writer import write_midi
-        write_midi(score, str(output_path))
+        from musicgen.io.midi_writer import MIDIWriter
+        MIDIWriter.write(score, str(output_path))
 
         return str(output_path)
 

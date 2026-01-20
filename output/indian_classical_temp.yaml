@@ -1,0 +1,102 @@
+title: "Khamaj Pulse"
+composer: "MusicGen Indian Classical"
+duration_seconds: 242
+
+key:
+  root: "C"
+  mode: "major"
+  octave: 4
+
+tempo:
+  bpm: 100
+
+time_signature:
+  numerator: 4
+  denominator: 4
+
+genre: "indian_classical"
+
+style:
+  complexity: "medium"
+  mood: "energetic_playful"
+  ornamentation: "heavy"
+
+sections:
+  - name: "alap"
+    duration_bars: 16
+    tempo_multiplier: 0.7
+    tala: null
+    laya: "vilambit"
+  - name: "gat_madhya"
+    duration_bars: 50
+    tempo_multiplier: 1.0
+    tala: "jhaptal"
+    laya: "madhya"
+  - name: "gat_drut"
+    duration_bars: 50
+    tempo_multiplier: 1.8
+    tala: "jhaptal"
+    laya: "drut"
+
+instruments:
+  - name: "Sitar"
+    family: "strings"
+    role: "melody"
+    channel: 0
+    midi_program: 104
+  - name: "Tabla"
+    family: "percussion"
+    role: "rhythm"
+    channel: 2
+    stroke_mapping:
+      "dha": 50
+      "dhin": 49
+      "tin": 57
+      "na": 52
+      "ge": 43
+      "ke": 40
+      "kat": 45
+  - name: "Tanpura"
+    family: "drone"
+    role: "drone"
+    channel: 3
+    drone_notes:
+      - note: "C3"
+        detune_cents: 0
+        velocity: 60
+        start_offset: 0.0
+      - note: "G3"
+        detune_cents: 0
+        velocity: 50
+        start_offset: 0.0
+      - note: "C4"
+        detune_cents: 0
+        velocity: 55
+        start_offset: 0.1
+
+melody_rules:
+  source: "raga"
+  raga: "khamaj"
+  density:
+    notes_per_minute: [90, 150]
+    avg_duration_beats: [0.25, 1.0]
+    duration_range: [0.125, 1.5]
+  phrases:
+    length_bars: [2, 4]
+    development: "progressive"
+    repetition: true
+  register:
+    lowest_octave: 3
+    highest_octave: 6
+    emphasis: "upper"
+  ornamentation:
+    meend: "frequent"
+    gamaka: "occasional"
+    krintan: "frequent"
+
+rhythm_rules:
+  source: "tala"
+  tala: "jhaptal"
+  cycle_beats: 10
+  division: [2, 3, 2, 3]
+  accent_pattern: [3, 0, 2, 0, 0, 1, 0, 2, 0, 0]

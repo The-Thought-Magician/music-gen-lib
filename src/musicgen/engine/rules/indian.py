@@ -166,12 +166,12 @@ class IndianClassicalRule(GenreRule):
 
             # Create the note
             melody_note = Note(
-                note_name=note.pitch,
-                octave=octave,
-                start_time=current_time,
-                duration=duration,
-                velocity=min(base_velocity + random.randint(-5, 5), 127),
+                note.name,
+                octave,
+                duration,
+                min(base_velocity + random.randint(-5, 5), 127),
             )
+            melody_note.start_time = current_time
             notes.append(melody_note)
 
             current_time += duration
@@ -253,13 +253,14 @@ class IndianClassicalRule(GenreRule):
             duration = beat_duration * 0.8 if accent > 0 else beat_duration * 0.5
 
             # Create note
+            from_midi = Note.from_midi(midi_note)
             note = Note(
-                note_name=Note.from_midi(midi_note).pitch,
-                octave=Note.from_midi(midi_note).octave,
-                start_time=time,
-                duration=duration,
-                velocity=velocity,
+                from_midi.name,
+                from_midi.octave,
+                duration,
+                velocity,
             )
+            note.start_time = time
             notes.append(note)
 
         return notes

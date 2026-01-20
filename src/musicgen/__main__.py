@@ -230,6 +230,49 @@ def main(argv: list = None) -> int:
             help="Preset name (for 'show' action)"
         )
 
+    # Compose Indian command (AI → YAML → Rule-based generation)
+    if YAML_ENGINE_AVAILABLE and AI_CLIENT_AVAILABLE:
+        indian_parser = subparsers.add_parser(
+            "compose-indian",
+            help="Generate Indian classical music from AI prompt using rule-based engine"
+        )
+        indian_parser.add_argument(
+            "prompt",
+            nargs="*",
+            help="Natural language description of the music"
+        )
+        indian_parser.add_argument(
+            "-f", "--prompt-file",
+            dest="prompt_file",
+            help="Read prompt from file"
+        )
+        indian_parser.add_argument(
+            "--output-dir", "-o",
+            default=".",
+            help="Output directory (default: current directory)"
+        )
+        indian_parser.add_argument(
+            "--output-name",
+            help="Base name for output files"
+        )
+        indian_parser.add_argument(
+            "--format",
+            dest="formats",
+            action="append",
+            choices=["midi", "mp3", "wav"],
+            help="Output format (can specify multiple, default: mp3)"
+        )
+        indian_parser.add_argument(
+            "--save-yaml",
+            action="store_true",
+            help="Save the generated YAML specification"
+        )
+        indian_parser.add_argument(
+            "--verbose", "-v",
+            action="store_true",
+            help="Verbose output"
+        )
+
     # YAML command (generate from YAML specification)
     if YAML_ENGINE_AVAILABLE:
         yaml_parser = subparsers.add_parser(
@@ -282,6 +325,9 @@ def main(argv: list = None) -> int:
 
     elif args.command == "yaml" and YAML_ENGINE_AVAILABLE:
         return cmd_yaml(args)
+
+    elif args.command == "compose-indian" and YAML_ENGINE_AVAILABLE and AI_CLIENT_AVAILABLE:
+        return cmd_compose_indian(args)
 
     else:
         print(f"Command '{args.command}' not available", file=sys.stderr)
@@ -574,6 +620,145 @@ def cmd_yaml(args) -> int:
 
     except Exception as e:
         logger.error(f"Error generating from YAML: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        return 1
+
+
+def cmd_compose_indian(args) -> int:
+    """Execute compose-indian command (AI → YAML → Rule-based generation).
+
+    Args:
+        args: Parsed arguments
+
+    Returns:
+        Exit code
+    """
+    if not YAML_ENGINE_AVAILABLE:
+        logger.error("YAML engine not available")
+        return 1
+    if not AI_CLIENT_AVAILABLE:
+        logger.error("AI client not available. Set GOOGLE_API_KEY environment variable.")
+        return 1
+
+    # Set log level
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    # Get prompt
+    if hasattr(args, 'prompt_file') and args.prompt_file:
+        prompt = Path(args.prompt_file).read_text().strip()
+    elif hasattr(args, 'prompt') and args.prompt:
+        prompt = " ".join(args.prompt)
+    else:
+        logger.error("No prompt provided. Use: musicgen compose-indian \"your description\"")
+        return 1
+
+    logger.info(f"Generating Indian classical music from prompt: {prompt[:100]}...")
+
+    try:
+        # Import AI client and yaml prompts
+        from musicgen.ai_client import GeminiClient
+        from musicgen.ai_client.yaml_prompts import build_yaml_prompt
+
+        # Get the prompts
+        system_prompt, user_prompt = build_yaml_prompt(prompt)
+
+        # Create AI client and generate YAML
+        client = GeminiClient()
+        logger.info("Requesting YAML specification from AI...")
+
+        # Use internal method to get raw text (not parsed JSON)
+        response_text = client._call_with_retry(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            tools=None,
+        )
+
+        # Extract YAML from response
+        yaml_content = response_text.strip()
+        # Remove markdown code blocks if present
+        if yaml_content.startswith("```"):
+            lines = yaml_content.split("\n")
+            yaml_content = "\n".join(lines[1:])
+            if yaml_content.endswith("```"):
+                yaml_content = yaml_content[:-3]
+            yaml_content = yaml_content.strip()
+
+        logger.info("Received YAML specification from AI")
+
+        # Save YAML if requested
+        output_dir = Path(args.output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        if args.save_yaml:
+            output_name = args.output_name or "indian_classical"
+            yaml_path = output_dir / f"{output_name}.yaml"
+            yaml_path.write_text(yaml_content)
+            logger.info(f"Saved YAML: {yaml_path}")
+
+        # Parse and validate YAML
+        from musicgen.engine.parser import _parse_dict, CompositionSpec
+        import yaml
+
+        data = yaml.safe_load(yaml_content)
+        spec = _parse_dict(CompositionSpec, data)
+
+        logger.info(f"Composition: {spec.title}")
+        logger.info(f"  Raga: {spec.melody_rules.raga}")
+        logger.info(f"  Sections: {len(spec.sections)}")
+        logger.info(f"  Instruments: {[i.name for i in spec.instruments]}")
+
+        # Save spec to temp YAML file for generation
+        temp_yaml_path = output_dir / f"{args.output_name or 'indian_classical'}_temp.yaml"
+        temp_yaml_path.write_text(yaml_content)
+
+        # Generate MIDI using rule-based engine
+        logger.info("Generating music using rule-based engine...")
+        result_path = generate_from_yaml(temp_yaml_path)
+
+        # Clean up temp file
+        if not args.save_yaml:
+            temp_yaml_path.unlink()
+
+        # Rename to final output
+        final_name = args.output_name or spec.title.replace(" ", "_").replace("/", "_")
+        midi_path = output_dir / f"{final_name}.mid"
+        if result_path != str(midi_path):
+            Path(result_path).rename(midi_path)
+            result_path = str(midi_path)
+
+        logger.info(f"Generated MIDI: {result_path}")
+
+        # Determine output formats
+        formats = args.formats or ["mp3"]
+
+        # Convert to requested formats
+        if "midi" not in formats or len(formats) > 1:
+            # Try to synthesize audio
+            try:
+                from musicgen.io.audio_synthesizer import AudioSynthesizer
+
+                synthesizer = AudioSynthesizer()
+                logger.info("Synthesizing audio...")
+
+                for fmt in formats:
+                    if fmt == "midi":
+                        continue
+                    fmt_path = output_dir / f"{final_name}.{fmt}"
+                    logger.info(f"Converting to {fmt.upper()}...")
+                    synthesizer.render(midi_path, fmt_path)
+                    logger.info(f"  Generated: {fmt_path}")
+
+            except RuntimeError as audio_err:
+                logger.warning(f"Audio synthesis not available: {audio_err}")
+                logger.info("Install FluidSynth for MP3/WAV output: sudo apt install fluidsynth")
+
+        return 0
+
+    except Exception as e:
+        logger.error(f"Error: {e}")
         if args.verbose:
             import traceback
             traceback.print_exc()

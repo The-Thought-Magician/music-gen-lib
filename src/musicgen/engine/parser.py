@@ -205,12 +205,23 @@ def _parse_dict(cls: type, data: dict[str, Any]) -> Any:
         if origin is Union or origin is UnionType:
             # Check if any arg is None (makes it Optional)
             is_optional = any(arg is type(None) for arg in args)
-            if is_optional and len(args) == 2:
-                non_none_type = args[0] if args[1] is type(None) else args[1]
+            if is_optional:
                 if value is None:
                     parsed[key] = None
-                else:
+                    continue
+                # Get the non-None type
+                non_none_type = args[0] if args[1] is type(None) else args[1]
+                # If the non-None type is a list, handle it
+                non_none_origin = get_origin(non_none_type)
+                non_none_args = get_args(non_none_type)
+                if non_none_origin is list:
+                    # Parse list items
+                    inner_type = non_none_args[0] if non_none_args else Any
+                    parsed[key] = [_parse_dict(inner_type, item) if isinstance(item, dict) else item for item in value]
+                elif isinstance(value, dict) and hasattr(non_none_type, "__dataclass_fields__"):
                     parsed[key] = _parse_dict(non_none_type, value)
+                else:
+                    parsed[key] = value
                 continue
 
         # Handle list types
@@ -326,12 +337,18 @@ def validate_spec(spec: CompositionSpec) -> list[str]:
     if "melody" not in instrument_roles:
         errors.append("No melody instrument defined")
 
-    # For Indian classical, require specific instruments
+    # For Indian classical, require specific instrument types
     if spec.genre == "indian_classical":
-        required = {"sitar", "tabla", "tanpura"}
-        defined = {inst.name.lower() for inst in spec.instruments}
-        for req in required:
-            if req not in defined:
-                errors.append(f"Indian classical requires {req} instrument")
+        # Need at least: melody (sitar/sarod/bansuri/santoor), rhythm (tabla), drone (tanpura)
+        has_melody = any(inst.role == "melody" for inst in spec.instruments)
+        has_rhythm = any(inst.role == "rhythm" for inst in spec.instruments)
+        has_drone = any(inst.role == "drone" for inst in spec.instruments)
+
+        if not has_melody:
+            errors.append("Indian classical requires a melody instrument (sitar, sarod, bansuri, santoor, etc.)")
+        if not has_rhythm:
+            errors.append("Indian classical requires a rhythm instrument (tabla, pakhawaj, etc.)")
+        if not has_drone:
+            errors.append("Indian classical requires a drone instrument (tanpura)")
 
     return errors

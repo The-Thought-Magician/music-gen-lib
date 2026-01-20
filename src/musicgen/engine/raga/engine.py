@@ -14,6 +14,62 @@ from musicgen.core.note import Note
 
 
 # =============================================================================
+# Indian Note Name Mapping
+# =============================================================================
+
+# Indian svaras to Western notes (assuming C as tonic/Sa)
+# Lowercase = komal (flat), Uppercase = shuddha (natural)
+# M with tik =tivra Ma (F#) - represented as M+
+_INDIAN_NOTE_MAP = {
+    # Shuddha (natural) notes
+    "S": "C",   # Sa - tonic
+    "R": "D",   # Re - second
+    "G": "E",   # Ga - third
+    "M": "F",   # Ma - fourth
+    "P": "G",   # Pa - fifth
+    "D": "A",   # Dha - sixth
+    "N": "B",   # Ni - seventh
+    # Komal (flat) notes
+    "r": "Db",  # Komal Re
+    "g": "Eb",  # Komal Ga
+    "d": "Ab",  # Komal Dha
+    "n": "Bb",  # Komal Ni
+    # Tivra (sharp) Ma
+    "M+": "F#", # Tivra Ma
+}
+
+# Octave markers
+_OCTAVE_DOWN = "'"   # Indicates octave below (in Indian notation)
+_OCTAVE_UP = "''"    # Indicates octave above
+
+
+def indian_to_western(note_name: str, octave: int = 4) -> tuple[str, int]:
+    """Convert Indian svara name to Western note name and octave.
+
+    Args:
+        note_name: Indian note name (S, R, g, M+, etc.)
+        octave: Base octave (default 4)
+
+    Returns:
+        Tuple of (western_note_name, octave)
+    """
+    base_name = note_name
+
+    # Handle octave markers
+    if note_name.endswith("''"):
+        base_name = note_name[:-2]
+        octave += 1
+    elif note_name.endswith("'"):
+        base_name = note_name[:-1]
+        octave += 1
+
+    # Get the Western note name
+    western_name = _INDIAN_NOTE_MAP.get(base_name, base_name)
+
+    return western_name, octave
+
+
+# =============================================================================
 # Raga Definitions
 # =============================================================================
 
@@ -23,7 +79,7 @@ class Raga:
     """Definition of an Indian classical raga."""
 
     name: str
-    aroha: list[str]  # Ascending pattern (note names)
+    aroha: list[str]  # Ascending pattern (Indian note names)
     avaroha: list[str]  # Descending pattern
     vadi: int  # Most important note (MIDI number)
     samvadi: int  # Second most important note (MIDI number)
@@ -36,10 +92,18 @@ class Raga:
         if self.saptak:
             return self.saptak.copy()
 
-        # Build from aroha
+        # Build from aroha using Indian note mapping
         saptak = []
+        octave = 4  # Base octave
+
         for note_name in self.aroha + self.avaroha:
-            note = Note.from_pitch_string(note_name)
+            western_name, note_octave = indian_to_western(note_name, octave)
+
+            # Handle octave changes within the scale
+            if "'" in note_name:
+                note_octave += note_name.count("'")
+
+            note = Note(western_name, octave=note_octave)
             midi_num = note.midi_number
             if midi_num not in saptak:
                 saptak.append(midi_num)

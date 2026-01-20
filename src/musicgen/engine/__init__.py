@@ -108,12 +108,12 @@ class GenreRule(ABC):
             core_note = CoreNote(note_char, octave=octave)
 
             notes.append(Note(
-                note_name=core_note.pitch,
-                octave=core_note.octave,
-                start_time=start_time,
-                duration=duration,
-                velocity=drone_note.velocity,
+                core_note.name,
+                core_note.octave,
+                duration,
+                drone_note.velocity,
             ))
+            notes[-1].start_time = start_time
 
             # Start next note slightly before this one ends for overlap
             start_time += duration - 0.1
