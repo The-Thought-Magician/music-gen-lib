@@ -15,6 +15,7 @@ except ImportError:
     YAML_AVAILABLE = False
 
 from musicgen.config import get_config
+from musicgen.instruments.midi_map import GM_PROGRAM_NAMES
 from musicgen.schema.models import (
     DurationUnit,
     NoteFormat,
@@ -167,8 +168,11 @@ class SchemaGenerator:
         }
 
     def _instrument_schema(self) -> dict[str, Any]:
-        """Common instruments with MIDI program numbers."""
-        return {
+        """Common instruments with MIDI program numbers.
+
+        Includes General MIDI instruments and world/ethnic instruments.
+        """
+        schema = {
             "piano": 0,
             "acoustic_grand": 0,
             "bright_acoustic": 1,
@@ -201,7 +205,43 @@ class SchemaGenerator:
                 "timpani": 47,
                 "orchestral_percussion": "channel 10",
             },
+            "world_instruments": self._world_instrument_schema(),
         }
+        return schema
+
+    def _world_instrument_schema(self) -> dict[str, Any]:
+        """World/ethnic instruments with MIDI program numbers.
+
+        Includes instruments from various cultural traditions. Returns None
+        for percussion-only instruments which should use MIDI channel 10.
+        """
+        # Try to import world instruments; if not available, return basic GM world
+        try:
+            from musicgen.instruments.world import WORLD_INSTRUMENTS
+
+            world_schema = {}
+            for key, instrument in WORLD_INSTRUMENTS.items():
+                # Include all instruments with their MIDI programs
+                # For percussion-only instruments, explicitly note None
+                if instrument.midi_program is not None:
+                    world_schema[instrument.name] = instrument.midi_program
+                else:
+                    # Percussion-only instruments - document they use channel 10
+                    world_schema[instrument.name] = None
+
+            return world_schema
+        except ImportError:
+            # Fallback to GM world instruments if world.py not available
+            return {
+                "sitar": 104,
+                "banjo": 105,
+                "shamisen": 106,
+                "koto": 107,
+                "kalimba": 108,
+                "bagpipe": 109,
+                "fiddle": 110,
+                "shanai": 111,
+            }
 
     def _theory_schema(self) -> dict[str, Any]:
         """Music theory reference for AI."""

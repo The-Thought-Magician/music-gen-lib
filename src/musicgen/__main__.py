@@ -151,6 +151,14 @@ def main(argv: list = None) -> int:
             action="store_true",
             help="Verbose output"
         )
+        compose_parser.add_argument(
+            "--genre",
+            choices=[
+                "rock", "pop", "jazz", "classical", "electronic",
+                "indian_classical", "middle_eastern", "east_asian", "latin", "african"
+            ],
+            help="Music genre for stylistic guidance (affects instrument selection and phrasing)"
+        )
 
     # Generate command (mood-based)
     gen_parser = subparsers.add_parser("generate", help="Generate a composition from mood preset")
@@ -646,6 +654,12 @@ def cmd_compose(args) -> int:
     if not prompt:
         logger.error("No prompt provided. Use: musicgen compose \"your prompt\"")
         return 1
+
+    # Enhance prompt with genre if specified
+    if hasattr(args, 'genre') and args.genre:
+        genre_display = args.genre.replace('_', ' ').title()
+        prompt = f"{prompt} (Genre: {genre_display})"
+        logger.info(f"Genre: {genre_display}")
 
     logger.info(f"Prompt: {prompt[:100]}...")
 

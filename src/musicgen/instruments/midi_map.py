@@ -6,7 +6,10 @@ and drum key numbers for instrument selection.
 """
 
 from enum import IntEnum
-from typing import Final
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    from musicgen.instruments.world import WorldInstrumentDefinition
 
 # =============================================================================
 # General MIDI Program Numbers (0-127)
@@ -486,3 +489,95 @@ def is_world_program(program: int) -> bool:
 def is_synth_program(program: int) -> bool:
     """Check if program is a synthesizer (80-103)."""
     return 80 <= program <= 103
+
+
+# =============================================================================
+# Unified Instrument Lookup (GM + World Instruments)
+# =============================================================================
+
+
+def get_instrument_midi_program(name: str) -> int | None:
+    """Get MIDI program number for an instrument name (GM or world instrument).
+
+    This unified lookup function checks both standard General MIDI instruments
+    and world/ethnic instruments defined in the world instruments module.
+
+    Args:
+        name: Instrument name (case-insensitive, handles spaces/underscores/hyphens)
+
+    Returns:
+        MIDI program number (0-127) if found, None otherwise
+
+    Examples:
+        >>> get_instrument_midi_program("sitar")
+        104
+        >>> get_instrument_midi_program("Sitar")
+        104
+        >>> get_instrument_midi_program("acoustic grand piano")
+        0
+        >>> get_instrument_midi_program("tabla")
+        None  # Percussion-only, use channel 10
+        >>> get_instrument_midi_program("unknown")
+        None
+
+    Note:
+        - Returns None for percussion-only instruments (tabla, mridangam, etc.)
+          which should use MIDI channel 10
+        - World instruments without direct GM equivalents use their defined
+          midi_program value from WorldInstrumentDefinition
+        - For instruments like sarod that have no GM program, returns None;
+          consider using a similar GM instrument (e.g., acoustic_guitar_nylon=24)
+    """
+    if not name:
+        return None
+
+    # Normalize the name: lowercase, replace spaces/hyphens with underscores
+    normalized = name.lower().replace(" ", "_").replace("-", "_")
+
+    # First check standard GM programs
+    if normalized in PROGRAM_TO_NUMBER:
+        return PROGRAM_TO_NUMBER[normalized]
+
+    # Then check world instruments
+    # Lazy import to avoid circular dependency
+    try:
+        from musicgen.instruments.world import WORLD_INSTRUMENTS
+
+        world_instrument = WORLD_INSTRUMENTS.get(normalized)
+        if world_instrument is not None:
+            # Return the MIDI program if defined
+            # Note: Returns None for percussion-only instruments
+            return world_instrument.midi_program
+    except ImportError:
+        # If world instruments module is not available, just skip
+        pass
+
+    return None
+
+
+# =============================================================================
+# Exports
+# =============================================================================
+
+__all__ = [
+    # Enums
+    "GMProgram",
+    "GMKey",
+    # Constants
+    "GM_PROGRAM_NAMES",
+    "GM_DRUM_NAMES",
+    "PROGRAM_TO_NUMBER",
+    "DRUM_TO_NUMBER",
+    # Helper functions
+    "get_program_number",
+    "get_program_name",
+    "get_drum_key",
+    "get_drum_name",
+    "is_guitar_program",
+    "is_bass_program",
+    "is_drum_program",
+    "is_world_program",
+    "is_synth_program",
+    # Unified lookup
+    "get_instrument_midi_program",
+]
