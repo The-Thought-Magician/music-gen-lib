@@ -23,18 +23,10 @@ except ImportError:
 
 from musicgen.generator import CompositionRequest, generate, list_available_moods
 
-# Try to import AI components (old orchestration plan approach)
+# Try to import AI note-level components
 try:
-    from musicgen.ai import GeminiComposer, build_composition_from_plan
-    from musicgen.ai.models import OrchestrationPlan
-    AI_ORCHESTRATION_AVAILABLE = True
-except ImportError:
-    AI_ORCHESTRATION_AVAILABLE = False
-
-# Try to import new AI note-level components
-try:
-    from musicgen.composer_new import AIComposer, ValidationError
-    from musicgen.composer_new.presets import get_preset, list_presets
+    from musicgen.composer import AIComposer, ValidationError
+    from musicgen.composer.presets import get_preset, list_presets
     AI_COMPOSE_AVAILABLE = True
 except ImportError:
     AI_COMPOSE_AVAILABLE = False
@@ -231,83 +223,6 @@ def main(argv: list = None) -> int:
             help="Preset name (for 'show' action)"
         )
 
-    # AI command (old AI-powered generation with orchestration plans)
-    if AI_ORCHESTRATION_AVAILABLE:
-        ai_parser = subparsers.add_parser("ai", help="Generate music using AI (orchestration plan approach)")
-        ai_parser.add_argument(
-            "prompt",
-            nargs="*",
-            help="Natural language description of desired music"
-        )
-        ai_parser.add_argument(
-            "--duration",
-            type=int,
-            default=180,
-            help="Duration in seconds (default: 180)"
-        )
-        ai_parser.add_argument(
-            "--form",
-            choices=["binary", "ternary", "rondo", "sonata", "through_composed"],
-            help="Musical form"
-        )
-        ai_parser.add_argument(
-            "--output-dir", "-o",
-            default=".",
-            help="Output directory for generated files"
-        )
-        ai_parser.add_argument(
-            "--format", "-f",
-            dest="formats",
-            action="append",
-            choices=["midi", "wav", "mp3", "musicxml", "pdf"],
-            help="Export format (can specify multiple, default: midi, mp3)"
-        )
-        ai_parser.add_argument(
-            "--seed",
-            type=int,
-            help="Random seed for reproducibility"
-        )
-        ai_parser.add_argument(
-            "--api-key",
-            help="Google API key (or set GOOGLE_API_KEY env var)"
-        )
-        ai_parser.add_argument(
-            "--save-plan",
-            action="store_true",
-            help="Save the orchestration plan as JSON"
-        )
-
-    # From-file command (read prompt from file)
-    if AI_ORCHESTRATION_AVAILABLE:
-        file_parser = subparsers.add_parser("from-file", help="Generate music from a prompt file")
-        file_parser.add_argument(
-            "prompt_file",
-            help="File containing the prompt (default: userprompt.txt)"
-        )
-        file_parser.add_argument(
-            "--duration",
-            type=int,
-            default=180,
-            help="Duration in seconds (default: 180)"
-        )
-        file_parser.add_argument(
-            "--watch", "-w",
-            action="store_true",
-            help="Watch file for changes and regenerate"
-        )
-        file_parser.add_argument(
-            "--output-dir", "-o",
-            default=".",
-            help="Output directory for generated files"
-        )
-        file_parser.add_argument(
-            "--format", "-f",
-            dest="formats",
-            action="append",
-            choices=["midi", "wav", "mp3", "musicxml", "pdf"],
-            help="Export format"
-        )
-
     # List moods command
     list_parser = subparsers.add_parser("list-moods", help="List available mood presets")
 
@@ -337,12 +252,6 @@ def main(argv: list = None) -> int:
 
     elif args.command == "presets" and AI_COMPOSE_AVAILABLE:
         return cmd_presets(args)
-
-    elif args.command == "ai" and AI_ORCHESTRATION_AVAILABLE:
-        return cmd_ai(args)
-
-    elif args.command == "from-file" and AI_ORCHESTRATION_AVAILABLE:
-        return cmd_from_file(args)
 
     else:
         print(f"Command '{args.command}' not available", file=sys.stderr)
@@ -383,15 +292,6 @@ def cmd_check() -> int:
         print(f"  Overall: {'✓ Ready' if status['available'] else '✗ Not ready'}")
     else:
         print("  API Key: ✗ google-genai not installed")
-
-    print()
-
-    # Check AI orchestration plan support (old ai command)
-    print("AI Orchestration Plan:")
-    if AI_ORCHESTRATION_AVAILABLE:
-        print("  Package: ✓ Installed")
-    else:
-        print("  Package: ✗ Not available")
 
     print()
 
@@ -469,171 +369,6 @@ def cmd_generate(args) -> int:
         import traceback
         traceback.print_exc()
         return 1
-
-
-def cmd_ai(args) -> int:
-    """Execute AI generation command.
-
-    Args:
-        args: Parsed arguments
-
-    Returns:
-        Exit code
-    """
-    if not args.prompt:
-        print("Error: Prompt required", file=sys.stderr)
-        print("Usage: musicgen ai \"your description of desired music\"", file=sys.stderr)
-        return 1
-
-    prompt = " ".join(args.prompt)
-
-    # Set default formats if none specified
-    formats = args.formats or ["midi", "mp3"]
-
-    print(f"Analyzing prompt: \"{prompt[:50]}...\"")
-
-    try:
-        # Create AI composer
-        composer = GeminiComposer(api_key=args.api_key)
-
-        # Extract parameters
-        print("Generating orchestration plan...")
-        plan = composer.extract_parameters(
-            prompt=prompt,
-            duration_seconds=args.duration,
-            form_type=args.form
-        )
-
-        print(f"  Title: {plan.title}")
-        print(f"  Key: {plan.key} {plan.key_type}")
-        print(f"  Scale: {plan.scale_type}")
-        print(f"  Tempo: {plan.tempo} BPM")
-        print(f"  Form: {plan.form_type}")
-        print(f"  Sections: {len(plan.sections)}")
-
-        # Save plan if requested
-        if args.save_plan:
-            import json
-            plan_path = Path(args.output_dir) / f"{plan.title.replace(' ', '_')}_plan.json"
-            with open(plan_path, 'w') as f:
-                json.dump(plan.model_dump(), f, indent=2)
-            print(f"  Plan saved: {plan_path}")
-
-        # Build composition
-        print("Building composition...")
-        score = build_composition_from_plan(plan, seed=args.seed)
-
-        # Export using MIDI writer
-        from musicgen.io.midi_writer import MIDIWriter
-
-        output_dir = Path(args.output_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        base_name = plan.title.replace(' ', '_')
-        midi_path = None
-        audio_path = None
-
-        # Generate MIDI (always needed for audio)
-        if "midi" in formats or "wav" in formats or "mp3" in formats:
-            midi_path = str(output_dir / f"{base_name}.mid")
-            MIDIWriter.write(score, midi_path, tempo=plan.tempo)
-            if "midi" in formats:
-                print(f"  MIDI: {midi_path}")
-
-        # Generate audio
-        if ("wav" in formats or "mp3" in formats) and midi_path and AUDIO_AVAILABLE:
-            from musicgen.io.audio_synthesizer import AudioSynthesizer
-            try:
-                synth = AudioSynthesizer()
-                if "wav" in formats:
-                    wav_path = str(output_dir / f"{base_name}.wav")
-                    synth.render(midi_path, wav_path, "wav")
-                    print(f"  WAV: {wav_path}")
-                if "mp3" in formats:
-                    mp3_path = str(output_dir / f"{base_name}.mp3")
-                    synth.render(midi_path, mp3_path, "mp3")
-                    print(f"  MP3: {mp3_path}")
-            except Exception as e:
-                print(f"  Audio generation skipped: {e}")
-
-        print(f"\nDone! Composition saved to {output_dir}")
-
-        return 0
-
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        import traceback
-        traceback.print_exc()
-        return 1
-
-
-def cmd_from_file(args) -> int:
-    """Execute from-file command.
-
-    Args:
-        args: Parsed arguments
-
-    Returns:
-        Exit code
-    """
-    prompt_file = Path(args.prompt_file)
-
-    if not prompt_file.exists():
-        # Try default location
-        prompt_file = Path("userprompt.txt")
-        if not prompt_file.exists():
-            print(f"Error: Prompt file not found: {args.prompt_file}", file=sys.stderr)
-            print("Create userprompt.txt with your description, or specify a file", file=sys.stderr)
-            return 1
-
-    def generate_from_file():
-        """Generate music from the prompt file."""
-        with open(prompt_file) as f:
-            prompt = f.read().strip()
-
-        if not prompt:
-            print(f"Error: Prompt file is empty: {prompt_file}", file=sys.stderr)
-            return 1
-
-        print(f"Reading prompt from: {prompt_file}")
-        print(f"Prompt: {prompt[:100]}...")
-
-        # Create args object for cmd_ai
-        class Args:
-            pass
-        ai_args = Args()
-        ai_args.prompt = [prompt]
-        ai_args.duration = args.duration
-        ai_args.form = None
-        ai_args.output_dir = args.output_dir
-        ai_args.formats = args.formats or ["midi", "mp3"]
-        ai_args.seed = None
-        ai_args.api_key = None
-        ai_args.save_plan = False
-
-        return cmd_ai(ai_args)
-
-    if args.watch:
-        # Watch mode
-        print(f"Watching {prompt_file} for changes (Ctrl+C to stop)...")
-        print()
-
-        last_mtime = prompt_file.stat().st_mtime
-
-        try:
-            while True:
-                current_mtime = prompt_file.stat().st_mtime
-                if current_mtime != last_mtime:
-                    print(f"\n[{time.strftime('%H:%M:%S')}] File changed, regenerating...")
-                    generate_from_file()
-                    last_mtime = current_mtime
-                    print("\nWatching for changes...")
-                time.sleep(1)
-        except KeyboardInterrupt:
-            print("\nStopped watching.")
-            return 0
-    else:
-        return generate_from_file()
 
 
 def cmd_compose(args) -> int:

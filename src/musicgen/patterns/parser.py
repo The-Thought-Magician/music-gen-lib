@@ -78,10 +78,13 @@ class PatternParser:
         return Pattern(events=events, length=float(len(events)))
 
     def _parse_polymetric(self, pattern_str: str) -> Pattern:
-        """Parse a polymetric pattern (comma-separated parts)."""
+        """Parse a polymetric pattern (comma-separated parts).
+
+        NOTE: Currently only parses the first part. Full polymetric support
+        with independent time signatures is planned for future implementation.
+        """
         parts = pattern_str.split(",")
         # For now, just parse the first part
-        # Full polymetric support will be added in V4-25
         return self.parse(parts[0])
 
     def _parse_sequence(self, seq: str) -> list[PatternEvent]:
@@ -174,34 +177,6 @@ class PatternParser:
             return [False] * steps
         if hits >= steps:
             return [True] * steps
-
-        # Bjorklund algorithm using recursive remainder method
-        def bjorklund_recursive(onsets: int, total: int) -> list[list[int]]:
-            """Recursive Bjorklund algorithm."""
-            if onsets == 0:
-                return [[0]] * total
-            if onsets == total:
-                return [[1]] * total
-
-            # Calculate the base pattern and remainder
-            counts = []
-            remainder = onsets
-            divisor = total
-
-            while remainder > 0:
-                count = divisor // remainder
-                counts.append(count)
-                new_remainder = divisor % remainder
-                divisor = remainder
-                remainder = new_remainder
-
-            # Build the pattern from counts
-            result: list[list[int]] = []
-            for c in counts:
-                result.append([1])
-                result.extend([[0]] * (c - 1))
-
-            return result
 
         # Simple Euclidean distribution
         result: list[bool] = [False] * steps

@@ -1,25 +1,26 @@
-"""Constants for music notation and timing."""
+"""Constants for music notation and timing.
+
+This module imports duration constants from core.note to maintain a single
+source of truth for note durations.
+"""
 
 from dataclasses import dataclass
 
-# Note names
-NOTE_NAMES = ["C", "D", "E", "F", "G", "A", "B"]
-NOTE_NAMES_WITH_SHARPS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-NOTE_NAMES_WITH_FLATS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
+# Import duration constants from note module (source of truth)
+from musicgen.core.note import (
+    EIGHTH,
+    HALF,
+    QUARTER,
+    SIXTEENTH,
+    THIRTY_SECOND,
+    WHOLE,
+    DOTTED_EIGHTH,
+    DOTTED_HALF,
+    DOTTED_QUARTER,
+    DOTTED_WHOLE,
+)
 
-# Duration values (in quarter note units)
-WHOLE = 4.0
-HALF = 2.0
-QUARTER = 1.0
-EIGHTH = 0.5
-SIXTEENTH = 0.25
-THIRTY_SECOND = 0.125
-
-# Dotted durations
-DOTTED_WHOLE = 6.0
-DOTTED_HALF = 3.0
-DOTTED_QUARTER = 1.5
-DOTTED_EIGHTH = 0.75
+# Additional duration values (if note.py doesn't have these)
 
 # Triplet durations
 TRIPLET_WHOLE = WHOLE * 2/3

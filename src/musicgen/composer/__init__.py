@@ -1,19 +1,19 @@
 """AI Composer module."""
 
-from musicgen.composer_new.composer import (
+from musicgen.composer.composer import (
     AIComposer,
     ValidationError,
     compose,
     compose_from_file,
 )
-from musicgen.composer_new.presets import (
+from musicgen.composer.presets import (
     MODIFIERS,
     PRESETS,
     apply_modifier,
     get_preset,
     list_presets,
 )
-from musicgen.composer_new.sectional import (
+from musicgen.composer.sectional import (
     SectionalComposer,
     generate_sectional,
 )

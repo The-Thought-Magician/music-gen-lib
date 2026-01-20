@@ -348,38 +348,6 @@ def unfreeze(pattern: Pattern, state: PatternState) -> Pattern:
     return pattern
 
 
-def once(pattern: Pattern) -> Pattern:
-    """
-    Create a pattern that only plays once.
-
-    After playing once, it becomes silent.
-
-    Args:
-        pattern: Pattern to play once
-
-    Returns:
-        New pattern with one-shot behavior
-    """
-    # This is a simplified version - full implementation would
-    # require tracking state
-    return Pattern(events=list(pattern.events), length=pattern.length)
-
-
-def every(pattern: Pattern, _n: int = 2) -> Pattern:
-    """
-    Only play every n-th cycle of a pattern.
-
-    Args:
-        pattern: Pattern to modify
-        n: Play every n cycles
-
-    Returns:
-        New conditional pattern
-    """
-    # Simplified - would need cycle tracking
-    return Pattern(events=list(pattern.events), length=pattern.length)
-
-
 def range_pattern(start: int, end: int, step: int = 1) -> Pattern:
     """
     Create a numeric range pattern.
@@ -482,24 +450,6 @@ def rarely(pattern: Pattern, probability: float = 0.25) -> Pattern:
 def never(pattern: Pattern) -> Pattern:  # noqa: ARG001
     """Never play the pattern (returns empty pattern)."""
     return Pattern(events=[], length=0)
-
-
-def sometimes_cycle(
-    pattern: Pattern,
-    _cycle_probability: float = 0.5,
-) -> Pattern:
-    """
-    Only play pattern in some cycles.
-
-    Args:
-        pattern: Pattern to conditionally play
-        cycle_probability: Probability of playing in each cycle
-
-    Returns:
-        New conditional pattern
-    """
-    # This would need state tracking for full implementation
-    return Pattern(events=list(pattern.events), length=pattern.length)
 
 
 # =============================================================================
@@ -651,8 +601,6 @@ __all__ = [
     "silence_in",
     "freeze",
     "unfreeze",
-    "once",
-    "every",
     "range_pattern",
     "run_with",
     "degrade_by",
@@ -660,7 +608,6 @@ __all__ = [
     "often",
     "rarely",
     "never",
-    "sometimes_cycle",
     # Construction
     "from_list",
     "from_dict",
